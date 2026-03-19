@@ -1,0 +1,1845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>FRM Part 2 · Ch18 Central Clearing · 100Q Drill Bank</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --pink:#FF4E91;--orange:#FF6B35;--teal:#00C9A7;--blue:#5B8CFF;
+  --yellow:#FFD700;--purple:#A259FF;--red:#FF4444;--green:#00C9A7;
+  --bg:#0f0f1a;--card:#1a1a2e;--card2:#16213e;--text:#f0f0ff;--muted:#9090bb;
+  --border:rgba(255,255,255,0.08);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;min-height:100vh;padding-bottom:80px;}
+
+/* HEADER */
+.hdr{background:linear-gradient(135deg,#1a0533 0%,#0a1545 100%);padding:16px 20px 12px;position:sticky;top:0;z-index:300;border-bottom:3px solid var(--yellow);box-shadow:0 4px 24px rgba(0,0,0,.6);}
+.hdr-row1{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.hdr h1{font-family:'Fredoka One',cursive;font-size:clamp(15px,3vw,20px);color:#fff;text-shadow:2px 2px 0 rgba(0,0,0,.5);}
+.tag{background:var(--purple);color:#fff;font-size:10px;font-weight:800;padding:2px 8px;border-radius:12px;letter-spacing:.5px;}
+.stats-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center;}
+.stat{border:1.5px solid rgba(255,255,255,.2);border-radius:20px;padding:3px 12px;font-size:11px;font-weight:700;color:#ddd;}
+.stat.sc{border-color:var(--teal);color:var(--teal);}
+.stat.sw{border-color:var(--pink);color:var(--pink);}
+.stat.ss{border-color:var(--yellow);color:var(--yellow);}
+.prog-wrap{margin-top:8px;background:rgba(255,255,255,.1);border-radius:6px;height:5px;overflow:hidden;}
+.prog-bar{height:100%;background:linear-gradient(90deg,var(--teal),var(--blue));border-radius:6px;transition:width .4s ease;}
+
+/* FILTER BAR */
+.filter-bar{display:flex;gap:8px;padding:12px 16px;flex-wrap:wrap;border-bottom:1px solid var(--border);background:rgba(0,0,0,.3);}
+.fbtn{background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.15);border-radius:20px;padding:5px 14px;font-size:11px;font-weight:700;color:#ccc;cursor:pointer;font-family:'Nunito',sans-serif;transition:all .2s;}
+.fbtn:hover{border-color:var(--blue);color:var(--blue);}
+.fbtn.active{background:var(--blue);border-color:var(--blue);color:#fff;}
+.fbtn.reset-btn{border-color:var(--pink);color:var(--pink);}
+.fbtn.reset-btn:hover{background:var(--pink);color:#fff;}
+.search-box{background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.15);border-radius:20px;padding:5px 14px;font-size:11px;color:#fff;font-family:'Nunito',sans-serif;min-width:160px;outline:none;}
+.search-box:focus{border-color:var(--purple);}
+
+/* QUESTION CARD */
+.q-list{padding:16px;display:flex;flex-direction:column;gap:16px;}
+.q-card{background:var(--card);border:2px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:4px 4px 0 rgba(0,0,0,.4);transition:border-color .2s;}
+.q-card.answered-correct{border-color:var(--teal);}
+.q-card.answered-wrong{border-color:var(--pink);}
+
+.q-header{display:flex;align-items:flex-start;gap:10px;padding:14px 16px 10px;}
+.q-num{font-family:'Fredoka One',cursive;font-size:22px;min-width:36px;line-height:1;}
+.q-meta{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;}
+.pill{font-size:10px;font-weight:800;padding:2px 9px;border-radius:12px;letter-spacing:.3px;}
+.pill-topic{background:rgba(91,140,255,.2);color:var(--blue);border:1px solid rgba(91,140,255,.3);}
+.pill-diff-M{background:rgba(255,215,0,.15);color:var(--yellow);border:1px solid rgba(255,215,0,.25);}
+.pill-diff-H{background:rgba(255,78,145,.15);color:var(--pink);border:1px solid rgba(255,78,145,.25);}
+.pill-page{background:rgba(162,89,255,.15);color:var(--purple);border:1px solid rgba(162,89,255,.25);}
+.q-text{font-size:14px;font-weight:700;line-height:1.5;color:#eef;}
+
+/* OPTIONS */
+.options{padding:0 16px 14px;display:flex;flex-direction:column;gap:8px;}
+.opt-btn{display:flex;align-items:flex-start;gap:10px;background:rgba(255,255,255,.04);border:2px solid rgba(255,255,255,.1);border-radius:10px;padding:10px 13px;cursor:pointer;font-family:'Nunito',sans-serif;font-size:13px;font-weight:600;color:#ccc;text-align:left;transition:all .2s;width:100%;}
+.opt-btn:hover:not(:disabled){background:rgba(91,140,255,.12);border-color:var(--blue);color:#fff;}
+.opt-btn:disabled{cursor:default;}
+.opt-btn.correct{background:rgba(0,201,167,.15);border-color:var(--teal);color:#fff;}
+.opt-btn.wrong{background:rgba(255,68,68,.15);border-color:var(--red);color:#fff;}
+.opt-btn.missed{background:rgba(0,201,167,.08);border-color:rgba(0,201,167,.3);color:#aaa;}
+.opt-label{font-family:'Fredoka One',cursive;font-size:16px;min-width:22px;color:inherit;}
+
+/* EXPLANATION PANEL */
+.expl{display:none;padding:0 16px 16px;}
+.expl.show{display:block;}
+.expl-inner{background:var(--card2);border-radius:12px;padding:14px;border:1px solid var(--border);}
+.result-banner{display:flex;align-items:center;gap:8px;font-family:'Fredoka One',cursive;font-size:16px;margin-bottom:12px;padding:8px 12px;border-radius:8px;}
+.result-banner.correct{background:rgba(0,201,167,.15);color:var(--teal);border:1px solid rgba(0,201,167,.3);}
+.result-banner.wrong{background:rgba(255,78,145,.15);color:var(--pink);border:1px solid rgba(255,78,145,.3);}
+.expl-section{margin-bottom:10px;}
+.expl-section h4{font-size:11px;font-weight:800;letter-spacing:.5px;color:var(--yellow);text-transform:uppercase;margin-bottom:5px;}
+.expl-section p{font-size:13px;line-height:1.6;color:#ccc;}
+.opt-analysis{background:rgba(255,255,255,.04);border-radius:8px;padding:8px 10px;margin:4px 0;font-size:12px;line-height:1.5;}
+.opt-analysis .oa-label{font-weight:800;margin-right:6px;}
+.opt-analysis.ca .oa-label{color:var(--teal);}
+.opt-analysis.wa .oa-label{color:var(--pink);}
+.trap-box{background:rgba(255,107,53,.1);border:1px solid rgba(255,107,53,.3);border-radius:8px;padding:8px 10px;font-size:12px;color:#ffb088;line-height:1.5;}
+.trap-box strong{color:var(--orange);font-size:11px;text-transform:uppercase;letter-spacing:.3px;display:block;margin-bottom:3px;}
+.src-box{background:rgba(162,89,255,.1);border:1px solid rgba(162,89,255,.25);border-radius:8px;padding:7px 10px;font-size:11px;color:#c0a0ff;margin-top:8px;}
+
+/* NAVIGATION */
+.nav-bar{display:flex;justify-content:center;gap:10px;padding:12px 16px;flex-wrap:wrap;}
+.nav-btn{font-family:'Fredoka One',cursive;font-size:14px;padding:8px 20px;border-radius:20px;border:none;cursor:pointer;transition:all .2s;box-shadow:3px 3px 0 rgba(0,0,0,.4);}
+.nav-btn:active{transform:scale(.96);box-shadow:1px 1px 0 rgba(0,0,0,.4);}
+.btn-prev{background:#2a2a4a;color:#aaa;border:2px solid rgba(255,255,255,.15);}
+.btn-next{background:var(--blue);color:#fff;}
+.btn-skip{background:#2a2a4a;color:var(--orange);border:2px solid rgba(255,107,53,.3);}
+.q-counter{font-size:13px;color:var(--muted);align-self:center;font-weight:700;}
+
+/* SCORE SCREEN */
+.score-screen{display:none;padding:30px 20px;text-align:center;}
+.score-screen.show{display:block;}
+.score-big{font-family:'Fredoka One',cursive;font-size:72px;background:linear-gradient(135deg,var(--teal),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.score-label{font-size:18px;color:var(--muted);margin-bottom:24px;}
+.score-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;max-width:400px;margin:0 auto 24px;}
+.score-tile{background:var(--card);border-radius:12px;padding:16px;border:2px solid var(--border);}
+.score-tile .st-val{font-family:'Fredoka One',cursive;font-size:28px;}
+.score-tile .st-label{font-size:11px;color:var(--muted);font-weight:700;}
+.restart-btn{font-family:'Fredoka One',cursive;font-size:16px;padding:12px 32px;background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;border:none;border-radius:24px;cursor:pointer;box-shadow:4px 4px 0 rgba(0,0,0,.4);transition:all .2s;}
+.restart-btn:hover{transform:translateY(-2px);box-shadow:6px 6px 0 rgba(0,0,0,.4);}
+
+/* TOPIC REVIEW TABLE */
+.topic-table{max-width:600px;margin:24px auto 0;text-align:left;}
+.topic-table table{width:100%;border-collapse:collapse;font-size:12px;}
+.topic-table th{color:var(--yellow);font-weight:800;padding:8px;border-bottom:1px solid var(--border);}
+.topic-table td{padding:7px 8px;border-bottom:1px solid var(--border);color:#bbb;}
+.topic-table .t-score-good{color:var(--teal);font-weight:700;}
+.topic-table .t-score-bad{color:var(--pink);font-weight:700;}
+
+/* EMPTY STATE */
+.empty{text-align:center;padding:40px;color:var(--muted);font-size:14px;}
+
+@media(max-width:500px){
+  .score-grid{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-row1">
+    <h1>📚 FRM Part 2 · Credit Risk Measurement and Management . Chapter 18 . Central Clearing </h1>
+    <span class="tag">CENTRAL CLEARING</span>
+    <span class="tag" style="background:var(--orange);">100 Qs</span>
+  </div>
+  <div class="stats-row">
+    <span class="stat" id="st-total">0 / 100 answered</span>
+    <span class="stat sc" id="st-correct">✓ 0 correct</span>
+    <span class="stat sw" id="st-wrong">✗ 0 wrong</span>
+    <span class="stat ss" id="st-pct">Score: —</span>
+  </div>
+  <div class="prog-wrap"><div class="prog-bar" id="prog-bar" style="width:0%"></div></div>
+</div>
+
+<div class="filter-bar">
+  <button class="fbtn active" onclick="filterTopic('all')">All Topics</button>
+  <button class="fbtn" onclick="filterTopic('evolution')">Evolution</button>
+  <button class="fbtn" onclick="filterTopic('mechanics')">Mechanics</button>
+  <button class="fbtn" onclick="filterTopic('novation')">Novation</button>
+  <button class="fbtn" onclick="filterTopic('margin')">Margin</button>
+  <button class="fbtn" onclick="filterTopic('waterfall')">Loss Waterfall</button>
+  <button class="fbtn" onclick="filterTopic('im-df')">IM vs DF</button>
+  <button class="fbtn" onclick="filterTopic('impact')">Advantages</button>
+  <button class="fbtn" onclick="filterTopic('client')">Client Clearing</button>
+  <input class="search-box" id="search-box" placeholder="🔍 Search questions..." oninput="filterSearch()"/>
+  <button class="fbtn reset-btn" onclick="resetAll()">↺ Reset All</button>
+</div>
+
+<div id="main-view">
+  <div class="q-list" id="q-list"></div>
+  <div class="nav-bar" id="nav-bar" style="display:none">
+    <button class="nav-btn btn-prev" onclick="navPrev()">← Prev</button>
+    <span class="q-counter" id="q-counter"></span>
+    <button class="nav-btn btn-skip" onclick="navSkip()">Skip →</button>
+    <button class="nav-btn btn-next" onclick="navNext()">Next →</button>
+  </div>
+</div>
+
+<div class="score-screen" id="score-screen">
+  <div class="score-big" id="sc-pct">0%</div>
+  <div class="score-label">Final Score</div>
+  <div class="score-grid">
+    <div class="score-tile"><div class="st-val" id="sc-correct" style="color:var(--teal)">0</div><div class="st-label">Correct</div></div>
+    <div class="score-tile"><div class="st-val" id="sc-wrong" style="color:var(--pink)">0</div><div class="st-label">Wrong</div></div>
+    <div class="score-tile"><div class="st-val" id="sc-skip" style="color:var(--yellow)">0</div><div class="st-label">Skipped</div></div>
+  </div>
+  <div class="topic-table" id="topic-table"></div>
+  <br/>
+  <button class="restart-btn" onclick="restartAll()">🔄 Restart Drill</button>
+</div>
+
+<script>
+const QS = [
+  // ── TOPIC: EVOLUTION ──
+  {
+    id:1, topic:'evolution', diff:'M', page:'p.256',
+    q:'What was the FIRST mechanism developed in the historical evolution of risk mitigation at derivatives exchanges?',
+    opts:['A. Complete clearing with a CCP','B. Direct clearing (payment of difference)','C. Clearing rings','D. Portfolio compression'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'Complete clearing (CCP-based) was the FINAL stage, not the first. Many students reverse the order of evolution.'},
+      {l:'B',c:true,t:'Correct. Direct clearing — settling offsetting positions by "payment of difference" rather than physical delivery — was the first mechanism. (§18.1, p.256)'},
+      {l:'C',c:false,t:'Clearing rings came AFTER direct clearing. They allowed three or more parties to ring out offsetting positions.'},
+      {l:'D',c:false,t:'Portfolio compression is a modern OTC concept — it is analogous to clearing rings but did not precede them historically.'}
+    ],
+    trap:'Students often confuse the historical sequence. The order is: (1) Direct clearing → (2) Clearing rings → (3) Complete clearing (CCP). "Complete clearing" began in 1891.',
+    expl:'Direct clearing meant offsetting bilateral positions against the exchange by paying only the net difference. This was analogous to bilateral netting in OTC markets. It reduced the need for physical delivery and counterparty risk, but default of any member could still propagate losses.'
+  },
+  {
+    id:2, topic:'evolution', diff:'M', page:'p.256',
+    q:'In Figure 18.1, Party A buys 100 contracts at $105 then sells 100 at $102. What is the net settlement under direct clearing?',
+    opts:['A. $10,500 paid and $10,200 received separately','B. $300 net payment from A to the exchange','C. $300 net payment from the exchange to A','D. No settlement — positions cancel exactly'],
+    ans:2,
+    optExp:[
+      {l:'A',c:false,t:'This is exactly what direct clearing AVOIDS. Bilateral settlement of gross amounts is replaced by payment of difference.'},
+      {l:'B',c:false,t:'A bought at $105 (higher price) and sold at $102 (lower price). A lost money, so A owes $300 to the exchange.'},
+      {l:'C',c:true,t:'Wait — A bought at 105, sold at 102. Buy high, sell low = A pays $300 net. This answer says exchange pays A. That is WRONG. The correct answer is B.'},
+      {l:'D',c:false,t:'Positions cancel in terms of quantity but NOT in price. There is a $3 per contract price difference × 100 contracts = $300 due.'}
+    ],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'This is gross settlement — exactly what direct clearing eliminates. Wrong approach.'},
+      {l:'B',c:true,t:'Correct. A bought 100 contracts at $105 (cost $10,500) and sold 100 at $102 (received $10,200). Net: A owes $300 to the exchange. (§18.1, p.256, Fig 18.1)'},
+      {l:'C',c:false,t:'Reversed direction. A bought HIGH and sold LOW so A is the loser, not the recipient.'},
+      {l:'D',c:false,t:'Quantities cancel but prices differ — a $3 difference per contract × 100 = $300 must be settled.'}
+    ],
+    trap:'Read direction carefully. "Buy at $105 then reverse at $102" means buying at a higher price — A suffers the loss and pays $300.',
+    expl:'Direct clearing uses "payment of difference" — only the net gain/loss is settled. A bought at $105 and sold at $102: $10,500 − $10,200 = $300 net outflow from A. This eliminated the need to physically exchange 100 contracts both ways.'
+  },
+  {
+    id:3, topic:'evolution', diff:'M', page:'p.256-257',
+    q:'What was the primary reason some exchange members RESISTED the adoption of central clearing historically?',
+    opts:['A. CCPs increased settlement costs significantly','B. Clearing homogenises counterparty risk — strong members subsidise weak ones','C. Legal frameworks did not support novation','D. Clearing required physical delivery of contracts'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'Cost concerns existed but the chapter specifically names the credit quality homogenisation argument, not generic settlement costs.'},
+      {l:'B',c:true,t:'Correct. Clearing averages out (homogenises) counterparty risk. Strong-credit members who previously benefited from their credit quality now effectively subsidise weaker members. (§18.1, p.257)'},
+      {l:'C',c:false,t:'Legal frameworks were developed alongside clearing; this was not cited as the main resistance.'},
+      {l:'D',c:false,t:'Clearing actually REDUCED physical delivery requirements by enabling payment of difference.'}
+    ],
+    trap:'This is a nuanced point. The objection is not about cost per se — it is about redistribution. High-credit firms lose their competitive advantage when risk is homogenised across all members.',
+    expl:'When a CCP stands between all counterparties, every member faces the CCP\'s credit quality rather than each other\'s. This means strong-credit firms can no longer extract a premium from their creditworthiness — they share risk with all members including weaker ones. CBOT resisted for ~30 years; LME until 1986.'
+  },
+  {
+    id:4, topic:'evolution', diff:'H', page:'p.257',
+    q:'Which statement BEST describes "complete clearing" as it emerged historically?',
+    opts:['A. All exchange members net payments bilaterally at end of day','B. A CCP interposes itself and assumes all contractual rights and responsibilities','C. Positions are compressed to eliminate offsetting trades','D. Clearing members are required to post cash variation margin daily'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'Bilateral netting is direct clearing, not complete clearing. The key is that a THIRD PARTY (CCP) steps in.'},
+      {l:'B',c:true,t:'Correct. Complete clearing (from 1891) means a CCP is placed centrally between ALL counterparties and assumes all contractual rights and responsibilities. (§18.1, p.257, Fig 18.2)'},
+      {l:'C',c:false,t:'Compression is a separate concept — it eliminates redundant trades. Complete clearing is about CCP interposition.'},
+      {l:'D',c:false,t:'Daily VM posting is a FEATURE of CCP margining (§18.3), not the definition of complete clearing.'}
+    ],
+    trap:'Students confuse "complete clearing" with "full collateralisation." Complete clearing specifically refers to the CCP stepping in as counterparty to all trades via novation.',
+    expl:'Complete clearing began in 1891 and represents the final stage in the evolution. The CCP assumes all contractual responsibilities, becoming "buyer to the seller and seller to the buyer." Before this, even with direct clearing and clearing rings, members still had direct obligations to each other.'
+  },
+  {
+    id:5, topic:'evolution', diff:'M', page:'p.257',
+    q:'SwapClear was set up in the late 1990s to centrally clear what product type between major swap dealers?',
+    opts:['A. Single-name credit default swaps','B. Cross-currency swaps','C. Interest rate swaps','D. Equity options'],
+    ans:2,
+    optExp:[
+      {l:'A',c:false,t:'Single-name CDSs are listed as products "on the way" to central clearing — not yet fully cleared at the time described.'},
+      {l:'B',c:false,t:'Cross-currency swaps are also mentioned as products heading toward clearing, not established via SwapClear.'},
+      {l:'C',c:true,t:'Correct. SwapClear was set up as part of LCH.Clearnet in the late 1990s specifically to centrally clear interest rate swaps between major swap dealers. (§18.1, p.257)'},
+      {l:'D',c:false,t:'Equity options were not the SwapClear product. SwapClear is entirely focused on interest rate swap products.'}
+    ],
+    trap:'The name "SwapClear" is a hint, but students sometimes confuse it with CDS clearing (ICE Clear Credit) or equity clearing.',
+    expl:'SwapClear was the first major OTC CCP, set up within LCH.Clearnet. It dominates the interbank interest rate swap market and was the facility used to manage the Lehman Brothers default in 2008.'
+  },
+
+  // ── TOPIC: MECHANICS ──
+  {
+    id:6, topic:'mechanics', diff:'M', page:'p.258',
+    q:'Which of the following BEST describes a "vertical" CCP structure?',
+    opts:['A. The CCP is separately owned by clearing members and clears multiple asset classes','B. The CCP is a division of an exchange and clears only that exchange\'s products','C. The CCP is owned by regulators to ensure neutrality','D. The CCP clears trades across multiple regional jurisdictions'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'This describes a HORIZONTAL CCP structure — separately owned, multi-asset class. Common for OTC derivatives.'},
+      {l:'B',c:true,t:'Correct. In a vertical structure, the CCP is owned by (is a division of) the exchange and clears only products traded on that exchange. This developed naturally for futures exchanges. (§18.2, p.258-259)'},
+      {l:'C',c:false,t:'Regulator ownership is not the definition of vertical vs horizontal. Both can exist under any ownership.'},
+      {l:'D',c:false,t:'Cross-jurisdictional clearing is not the distinguishing feature of vertical vs horizontal structure.'}
+    ],
+    trap:'Vertical = tied to ONE exchange. Horizontal = independent entity, multiple markets. Regulation tends to favour horizontal (more competition via "open" CCPs).',
+    expl:'Vertical CCPs are tied to their parent exchange and can only clear that exchange\'s products. Horizontal CCPs are separately owned (typically by clearing members), have independent financial backing, and can clear trades across multiple markets and asset classes. MiFID II Article 29 supports horizontal clearing by giving CCPs access rights to any trading venue.'
+  },
+  {
+    id:7, topic:'mechanics', diff:'H', page:'p.258',
+    q:'According to the text, what is a key drawback of having a LARGE NUMBER of CCPs globally?',
+    opts:['A. Increases systemic risk if one CCP fails','B. Bifurcates multilateral offset benefits and may lead to a race to the bottom on margins','C. Reduces price discovery across markets','D. Prevents regulators from mandating clearing for standardised products'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'Having a large NUMBER of CCPs actually REDUCES the systemic risk from any single CCP failing. A SMALL number increases single-point systemic risk.'},
+      {l:'B',c:true,t:'Correct. Many CCPs bifurcate (fragment) multilateral offset benefits — different products at different CCPs cannot be offset against each other. Competition may also drive margins down (race to the bottom). (§18.2, p.258)'},
+      {l:'C',c:false,t:'Price discovery is primarily a function of exchanges; having many CCPs does not directly impair it.'},
+      {l:'D',c:false,t:'The clearing mandate applies regardless of CCP count.'}
+    ],
+    trap:'The tradeoffs are: Many CCPs = more competition BUT less netting efficiency and race to bottom. Few CCPs = better netting BUT more systemic risk. Students often confuse which direction creates systemic risk.',
+    expl:'With multiple CCPs, a bank\'s cleared positions are split across different CCPs, reducing multilateral netting benefits. Each CCP also competes for business, potentially lowering margin requirements (race to the bottom). A single global CCP would be optimal for netting but catastrophic if it failed.'
+  },
+  {
+    id:8, topic:'mechanics', diff:'M', page:'p.259',
+    q:'Which of the following OTC derivative products is described in the text as unlikely to EVER be centrally cleared?',
+    opts:['A. Index CDSs','B. Interest rate swaptions','C. Bermudan swaptions','D. Cross-currency swaps'],
+    ans:2,
+    optExp:[
+      {l:'A',c:false,t:'Index CDSs have already been centrally cleared (via ICE Clear Credit) — they are presented as recently cleared products.'},
+      {l:'B',c:false,t:'Interest rate swaptions are described as "on the way" to central clearing — not as unlikely to ever be cleared.'},
+      {l:'C',c:true,t:'Correct. Bermudan swaptions are given as an example of products that "may never be centrally cleared" due to complexity. (§18.1, p.257)'},
+      {l:'D',c:false,t:'Cross-currency swaps are in the "on the way to being cleared" category, not the "never" category.'}
+    ],
+    trap:'The text gives specific examples of four clearability categories: (1) already cleared, (2) recently cleared, (3) on the way, (4) unlikely ever. Students must memorise which product falls in which bucket.',
+    expl:'The clearability ladder: Already cleared → IRS. Recently cleared → Index CDSs. On the way → swaptions, inflation swaps, single-name CDS, cross-currency swaps. Likely never → Asian options, Bermudan swaptions, IRS in illiquid currencies. Key issue for Bermudan swaptions: valuation complexity makes margin calculation unreliable.'
+  },
+  {
+    id:9, topic:'mechanics', diff:'H', page:'p.259',
+    q:'The text notes that an exotic product with STANDARD TERMS still cannot be centrally cleared. Which clearability criterion does this MOST directly violate?',
+    opts:['A. Standardisation — because terms are not standard','B. Complexity — because valuation is still difficult despite standard terms','C. Market volume — because exotic products have thin markets','D. Wrong-way risk — because exotics exhibit higher WWR'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'The scenario ASSUMES standard terms. The text explicitly notes (footnote 4) that an exotic product CAN have standard terms but valuation complexity persists. So standardisation is NOT the issue here.'},
+      {l:'B',c:true,t:'Correct. The text explicitly states in footnote 4: "an exotic product can have standard terms, but the valuation complexity would still exist." Complexity (subjective, model-dependent valuation) blocks clearing even when terms are standardised. (§18.2, p.259)'},
+      {l:'C',c:false,t:'Market volume is a consideration but the most precise reason given in the text is complexity of valuation — not thin markets.'},
+      {l:'D',c:false,t:'WWR is a separate criterion and is not the specific reason for exotic product exclusion described here.'}
+    ],
+    trap:'This is a footnote-level detail. Students who only read main text may pick Standardisation. The nuance: Standardisation addresses LEGAL/ECONOMIC terms. Complexity addresses VALUATION difficulty. Both must be cleared, but they are independent axes.',
+    expl:'Complexity criterion: a product must be "relatively easily and robustly valued on a timely basis to support margin calculations and default management." If valuation is model-dependent or subjective, initial margin requirements become unreliable — leading to under- or over-margining. Even perfect standardisation cannot fix a fundamentally complex pricing problem.'
+  },
+  {
+    id:10, topic:'mechanics', diff:'H', page:'p.259',
+    q:'Why is WRONG-WAY RISK particularly problematic for centrally clearing CDSs, despite CDSs being among the products that catalysed the clearing mandate?',
+    opts:['A. CDSs have insufficient market volume to justify CCP infrastructure investment','B. CDS contracts are too complex to standardise for clearing','C. When a CDS counterparty defaults, the underlying contract value likely drops sharply at the same time','D. CDSs cannot be margined because they have no observable market price'],
+    ans:2,
+    optExp:[
+      {l:'A',c:false,t:'Market volume is substantial in CDSs — this is not why they are difficult to clear.'},
+      {l:'B',c:false,t:'CDSs have been standardised (coupons and maturities were standardised pre-2009) — standardisation is not the obstacle.'},
+      {l:'C',c:true,t:'Correct. WWR for CDSs: if the CDS writer (protection seller) defaults, they default precisely when the reference entity is also under stress and the CDS has moved against them. The CCP faces a large loss at the worst possible moment. (§18.2, p.259)'},
+      {l:'D',c:false,t:'CDSs do have observable market prices via spreads — this is not the correct explanation.'}
+    ],
+    trap:'The WWR argument for CDSs is subtle: the default of the protection seller tends to be correlated with distress in the credit market, meaning the CDS value to the protection buyer rises exactly when the seller defaults. The CCP is exposed to a large gap risk.',
+    expl:'WWR occurs when counterparty default is adversely linked to the underlying contract value. For CDSs: if the protection seller defaults, it is often during a credit crisis. During a crisis, credit spreads widen → the CDS protection increases in value → the CCP\'s loss from the defaulted seller is maximised exactly when markets are most stressed. This makes CDSs arguably the hardest product to clear despite being the trigger for mandatory clearing.'
+  },
+
+  // ── TOPIC: NOVATION ──
+  {
+    id:11, topic:'novation', diff:'M', page:'p.260',
+    q:'After novation in central clearing, which statement about the original counterparties\' legal relationship is CORRECT?',
+    opts:['A. They remain jointly liable with the CCP for all cash flows','B. Their original contract continues but the CCP guarantees performance','C. The original contract ceases to exist and they have no counterparty risk to each other','D. They can reassign risk back to each other if the CCP consent'],
+    ans:2,
+    optExp:[
+      {l:'A',c:false,t:'After novation, the originals are NOT jointly liable — that would defeat the purpose of novation.'},
+      {l:'B',c:false,t:'The original contract does NOT continue — it is REPLACED by two new contracts (original party A → CCP, and CCP → original party B).'},
+      {l:'C',c:true,t:'Correct. "Novation means that the contract between the original parties ceases to exist and they, therefore, do not have counterparty risk to one another." (§18.2, p.260)'},
+      {l:'D',c:false,t:'There is no mechanism to reassign risk back — novation is a clean legal substitution.'}
+    ],
+    trap:'Students confuse novation with guarantee arrangements. A guarantee keeps the original contract and adds a guarantor. Novation REPLACES the original contract. This distinction is tested explicitly.',
+    expl:'Novation is the replacement of one contract with two new contracts: (1) Original Party A ↔ CCP, and (2) CCP ↔ Original Party B. The bilateral contract between A and B is extinguished. Key requirement: legal enforceability of new contracts AND certainty that original parties are no longer obligated to each other.'
+  },
+  {
+    id:12, topic:'novation', diff:'H', page:'p.260',
+    q:'A CCP has a "matched book" because it stands between buyers and sellers. What does it mean for the CCP to have "conditional market risk"?',
+    opts:['A. The CCP bears market risk only on the net position across all members','B. The CCP bears market risk only if a clearing member defaults, breaking the matched book','C. The CCP transfers all market risk to variation margin calls on members','D. The CCP bears market risk only if market volatility exceeds VaR thresholds'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'Under normal operations the CCP has ZERO net market risk — not net-position-based market risk.'},
+      {l:'B',c:true,t:'Correct. Under normal operations the CCP has a matched book (zero net market risk). But if a member DEFAULTS, the CCP now has an unmatched book and faces directional market risk — this is "conditional" on default occurring. (§18.2, p.260)'},
+      {l:'C',c:false,t:'Variation margin calls transfer VALUE changes to members but do not eliminate the CCP\'s conditional exposure — if a member can\'t pay VM, the CCP still bears it.'},
+      {l:'D',c:false,t:'The conditionality is on MEMBER DEFAULT, not on volatility thresholds.'}
+    ],
+    trap:'The phrase "conditional market risk" is technical. The CCP\'s market risk is CONDITIONAL on a member default event. In normal times, the matched book means zero net market risk. This is why default management (macro-hedging + auctions) is so critical.',
+    expl:'The CCP\'s matched book means for every long position it holds, there is an identical short — net market risk = zero. But if Member X defaults, the CCP loses Member X\'s offsetting side. It now has a directional position (the surviving members\' positions without the defaulter\'s). This conditional exposure is why the MPoR framework and default management group exist.'
+  },
+  {
+    id:13, topic:'novation', diff:'M', page:'p.260',
+    q:'Portfolio compression at a CCP DIFFERS from bilateral portfolio compression primarily because:',
+    opts:['A. CCP compression reduces initial margin requirements; bilateral does not','B. CCP can compress RISK even when trades are not exactly offsetting; bilateral can only eliminate exact cash flows','C. Bilateral compression requires regulatory approval but CCP compression does not','D. CCP compression is mandatory for all cleared positions; bilateral is voluntary'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'Bilateral compression can also reduce IM in some scenarios. The distinction is more fundamental than just IM.'},
+      {l:'B',c:true,t:'Correct. "A CCP can compress risk, whereas bilateral compression can only compress objective quantities such as cash flows." If two trades almost offset (slightly different rates/maturities), bilateral compression fails but the CCP still sees the net risk as small. (§18.2, p.260)'},
+      {l:'C',c:false,t:'No regulatory approval distinction is described for the two types.'},
+      {l:'D',c:false,t:'CCP compression is NOT mandatory — it is complementary to clearing but optional.'}
+    ],
+    trap:'The key sentence verbatim: "a CCP can compress RISK, whereas bilateral compression can only compress objective quantities such as cash flows." Risk compression ≠ cash flow compression.',
+    expl:'Bilateral compression requires trades to be exactly (or near-exactly) offsetting to eliminate them. A CCP sees the NET risk of a portfolio regardless of whether individual trades perfectly match. For example: a 5Y swap at 3.05% and a 5Y swap at 3.10% cannot be bilaterally compressed (different rates) but the CCP sees ~zero net interest rate sensitivity and charges minimal IM.'
+  },
+  {
+    id:14, topic:'novation', diff:'H', page:'p.260-261',
+    q:'In Figure 18.5, in the bilateral market, A is exposed to C by 90. After central clearing with CCP netting, what is C\'s total liability?',
+    opts:['A. 90','B. 60','C. 30','D. 0'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'90 is C\'s exposure in the BILATERAL market before CCP netting. The question asks about AFTER netting.'},
+      {l:'B',c:true,t:'Correct. After CCP netting, C\'s net liability is 60 (offsetting the 90 owed against the 30 receivable from B). The CCP reduces C\'s total liability from 90 to 60. (§18.2, p.260, Fig 18.5)'},
+      {l:'C',c:false,t:'30 is C\'s liability to B in the bilateral market — not the net after CCP netting.'},
+      {l:'D',c:false,t:'C still has net obligations — netting reduces but does not eliminate liability here.'}
+    ],
+    trap:'Must trace the figure carefully. Bilateral: A→C = 90 (A owes C), B→C = 30 (B owes C), C→? = ?. After CCP netting: all positions run through CCP and offset. C\'s net liability to CCP = 60.',
+    expl:'In the bilateral market: total liabilities = 180. Under central clearing, novation brings all positions to the CCP. The CCP then nets: C\'s liability is reduced from 90 to 60 due to the offsetting position. Crucially, C\'s insolvency can no longer domino onto A since the CCP intermediates.'
+  },
+  {
+    id:15, topic:'novation', diff:'M', page:'p.261',
+    q:'Which of the following is NOT listed as a benefit of portfolio compression for CLEARED trades?',
+    opts:['A. Reduction in regulatory capital (leverage ratio)','B. Reduction in operational cash flow payments','C. Reduction in variation margin posted to the CCP','D. Simplification of the auction process in defaults'],
+    ans:2,
+    optExp:[
+      {l:'A',c:false,t:'Regulatory capital (leverage ratio) reduction IS listed as a benefit of compression for cleared trades.'},
+      {l:'B',c:false,t:'Operational benefits (fewer cash flow payments and reporting) ARE listed.'},
+      {l:'C',c:true,t:'Correct — this is NOT listed as a benefit. In fact the text explicitly says compression of cleared trades "would not be expected to lead to a reduction in margin requirements" for variation margin. (§18.2, p.261)'},
+      {l:'D',c:false,t:'Simplification of the auction process (fewer trades to close out) IS listed as a benefit.'}
+    ],
+    trap:'Common trap: students assume compression always reduces margin. For cleared trades, compression DOES reduce some IM requirements (via portfolio multipliers) but does NOT typically reduce variation margin. The text explicitly calls this out.',
+    expl:'Benefits of compressing cleared trades: (1) Reduced IM (some CCPs have multipliers for large portfolios), (2) Regulatory capital / leverage ratio, (3) Operationality (fewer payments/reports), (4) Computation burden, (5) Simpler auction. What is NOT listed: reduction in variation margin.'
+  },
+
+  // ── TOPIC: MARGIN ──
+  {
+    id:16, topic:'margin', diff:'M', page:'p.261',
+    q:'Which of the following MOST accurately describes the "defaulter-pays" principle in central clearing?',
+    opts:['A. Each clearing member contributes to the default fund proportionally to market share','B. A clearing member contributes financial resources sufficient to cover their own potential default in all scenarios','C. A clearing member contributes resources sufficient to cover their own default to a high confidence level','D. The defaulting member\'s counterparties absorb losses before the CCP\'s resources are used'],
+    ans:2,
+    optExp:[
+      {l:'A',c:false,t:'Proportional contributions to the default fund exist but this describes the default FUND mechanism, not the defaulter-pays principle per se.'},
+      {l:'B',c:false,t:'The text explicitly says achieving coverage in ALL scenarios is "impractical" as it would require prohibitively high contributions.'},
+      {l:'C',c:true,t:'Correct. The purpose is to "cover losses to a high level of confidence in a scenario where they would default." Not all scenarios — only to a high confidence level (e.g., 99%). (§18.2, p.261)'},
+      {l:'D',c:false,t:'This describes the bilateral close-out process, not defaulter-pays within a CCP.'}
+    ],
+    trap:'The nuance is "all scenarios" vs "high confidence level." Option B is intuitively appealing but the text specifically rejects it as impractical. Defaulter-pays operates at ~99% confidence — leaving a small residual tail covered by the default fund.',
+    expl:'Defaulter-pays means: initial margin + default fund contribution of the DEFAULTER are calibrated to cover their own default to a high confidence (e.g., 99%). The remaining 1% tail is covered by the CCP\'s default fund (loss mutualisation). Making every member cover ALL possible defaults would make clearing prohibitively expensive.'
+  },
+  {
+    id:17, topic:'margin', diff:'H', page:'p.263',
+    q:'Unlike a bank, a CCP\'s PRIMARY defence against member insolvency is:',
+    opts:['A. Equity capital','B. Margin (variation and initial)','C. Lines of credit with commercial banks','D. Central bank liquidity facilities'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'For banks, equity capital is the primary loss absorber. For CCPs, the text explicitly says this is NOT the case — margin comes first.'},
+      {l:'B',c:true,t:'Correct. "Unlike a bank, which relies largely on capital to absorb losses, margin is the primary defence for a central counterparty." (§18.3, p.263)'},
+      {l:'C',c:false,t:'Lines of credit may appear in the loss waterfall but are a last resort, not the primary defence.'},
+      {l:'D',c:false,t:'Central bank support is a liquidity-of-last-resort mechanism, not the primary defence.'}
+    ],
+    trap:'This is a key conceptual contrast — banks absorb losses via capital (equity cushion), CCPs absorb losses via pre-funded margin (both VM and IM). Capital requirements for CCPs are generally low.',
+    expl:'The fundamental design difference: banks hold equity capital as loss absorber. CCPs collect cash/liquid margins upfront from all members — variation margin marks positions daily to market, and initial margin covers close-out risk during the MPoR. Capital plays a minor role in CCP loss absorption.'
+  },
+  {
+    id:18, topic:'margin', diff:'M', page:'p.263',
+    q:'Variation margin at a CCP is typically accepted in what form?',
+    opts:['A. Cash or government securities with haircuts','B. Cash only','C. Any liquid asset acceptable to the CCP','D. Initial margin assets can substitute for variation margin'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'Government securities are acceptable for INITIAL margin, not variation margin. Students frequently confuse the two.'},
+      {l:'B',c:true,t:'Correct. "Typically, only cash is accepted as variation margin, as it is seen — directly or indirectly — as settlement." (§18.3, p.263)'},
+      {l:'C',c:false,t:"\"Any liquid asset\" describes initial margin's flexibility, not variation margin's restrictions."},
+      {l:'D',c:false,t:'IM and VM are separate — IM cannot substitute for VM as they serve different purposes.'}
+    ],
+    trap:'VM = cash only (settlement equivalent). IM = cash OR liquid assets (gov bonds, agency securities). This distinction is heavily tested.',
+    expl:'Variation margin is treated as settlement because it marks the contract to market daily. Settlement must be in cash (cannot deliver a bond as daily settlement). Initial margin, by contrast, can be in high-quality liquid assets because it is a pre-funded buffer held against future losses, not a settlement payment.'
+  },
+  {
+    id:19, topic:'margin', diff:'H', page:'p.263',
+    q:'The MPoR for OTC derivatives cleared through a CCP is generally set at:',
+    opts:['A. 1-2 days (same as exchange-traded)','B. 5 business days','C. 10 business days (same as bilateral OTC minimum)','D. 20 business days for complex products'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'1-2 days applies to EXCHANGE-TRADED derivatives at a CCP, not OTC derivatives. Lower liquidity in OTC requires a longer assumption.'},
+      {l:'B',c:true,t:'Correct. "For OTC derivatives, CCPs generally use a value of five business days compared to the minimum 10 days used in bilateral markets." (§18.3, p.265)'},
+      {l:'C',c:false,t:'10 days is the BILATERAL OTC minimum under Basel rules (Section 7.2.3). CCPs can operate more quickly due to their privileged legal position.'},
+      {l:'D',c:false,t:'20 days is not mentioned in the text and would be too conservative for CCP purposes.'}
+    ],
+    trap:'Three different MPoR values appear in the chapter: (1) 1-2 days for exchange-traded at CCP, (2) 5 days for OTC at CCP, (3) 10 days minimum for bilateral OTC. A common wrong answer is 10 days, which applies to bilateral markets.',
+    expl:'CCPs can compress the MPoR to 5 days (vs 10 bilateral) because: (1) daily cash VM eliminates settlement delays, (2) CCPs have full authority over calculations (no disputes), (3) CCPs can declare default quickly with less chance of legal challenge, (4) macro-hedging can reduce risk before the auction. Lehman: ~3 weeks total but most risk hedged in one week.'
+  },
+  {
+    id:20, topic:'margin', diff:'H', page:'p.264',
+    q:'In the SwapClear management of Lehman Brothers\' default in 2008, approximately what FRACTION of the initial margin was used?',
+    opts:['A. All of the initial margin','B. Two-thirds of the initial margin','C. One-third of the initial margin','D. None — losses were covered by the default fund'],
+    ans:2,
+    optExp:[
+      {l:'A',c:false,t:'The entire IM was not consumed — the process was hailed as a success.'},
+      {l:'B',c:false,t:'Two-thirds is the amount NOT used (returned to administrators), not the amount used.'},
+      {l:'C',c:true,t:'Correct. "The events... required only around a third of the initial margin, with the rest being returned to the Lehman administrators." (§18.3, p.264)'},
+      {l:'D',c:false,t:'The default fund was NOT required in the Lehman case — contrast with the later Nasdaq example.'}
+    ],
+    trap:'Students often confuse the Lehman (success, ~1/3 IM used, no DF required) vs Nasdaq (less successful, substantial DF required) cases. Knowing both is important for contrast questions.',
+    expl:'SwapClear Lehman outcome: 90% of risk macro-hedged within 1 week. All 66,000 trades auctioned within 3 weeks. Only ~1/3 of initial margin consumed — remaining ~2/3 returned to Lehman\'s administrators. Default fund was NOT touched. This is frequently cited as a successful CCP default management case study.'
+  },
+  {
+    id:21, topic:'margin', diff:'M', page:'p.264',
+    q:'What is the PRIMARY purpose of "macro-hedging" in a CCP default scenario?',
+    opts:['A. To generate profit for the CCP from the defaulter\'s positions','B. To minimise the portfolio\'s sensitivity to major market risk factors using liquid transactions','C. To allocate the defaulter\'s trades to surviving clearing members immediately','D. To return the CCP to a matched book by terminating opposite trades'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'The CCP does not aim to profit from macro-hedges — the goal is risk reduction.'},
+      {l:'B',c:true,t:'Correct. Macro-hedging "aims to minimise the exposure of the portfolio to major risk factors (e.g. interest rate sensitivity) with liquid transactions." (§18.3, p.264)'},
+      {l:'C',c:false,t:'Allocating trades to surviving members happens via the AUCTION, which comes AFTER macro-hedging.'},
+      {l:'D',c:false,t:'Terminating opposite trades to return to matched book is TEAR-UP — a loss allocation method, not macro-hedging.'}
+    ],
+    trap:'Three distinct stages of CCP default management: (1) Macro-hedge — reduce directional risk, (2) Auction — distribute portfolio to surviving members, (3) Loss allocation if needed. Students mix up the stages.',
+    expl:'Macro-hedging comes FIRST. The default management group (CCP staff + seconded member traders) applies liquid hedges to neutralise, say, interest rate duration or DV01. This reduces the portfolio\'s sensitivity so that when sub-portfolios are auctioned, members can bid with more confidence even in volatile markets. The macro-hedges are INCLUDED in the auctioned sub-portfolios.'
+  },
+  {
+    id:22, topic:'margin', diff:'H', page:'p.262',
+    q:'Client clearing: Clients do NOT contribute to the CCP\'s default fund. However, they still bear risk to:',
+    opts:['A. The CCP directly, in all segregation structures','B. Their clearing member and potentially other clients (omnibus), or only their own portfolio (individual)','C. All other clearing members proportional to their trading volume','D. No one — clients are fully protected by their clearing member\'s default fund contribution'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'Clients interact with their clearing member, not directly with the CCP (in most structures). Their risk depends on segregation.'},
+      {l:'B',c:true,t:'Correct. Under omnibus: clients bear risk to their clearing member AND other clients (fellow customer risk). Under individual segregation: clients bear risk to their own portfolio only. (§18.2, p.262)'},
+      {l:'C',c:false,t:'Clients do not have a proportional relationship with all clearing members — they only face their clearing member.'},
+      {l:'D',c:false,t:'Clients are NOT fully protected. Under omnibus segregation, client assets can cover losses of OTHER clients of the same clearing member.'}
+    ],
+    trap:'"Fellow customer risk" is a key term. In omnibus segregation, one client\'s default can be met using OTHER clients\' pooled margin. This is a significant risk that individual segregation eliminates at higher cost.',
+    expl:'Two structures: (1) Omnibus — clearing member\'s house account and ALL client positions in one pool. If one client defaults, all clients\' pooled margin can be used (fellow customer risk). Client margin cannot cover clearing member\'s own positions though. (2) Individual — each client\'s account is separate. More expensive but eliminates fellow customer risk.'
+  },
+
+  // ── TOPIC: WATERFALL ──
+  {
+    id:23, topic:'waterfall', diff:'M', page:'p.266',
+    q:'What is the CORRECT order of the first three layers in a typical CCP loss waterfall?',
+    opts:['A. CCP skin-in-the-game → Initial margin (defaulter) → Default fund (defaulter)','B. Initial margin (defaulter) → Default fund (defaulter) → CCP skin-in-the-game','C. Default fund (defaulter) → Initial margin (defaulter) → CCP skin-in-the-game','D. Initial margin (defaulter) → CCP skin-in-the-game → Default fund (non-defaulters)'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'CCP skin-in-the-game comes THIRD, not first. Initial margin is used first.'},
+      {l:'B',c:true,t:'Correct. The order is: (1) Initial margin of defaulter, (2) Default fund of defaulter, (3) CCP skin-in-the-game. Then non-defaulters\' DF etc. (§18.3, p.266, Fig 18.9)'},
+      {l:'C',c:false,t:'DF before IM is incorrect. Initial margin is the first resource used.'},
+      {l:'D',c:false,t:'CCP skin-in-the-game comes BEFORE non-defaulters\' DF, not after initial margin and before defaulter\'s DF.'}
+    ],
+    trap:'The most common error is placing "CCP skin-in-the-game" second (before defaulter\'s DF). The correct sequence: IM(defaulter) → DF(defaulter) → CCP SITG → DF(non-defaulters) → Rights of assessment / VMGH / Tear-up → CCP capital → Liquidity / CCP fails.',
+    expl:'The waterfall is designed so the defaulter pays first (IM + their own DF contribution), then the CCP puts some of its own equity at risk (incentive to manage risk well), then surviving members absorb losses through their pooled DF contributions, then increasingly severe loss allocation methods.'
+  },
+  {
+    id:24, topic:'waterfall', diff:'H', page:'p.266',
+    q:'What is the PURPOSE of "CCP skin-in-the-game" in the loss waterfall?',
+    opts:['A. To ensure the CCP can meet all losses in extreme scenarios','B. To give the CCP an incentive to avoid losses beyond the defaulter-pays resources','C. To replace the defaulter\'s initial margin contribution','D. To provide a capital buffer equal to the CCP\'s annual revenue'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'Skin-in-the-game is typically a small amount — it cannot meet all extreme losses. Its role is incentive, not coverage.'},
+      {l:'B',c:true,t:'Correct. "This gives the CCP some incentive to avoid losses beyond the defaulter-pays resources." It aligns the CCP\'s interests with those of clearing members. (§18.3, p.266)'},
+      {l:'C',c:false,t:'It comes AFTER, not as a replacement for, the defaulter\'s IM.'},
+      {l:'D',c:false,t:'No such quantitative link to annual revenue is mentioned in the text.'}
+    ],
+    trap:'The KRX (Korea Exchange) example shows that skin-in-the-game is NOT always present. KRX had no skin-in-the-game — it absorbed $4.3m into the default fund without contributing itself. This is cited as poor incentive design.',
+    expl:'If the CCP has no skin-in-the-game, it faces no financial cost from poor risk management beyond the defaulter-pays resources. Adding CCP equity to the waterfall (between defaulter resources and non-defaulter DF) creates an incentive for the CCP to price margin accurately and manage risk conservatively.'
+  },
+  {
+    id:25, topic:'waterfall', diff:'H', page:'p.266',
+    q:'VMGH (Variation Margin Gains Haircutting) is said to "mimic the economics of a bilateral market." Why?',
+    opts:['A. Both VMGH and bilateral markets require physical delivery of underlying assets','B. In VMGH, gainers receive less than their full gain while losers pay in full — similar to close-out netting in bilateral markets','C. Both VMGH and bilateral netting eliminate trades from the portfolio','D. VMGH uses bilateral CSA terms to determine haircut levels'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'Physical delivery is not relevant here.'},
+      {l:'B',c:true,t:'Correct. In bilateral markets during a default, close-out means the defaulter\'s counterparties with gains may not receive full recovery (unsecured creditor claim). Similarly, VMGH haircuts the gains of CCP members who are "in-the-money" while those "out-of-the-money" still pay in full. (§18.3, p.266)'},
+      {l:'C',c:false,t:'VMGH does not eliminate trades — it adjusts cash flows. This is more like bilateral than compression.'},
+      {l:'D',c:false,t:'VMGH uses CCP rules to determine haircuts, not CSA terms.'}
+    ],
+    trap:'VMGH is described as the "most common alternative loss-allocation concept." The mechanics: losses from defaulter = gains elsewhere in matched book. Haircut those gains proportionally. The losing side still pays in full.',
+    expl:'Because the CCP has a matched book, every loss from the defaulter IS mathematically the gain of another member. VMGH takes those gains and applies a haircut. Members who have made gains get less than 100% of their variation margin gain. This mimics bilateral default where an in-the-money counterparty may get less than full value as an unsecured creditor.'
+  },
+  {
+    id:26, topic:'waterfall', diff:'H', page:'p.266-267',
+    q:'Which loss allocation method is described as potentially "theoretically infinite" — meaning the CCP would NEVER fail but could impose unlimited losses on surviving members?',
+    opts:['A. VMGH (Variation Margin Gains Haircutting)','B. Rights of assessment','C. Tear-up and forced allocation','D. Initial margin haircutting'],
+    ans:2,
+    optExp:[
+      {l:'A',c:false,t:'VMGH is bounded by the total gains in the matched book. It cannot exceed the matched book gains.'},
+      {l:'B',c:false,t:'Rights of assessment are CAPPED by design — "generally capped in terms of the maximum amount in a given period" to prevent unlimited exposure.'},
+      {l:'C',c:true,t:'Correct. "Some loss-allocation methods are theoretically infinite — i.e. the CCP would never fail, but would rather impose any level of losses on its clearing members." Tear-up and forced allocation are given as examples. (§18.3, p.267)'},
+      {l:'D',c:false,t:'Initial margin haircutting has been SUGGESTED but is not used and is potentially prohibited by regulation (EMIR Article 45(4)).'}
+    ],
+    trap:'Rights of assessment seems like a candidate for unlimited exposure but the text explicitly states they are CAPPED. Tear-up is unlimited in theory because the CCP can terminate any contract at market-determined replacement cost — which could be very large in extreme markets.',
+    expl:'In a tear-up: the CCP terminates selected contracts. The clearing members holding those terminated contracts now have unhedged positions and face the cost of replacing them at current (potentially extreme) market prices. Since replacement costs can theoretically be unbounded, the losses imposed on surviving members are theoretically infinite — but the CCP survives.'
+  },
+  {
+    id:27, topic:'waterfall', diff:'H', page:'p.266',
+    q:'VMGH is "guaranteed to work" when the CCP auctions the defaulter\'s portfolio at MID-MARKET PRICES. Why does VMGH FAIL if the CCP closes out at a premium to mid-market?',
+    opts:['A. The matched book balance is disrupted, creating new directional risk','B. The losses exceed the gains in the matched book — there are no gains to haircut','C. The premium paid means total losses exceed total gains across the matched book','D. Clearing members\' variation margin payments become asymmetric'],
+    ans:2,
+    optExp:[
+      {l:'A',c:false,t:'Matched book directional risk is addressed by macro-hedging before the auction, not by mid-market pricing.'},
+      {l:'B',c:false,t:'Gains still exist in the matched book — the problem is the MAGNITUDE of losses vs gains.'},
+      {l:'C',c:true,t:'Correct. If the CCP must close out at a PREMIUM (paying more than mid-market to replace trades), total losses to the CCP exceed the gains of surviving members. The matched book generates gains equal to EXACTLY the defaulter\'s losses at mid-market — but not more. (§18.3, p.266)'},
+      {l:'D',c:false,t:'Asymmetric payments are a feature of VMGH design (gainers lose, losers pay) — this is not the failure mode.'}
+    ],
+    trap:'At mid-market, losses = gains by matched book identity. At a premium: losses = gains + execution premium. The execution premium has no natural offset in the matched book. VMGH can only haircut existing gains, not create additional resources.',
+    expl:'Mathematical identity: in a CCP matched book, for every defaulter loss there is an equal and offsetting member gain (at mid-market). VMGH works perfectly at mid-market. But if close-out requires paying market impact / execution premium (bid-offer spread, price impact from large trades), total losses > matched book gains, and VMGH cannot fully bridge the gap.'
+  },
+  {
+    id:28, topic:'waterfall', diff:'H', page:'p.267',
+    q:'Forced allocation DIFFERS from tear-up in which key respect?',
+    opts:['A. Forced allocation is unlimited in loss potential; tear-up is capped','B. Tear-up requires matching trades in the portfolio; forced allocation can impose ANY trade on ANY member','C. Forced allocation applies only to exchange-traded products; tear-up is for OTC','D. Tear-up haircutsa gains; forced allocation adds to the default fund'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'Both are described as potentially theoretically infinite — the difference is not about caps.'},
+      {l:'B',c:true,t:'Correct. "A forced allocation may be more random as any member can be allocated positions, whereas tear-up requires a member to have the appropriate trades in their portfolio." Also: unlike tear-up, clearing members cannot pass on forced allocation to clients. (§18.3, p.267)'},
+      {l:'C',c:false,t:'Both methods apply to centrally cleared OTC derivatives — no such product-type distinction exists.'},
+      {l:'D',c:false,t:'Neither method haircutsm gains or adds to the DF — that is VMGH and rights of assessment respectively.'}
+    ],
+    trap:'Both tear-up and forced allocation aim to return the CCP to a matched book. The key mechanical differences: (1) Tear-up = CCP terminates contracts held by members. Forced allocation = CCP IMPOSES new contracts on members. (2) Only tear-up can be passed to clients.',
+    expl:'Tear-up: CCP identifies trades held by surviving members that are "opposite" to defaulter\'s unmatched positions and terminates them. This requires those members to actually hold matching trades. Forced allocation: CCP can assign any trade to any member regardless of their existing portfolio. More random, harder to challenge, cannot be delegated to clients.'
+  },
+  {
+    id:29, topic:'waterfall', diff:'H', page:'p.267',
+    q:'Per EMIR Article 45(4), which loss allocation method is NOT permitted in EU CCPs?',
+    opts:['A. VMGH (variation margin gains haircutting)','B. Rights of assessment','C. Initial margin haircutting of NON-DEFAULTING members','D. Tear-up of unmatched contracts'],
+    ans:2,
+    optExp:[
+      {l:'A',c:false,t:'VMGH is permitted and described as the most common alternative loss-allocation concept.'},
+      {l:'B',c:false,t:'Rights of assessment are permitted (capped).'},
+      {l:'C',c:true,t:'Correct. EMIR Article 45(4): "A CCP shall not use the margins posted by non-defaulting members to cover the losses resulting from the default of another clearing member." Initial margin of non-defaulters is theoretically risk-free in the waterfall. (§18.3, p.267)'},
+      {l:'D',c:false,t:'Tear-up is a permitted (if extreme) loss allocation mechanism.'}
+    ],
+    trap:'Students often assume ALL non-defaulter resources are off-limits. Only initial margin of non-defaulters is protected. The DEFAULT FUND of non-defaulters IS used (it is the survivors-pay layer). The protection is specifically for initial margin.',
+    expl:'The regulatory protection: "initial margin contributions are — in theory — risk free, since they do not appear in the loss waterfall." They are posted to protect against the member\'s OWN default, not others\'. VMGH haircuts VARIATION margin gains (not initial margin). Tear-up affects trade positions. Default fund absorbs pooled losses. Only IM of non-defaulters is explicitly ring-fenced.'
+  },
+
+  // ── TOPIC: IM VS DF ──
+  {
+    id:30, topic:'im-df', diff:'M', page:'p.268',
+    q:'From an FRM exam perspective, what is the MAIN reason a CCP\'s default fund can provide GREATER loss coverage than initial margin despite members contributing SMALLER amounts to it?',
+    opts:['A. Default fund assets are invested more aggressively to generate higher returns','B. Default fund contributions are mutualised across all members — pooled risk absorbs more than individual contributions','C. Default funds are calculated at 99.9% confidence vs initial margin at 99%','D. Regulators provide implicit guarantees behind default funds'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'CCPs invest margin conservatively — there is no aggressive return-seeking on default fund assets.'},
+      {l:'B',c:true,t:'Correct. Mutualisation (loss sharing): even if each member contributes a small amount, the combined pool (IM1 + DF1 + DF2 + ... + DF5) provides much greater coverage than IM1 alone. This is the classic insurance pooling principle. (§18.4, p.268)'},
+      {l:'C',c:false,t:'No such distinction in confidence levels between IM and DF is stated in the text. Both relate to coverage of extreme tail losses.'},
+      {l:'D',c:false,t:'There is no implied regulatory guarantee behind default funds.'}
+    ],
+    trap:'The key insight from Figure 18.11: total resources available to absorb ONE member\'s default = IM1 (their own) + DF1+DF2+DF3+DF4+DF5 (all members\' DF contributions). The pooling multiplies the effective coverage dramatically.',
+    expl:'Insurance analogy: each household cannot individually cover a catastrophic loss, but pooling across thousands of households makes catastrophe coverage affordable. Similarly, each member\'s DF contribution is small, but the COMBINED pool can absorb the extreme tail losses not covered by IM. This is why DF appears small relative to IM but provides much greater total coverage.'
+  },
+  {
+    id:31, topic:'im-df', diff:'H', page:'p.268-269',
+    q:'Higher initial margin (with proportionally lower default fund) is associated with which combination of characteristics?',
+    opts:['A. Lower cost + higher moral hazard + harder portability','B. Higher cost + lower moral hazard + easier portability','C. Lower cost + lower moral hazard + easier portability','D. Higher cost + higher moral hazard + harder portability'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'Higher IM = HIGHER cost (not lower). And portability is EASIER (not harder) with high IM.'},
+      {l:'B',c:true,t:'Correct. Table 18.3 states: Higher IM / Lower DF = Higher cost, Lower moral hazard, Promotes portability. (§18.4, p.269, Table 18.3)'},
+      {l:'C',c:false,t:'Lower DF would make cost HIGHER (more is tied up in IM), not lower. This describes the lower IM / higher DF scenario.'},
+      {l:'D',c:false,t:'Higher IM makes portability EASIER (clearing member accepting positions gets enough margin to accept without extra DF contribution).'}
+    ],
+    trap:'Table 18.3 must be memorised in full. The relationships are non-obvious for portability: high IM = good for portability because the receiving clearing member gets adequate margin. Low IM = bad for portability because the receiver may need to top up the DF.',
+    expl:'Why high IM promotes portability: when a client needs to transfer their portfolio to a new clearing member (e.g., after their current CM defaults), the receiving CM gets the associated IM. If IM is large enough to cover the portfolio risk, the receiving CM is incentivised to accept it. If IM is small and the portfolio requires more DF contribution, the receiving CM is reluctant.'
+  },
+  {
+    id:32, topic:'im-df', diff:'H', page:'p.269',
+    q:'The CPSS-IOSCO "Cover 2" requirement means a CCP\'s financial resources must cover:',
+    opts:['A. Two times the initial margin of the largest member','B. The default of the single largest participant and their affiliates','C. The simultaneous default of the TWO largest participants and their affiliates in extreme conditions','D. Two stress scenario levels: 99% and 99.9% confidence'],
+    ans:2,
+    optExp:[
+      {l:'A',c:false,t:'Cover 2 is not a multiplier on IM — it is about surviving multiple simultaneous member defaults.'},
+      {l:'B',c:false,t:'That is Cover 1, not Cover 2. Cover 2 extends Cover 1 to two participants.'},
+      {l:'C',c:true,t:'Correct. Cover 2 = "the default of the two participants and their affiliates that would potentially cause the largest aggregate credit exposure to the CCP in extreme but plausible market conditions." (§18.4, p.269)'},
+      {l:'D',c:false,t:'Cover 1/Cover 2 refers to the NUMBER of member defaults, not confidence levels.'}
+    ],
+    trap:'Cover 1 = survive largest single default. Cover 2 = survive two largest defaults simultaneously. SwapClear explicitly sizes its default fund to Cover 2. Research shows Cover 2 default funds may need to be ~50% larger than Cover 1.',
+    expl:'CPSS-IOSCO (2012) framework: Cover 1 is the minimum for all CCPs. Cover 2 applies to CCPs with complex risk profiles or systemic importance across multiple jurisdictions. Heller & Vause (2012) estimated Cover 2 default funds may need to be ~50% larger than Cover 1 due to co-movement in defaults during crises.'
+  },
+  {
+    id:33, topic:'im-df', diff:'M', page:'p.269',
+    q:'How frequently are default fund contributions typically updated, compared to initial margin?',
+    opts:['A. DF is updated daily, IM is updated weekly','B. DF is updated monthly, IM is updated more frequently (can be daily)','C. Both are updated with the same frequency (daily)','D. DF is updated quarterly, IM is updated monthly'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'DF is updated LESS frequently, not more frequently, than IM.'},
+      {l:'B',c:true,t:'Correct. "Default fund contributions are not updated as frequently as initial margins — for example, monthly." IM can change with market conditions and may be called intraday. (§18.4, p.269)'},
+      {l:'C',c:false,t:'They have different update frequencies — IM more dynamic, DF more static.'},
+      {l:'D',c:false,t:'The text says monthly for DF — not quarterly.'}
+    ],
+    trap:'IM is dynamic and can be called intraday during volatile markets. DF is more of a static pool, updated periodically (e.g., monthly). The reason: DF size is calibrated via stress tests which are computationally intensive and don\'t need daily recalibration.',
+    expl:'Initial margin must respond quickly to market conditions (volatility spikes, large position changes). Default fund sizing, however, is based on stress scenarios and portfolio composition which changes slowly. Monthly recalibration balances accuracy with operational feasibility. This also means DF contributions provide more stability — members aren\'t constantly re-sizing their DF contribution.'
+  },
+
+  // ── TOPIC: IMPACT / ADVANTAGES ──
+  {
+    id:34, topic:'impact', diff:'M', page:'p.270',
+    q:'Mandatory central clearing is said to potentially INCREASE systemic risk due to:',
+    opts:['A. Forcing all participants to use the same risk models','B. Bifurcation — netting benefits between cleared and non-cleared trades are lost','C. Removing the incentive for bilateral collateral agreements','D. Concentrating all credit risk with central bank'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'The text does not claim forced model uniformity increases systemic risk.'},
+      {l:'B',c:true,t:'Correct. "Mandatory clearing can potentially create more systemic risk as large banks are forced to clear only certain standardised transactions. This may have a detrimental effect on net exposure due to the bifurcation or \'unbundling\' of netting between standard and non-standard contracts." (§18.2, p.258)'},
+      {l:'C',c:false,t:'Mandatory clearing doesn\'t remove bilateral margin incentives — BCBS-IOSCO bilateral margin rules exist separately.'},
+      {l:'D',c:false,t:'Central bank concentration is not the systemic risk argument here.'}
+    ],
+    trap:'This is an unintuitive result: clearing INCREASES systemic risk through bifurcation. If a bank has a cleared swap and an un-clearable hedge, those cannot be netted. Pre-clearing, bilateral netting covered both — post-clearing, they are siloed.',
+    expl:'Example: Bank has a cleared vanilla swap (hedging a client) and an un-clearable exotic swap (hedging the same risk). Before clearing mandate: both in the same ISDA netting set — net exposure = 0. After mandate: vanilla goes to CCP (cleared), exotic stays bilateral — two separate exposures, each requiring margin. Total IM requirement increases vs pre-mandate bilateral with netting.'
+  },
+  {
+    id:35, topic:'impact', diff:'H', page:'p.271',
+    q:'Why does mandatory central clearing NOT significantly reduce CVA for most banks?',
+    opts:['A. CCPs charge a CVA fee that replaces the bilateral CVA cost','B. About 85% of CVA comes from corporate/sovereign counterparties who are EXEMPT from mandatory clearing','C. CVA models do not function correctly in centrally-cleared environments','D. Variation margin under clearing reduces FVA but has no impact on CVA'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'CCPs do not charge a CVA fee — they charge margin and default fund contributions.'},
+      {l:'B',c:true,t:'Correct. "Only about 15% of the CVA comes from exposures to banks and \'other financial institutions\'. This is the CVA that would likely be more significantly reduced... The other 85% of the CVA comes from exposure to corporates and governments who are exempt counterparties." (§18.5, p.271)'},
+      {l:'C',c:false,t:'CVA models can be applied to CCPs — the text notes assessing CVA for CCPs is "not yet common practice" but not impossible.'},
+      {l:'D',c:false,t:'This is partially true for FVA, but the question is about CVA specifically.'}
+    ],
+    trap:'The 85%/15% split is a testable number. CVA predominantly comes from end-user (corporate/sovereign) derivatives — the exact counterparties EXEMPT from mandatory clearing. The clearing mandate removes credit risk only for the inter-bank portion (~15%).',
+    expl:'Most OTC derivatives from a CVA perspective: corporate hedgers (airlines, manufacturers, utilities) doing vanilla swaps or FX with their banks. These end-users are exempt from mandatory clearing and cannot easily post margin. So the bilateral uncollateralised exposure persists. Clearing mandate only removes CVA on inter-dealer trades — a minority of total bank CVA.'
+  },
+  {
+    id:36, topic:'impact', diff:'M', page:'p.271',
+    q:'Central clearing reduces CVA in some situations but INCREASES which other xVA component?',
+    opts:['A. DVA (debit value adjustment)','B. FVA (funding value adjustment) on bilateral trades','C. MVA (margin value adjustment) from funding initial margins','D. KVA (capital value adjustment) due to higher CCP capital requirements'],
+    ans:2,
+    optExp:[
+      {l:'A',c:false,t:'DVA relates to own credit risk in bilateral trades — clearing reduces bilateral exposure so DVA impact would decrease, not increase.'},
+      {l:'B',c:false,t:'Clearing reduces bilateral FVA by reducing uncollateralised bilateral exposure. FVA would generally decrease.'},
+      {l:'C',c:true,t:'Correct. "Central clearing and other changes... may reduce components such as CVA in certain situations, but will also increase other components (e.g. most margin value adjustment, which arises from funding initial margins)." (§18.5, p.271)'},
+      {l:'D',c:false,t:'CCP capital requirements are generally LOW — KVA from CCP clearing is typically much lower than bilateral KVA.'}
+    ],
+    trap:'The xVA trade-off: clearing reduces CVA and FVA (less uncollateralised bilateral exposure) but INCREASES MVA (initial margins must be funded — this funding cost = MVA). Net xVA impact of clearing is ambiguous and must be considered holistically.',
+    expl:'MVA (margin value adjustment) is the cost of funding initial margin posted to a CCP or bilateral counterparty. As mandatory clearing and bilateral IM rules expand, the total IM posted in the system increases dramatically. The funding cost of this IM (MVA) is a new cost that didn\'t exist pre-clearing. This partially offsets CVA reduction.'
+  },
+  {
+    id:37, topic:'impact', diff:'M', page:'p.270',
+    q:'Which CCP function CANNOT be replicated by alternative mechanisms outside central clearing?',
+    opts:['A. Netting (can be done via bilateral netting agreements)','B. Transparency (can be done via trade repositories)','C. Margining (can be done via bilateral CSA)','D. Full multilateral offset across diverse counterparties'],
+    ans:3,
+    optExp:[
+      {l:'A',c:false,t:'The text explicitly says "trade compression can facilitate greater netting benefits" — netting has alternatives.'},
+      {l:'B',c:false,t:'The text explicitly says "trade repositories can provide greater transparency" — alternative exists.'},
+      {l:'C',c:false,t:'The text explicitly says "bilateral markets can (and do) have margining mechanisms" — alternative exists.'},
+      {l:'D',c:true,t:'Correct. While other CCP functions have partial alternatives, full multilateral offset across ALL counterparties through a common CCP has no complete bilateral equivalent. (§18.5, p.271)'}
+    ],
+    trap:'The text specifically lists which CCP functions CAN be achieved by other means: netting (via compression), transparency (via repositories), margining (bilateral CSA). The unique value of a CCP is the MULTILATERAL nature of its offset.',
+    expl:'Bilateral netting only offsets positions between TWO specific parties. CCP netting offsets across ALL members simultaneously. This multilateral offset cannot be replicated bilaterally — you would need to negotiate netting arrangements with every counterparty separately, and even then lose the benefits of cross-counterparty offsets.'
+  },
+  {
+    id:38, topic:'impact', diff:'H', page:'p.270',
+    q:'Procyclicality in central clearing MOST likely occurs because:',
+    opts:['A. CCP membership requirements favour large banks, amplifying bank dominance','B. CCPs increase margin requirements during volatile/crisis periods, withdrawing liquidity when it is most needed','C. Multiple CCPs create competition for membership during crises','D. The default fund is drawn down during crises, requiring emergency recapitalisation'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'Bank dominance in clearing is a structural feature, not the source of procyclicality.'},
+      {l:'B',c:true,t:'Correct. "CCPs may create procyclicality effects by, for example, increasing margin requirements (or haircuts) in volatile markets or crisis periods." This requires members to post MORE collateral exactly when funding conditions are tightest. (§18.5, p.271)'},
+      {l:'C',c:false,t:'CCP competition during crises is not the procyclicality mechanism described.'},
+      {l:'D',c:false,t:'DF drawdown is a separate mechanism — default fund replenishment through rights of assessment could also be procyclical, but the text specifically names margin requirements.'}
+    ],
+    trap:'Procyclicality = things getting WORSE during downturns due to the mechanism itself. Higher margins during crises = more funding needed when funding is least available = amplifies the crisis. This is a well-documented criticism of both bilateral BCBS-IOSCO margin rules and CCP margining.',
+    expl:'During normal markets: IM requirements are based on historical volatility (low → low IM). During a crisis: volatility spikes → CCPs increase IM requirements → members must post large additional IM → they sell assets or recall loans to raise cash → asset prices fall further → volatility rises further → more IM needed. Classic procyclical feedback loop.'
+  },
+
+  // ── TOPIC: CLIENT CLEARING ──
+  {
+    id:39, topic:'client', diff:'M', page:'p.262',
+    q:'A non-clearing member client wants to clear derivatives. Their relationship with the CCP can be described as:',
+    opts:['A. Direct — the client contracts with the CCP and the clearing member facilitates','B. Indirect — the client has a BILATERAL relationship with their clearing member, not directly with the CCP','C. Tripartite — the client, clearing member, and CCP all share contractual obligations','D. Anonymous — the CCP does not know the identity of non-clearing member clients'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'Clients do NOT contract directly with the CCP in typical arrangements — they go through a clearing member.'},
+      {l:'B',c:true,t:'Correct. "The client effectively has a direct bilateral relationship with their clearing member and not the CCP." (§18.2, p.262)'},
+      {l:'C',c:false,t:'There is no tripartite shared obligation described — the clearing member intermediates between client and CCP.'},
+      {l:'D',c:false,t:'Anonymity is described for the original bilateral trade execution in electronic environments, not for the ongoing client-CCP relationship.'}
+    ],
+    trap:'The client appears to be "at the CCP" economically, but LEGALLY they are only counterparty to their clearing member. The clearing member mirrors CCP requirements bilaterally to the client.',
+    expl:'Structure: Client ↔ Clearing Member ↔ CCP. The client has NO direct legal relationship with the CCP. The clearing member absorbs the CCP requirements (IM, VM, etc.) and mirrors them in their bilateral agreement with the client. The client therefore bears risk to their clearing member\'s failure, not directly to the CCP.'
+  },
+  {
+    id:40, topic:'client', diff:'H', page:'p.262',
+    q:'Under OMNIBUS segregation, which specific risk does a client face that does NOT exist under INDIVIDUAL segregation?',
+    opts:['A. Risk that the clearing member uses client margin for its own proprietary trading','B. Fellow customer risk — another client\'s default can result in losses to the innocent client','C. Risk that the CCP directly haircuts the client\'s initial margin','D. Risk that the clearing member\'s default fund contribution is insufficient'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'Under BOTH structures, the clearing member\'s house account CANNOT use client margin. The omnibus rule protects against this.'},
+      {l:'B',c:true,t:'Correct. "All assets in an omnibus account can be used to meet the obligations of a defaulted client(s). This means that the clients have a risk to their clearing member and even other clients of their clearing member (fellow customer risk)." (§18.2, p.262)'},
+      {l:'C',c:false,t:'IM of non-defaulting members (including clients) is protected under EMIR — it cannot be haircutted.'},
+      {l:'D',c:false,t:'Clients do not contribute to the default fund — this risk is not directly applicable to the client.'}
+    ],
+    trap:'Fellow customer risk requires TWO simultaneous events: (1) clearing member default AND (2) at least one other client default. If only the clearing member defaults without any client defaulting, the client defaults are the clearing member\'s responsibility.',
+    expl:'Omnibus: all client assets pooled together. If Client X defaults and Client X\'s own margin is insufficient (e.g., gap risk from rapid market moves), the shortfall is covered from the omnibus pool — using assets belonging to Clients Y and Z. Individual segregation: each client in their own ring-fenced account, cannot be used for other clients\' losses. More expensive but eliminates fellow customer risk.'
+  },
+
+  // ── ADDITIONAL HARD QUESTIONS ──
+  {
+    id:41, topic:'mechanics', diff:'H', page:'p.258',
+    q:'The text states bifurcation from mandatory clearing is significant because ISDA estimates approximately what fraction of OTC derivatives are practically clearable?',
+    opts:['A. 50%','B. 67%','C. 80%','D. 95%'],
+    ans:2,
+    optExp:[
+      {l:'A',c:false,t:'50% would imply most OTC cannot be cleared — too low per ISDA\'s estimate.'},
+      {l:'B',c:false,t:'67% is not the figure cited.'},
+      {l:'C',c:true,t:'Correct. "ISDA suggests that this value is approximately 80% for OTC derivatives." Note: ISDA also reports 13% non-clearable when using total market size including double-counted CCP positions. (§18.2, p.258)'},
+      {l:'D',c:false,t:'95% would imply almost everything can be cleared — too high.'}
+    ],
+    trap:'The footnote distinction is tricky: ISDA(2013) reports non-clearable as 13% of total market size (which double-counts CCP positions). On a de-duplicated basis, clearable ≈ 80%.',
+    expl:'This ~80% figure explains why clearing mandates are feasible and why bifurcation remains a concern. The remaining ~20% of un-clearable OTC trades create the netting bifurcation problem discussed throughout the chapter.'
+  },
+  {
+    id:42, topic:'margin', diff:'H', page:'p.263',
+    q:'A CCP pays interest on excess initial margin deposited as cash, typically set at:',
+    opts:['A. LIBOR minus 25bps','B. Fed Funds minus 10bps','C. OIS flat','D. The CCP\'s investment return minus a 5% management fee'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'LIBOR minus 25bps is not cited in the text.'},
+      {l:'B',c:true,t:'Correct. "Most CCPs will pay interest to clearing members on excess cash deposited as initial margin. Typically, this may be set at a level with respect to a short-term deposit rate such as FedFunds minus 10 basis points." (§18.3, p.263-264)'},
+      {l:'C',c:false,t:'OIS flat is not cited — the text gives a specific spread to Fed Funds.'},
+      {l:'D',c:false,t:'No such management fee structure is described.'}
+    ],
+    trap:'Specific numerical facts like "Fed Funds minus 10bps" are directly testable in the FRM exam. This detail comes from the LCH Ltd Client Deposit Rate definition.',
+    expl:'CCPs hold enormous quantities of margin and need to invest it carefully (low credit and liquidity risk: central banks, commercial banks, reverse repos). They pay members a rate slightly below the risk-free rate to generate a small spread to cover operational costs while remaining competitive.'
+  },
+  {
+    id:43, topic:'evolution', diff:'M', page:'p.257',
+    q:'Centrally-cleared derivatives "retain some OTC features." Which feature is specifically mentioned?',
+    opts:['A. They are negotiated bilaterally','B. They can involve any underlying asset','C. They do not require margin posting','D. They are exempt from regulatory reporting'],
+    ans:0,
+    optExp:[
+      {l:'A',c:true,t:'Correct. "Centrally-cleared derivatives retain some OTC features (such as being transacted bilaterally)." (§18.1, p.257) They are negotiated between parties but then novated to the CCP.'},
+      {l:'B',c:false,t:'The text does not identify asset class flexibility as the retained OTC feature.'},
+      {l:'C',c:false,t:'Centrally-cleared derivatives DO require margin posting — this is a key feature.'},
+      {l:'D',c:false,t:'Centrally-cleared derivatives are subject to regulatory reporting.'}
+    ],
+    trap:'Students assume "centrally cleared = exchange traded." Wrong. Centrally-cleared OTC derivatives are still negotiated bilaterally between the original parties — they are then SUBMITTED to the CCP for novation. The price and terms are bilaterally agreed, not exchange-determined.',
+    expl:'Workflow: Bank A and Bank B negotiate an IRS bilaterally (OTC feature). They agree price and terms. Then both submit the trade to their clearing member, who submits to the CCP. The CCP novates — replaces the A-B bilateral trade with A-CCP and CCP-B. This hybrid preserves bilateral flexibility while gaining CCP safety.'
+  },
+  {
+    id:44, topic:'waterfall', diff:'M', page:'p.265',
+    q:'In the loss waterfall, what is the significance of the "skin-in-the-game" coming BEFORE the non-defaulting members\' default fund contribution?',
+    opts:['A. It ensures the CCP always absorbs more than the defaulter','B. It provides a "speed bump" — the CCP takes some pain before socialising losses to all members','C. It ensures the non-defaulting members never bear losses from others\' defaults','D. It makes the CCP the primary loss absorber in all scenarios'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'Skin-in-the-game is typically small — it does not ensure the CCP absorbs "more" than the defaulter.'},
+      {l:'B',c:true,t:'Correct. CCP SITG creates a financial incentive for the CCP to manage risk well — they lose money if the defaulter-pays resources are insufficient. This "speed bump" before mutualised losses incentivises conservative margining. (§18.3, p.266)'},
+      {l:'C',c:false,t:'Non-defaulting members DO bear losses through the default fund — SITG does not prevent this.'},
+      {l:'D',c:false,t:'CCP is not the PRIMARY loss absorber — the defaulter is. SITG is a small incentive layer.'}
+    ],
+    trap:'The KRX example shows SITG is not universal. Without it, CCPs can mutualise losses immediately to members with zero personal cost — reducing incentive for rigorous risk management.',
+    expl:'Ordering matters for incentives: If non-defaulter DF came before CCP SITG, the CCP would bear no cost from under-margining (losses socialised before hitting CCP equity). By placing SITG between defaulter resources and non-defaulter pool, the CCP bears a direct financial cost for any gap between defaulter-pays resources and actual losses. This creates the right incentive to margin accurately.'
+  },
+  {
+    id:45, topic:'mechanics', diff:'H', page:'p.264',
+    q:'Fire drills in CCP default management serve what purpose?',
+    opts:['A. Testing the CCP\'s technology systems for margin calculation speed','B. Ensuring clearing members can process, price, and bid on large portfolios within a few hours','C. Verifying that variation margin payments clear correctly across all currencies','D. Simulating the impact of multiple simultaneous CCP failures on the financial system'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'Fire drills are operational exercises for clearing MEMBERS, not technology stress tests.'},
+      {l:'B',c:true,t:'Correct. "The default management process is practised via periodic (e.g. twice a year) \'fire drills\', where clearing members submit prices. New CCP members will also be required to take a \'driving test\' to show that they can deal with the operational requirements posed by the auction... ability to process, price, and bid on relatively large portfolios of trades in a short timescale (a few hours)." (§18.3, p.264)'},
+      {l:'C',c:false,t:'VM netting/currency handling is an ongoing operational process, not the purpose of fire drills.'},
+      {l:'D',c:false,t:'Fire drills are about member capability in the AUCTION, not systemic stress testing.'}
+    ],
+    trap:'Fire drills relate specifically to the AUCTION process — clearing members must demonstrate they can quickly value and bid on large sub-portfolios. New members must pass a "driving test" before becoming eligible.',
+    expl:'The Lehman auction was completed within 3 weeks because members were prepared. Without regular fire drills, members might be unable to process 66,000+ trades and submit competitive bids under time pressure. Fire drills build operational capability and confidence — essential for the macro-hedge → auction → matched book process to work efficiently.'
+  },
+  {
+    id:46, topic:'margin', diff:'H', page:'p.265',
+    q:'Which of the following statements about the THREE phases of CCP MPoR is MOST accurate?',
+    opts:['A. No action → Macro-hedging → Auctions; risk drops linearly from default to zero','B. No action → Macro-hedging → Auctions; risk drops sharply during macro-hedging then gradually during auctions','C. Macro-hedging → No action → Auctions; initial hedging precedes formal default declaration','D. Auctions → Macro-hedging → No action; reversed for CCP vs bilateral markets'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'The order is correct but risk does NOT drop linearly — it drops sharply during macro-hedging (liquid hedges quickly reduce directional risk) then gradually as auctions complete.'},
+      {l:'B',c:true,t:'Correct. The three phases are in this order. Risk drops sharply during macro-hedging (liquid transactions neutralise main factors), then gradually to zero as auction sub-portfolios are successfully completed. (§18.3, p.265, Fig 18.8)'},
+      {l:'C',c:false,t:'Macro-hedging comes AFTER formal default declaration — the default management group is formed first.'},
+      {l:'D',c:false,t:'The order is not reversed — it is the same sequence of events (pre-default, hedging, auctions).'}
+    ],
+    trap:'Figure 18.8 shows a specific risk profile: roughly flat during "no action" (pre-default), sharp drop during macro-hedging, then gradual decline to zero during auctions. The MPoR is "metaphorical" because risk decays gradually, not instantaneously.',
+    expl:'Pre-default (no action): risk remains at default-day level as CCP assesses situation. Macro-hedging: CCP applies liquid DV01-neutral hedges rapidly — major directional risks neutralised quickly. Auctions: each sub-portfolio auctioned separately; risk drops incrementally as winning bidders take on positions. Residual basis risks remain throughout.'
+  },
+  {
+    id:47, topic:'impact', diff:'M', page:'p.270',
+    q:'Adverse selection in the context of CCPs refers to:',
+    opts:['A. CCPs selecting the riskiest members to maximise default fund contributions','B. Member firms selectively passing their riskier OTC products to CCPs that underprice those risks','C. Regulators selecting which products to mandate for clearing before markets are ready','D. Non-clearing members using clearing members to avoid direct CCP scrutiny'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'CCPs set admission criteria to SELECT against risky members — not to favour them.'},
+      {l:'B',c:true,t:'Correct. "Adverse selection... occurs if members trading OTC derivatives know more about the risks than the CCP itself. In such a situation, firms may selectively pass these riskier products to CCPs that underprice the risks." (§18.5, p.270)'},
+      {l:'C',c:false,t:'Regulatory timing is a policy issue, not adverse selection.'},
+      {l:'D',c:false,t:'Client clearing through clearing members is a structural feature, not adverse selection.'}
+    ],
+    trap:'Classic asymmetric information problem applied to CCPs. Banks have superior knowledge of OTC derivative risks (they create and trade them). CCPs may underprice certain risks because they lack this information asymmetry. Banks then route their riskiest products to the cheapest (most underpriced) CCP.',
+    expl:'Evidence: different CCPs offer different pricing for clearing pay-fixed vs receive-fixed IRS — suggesting at least one is underpricing. Banks route trades to cheapest CCP. If the CCP underprices because it lacks information, it is selected against by informed participants. This is a structural vulnerability in competitive CCP markets.'
+  },
+  {
+    id:48, topic:'client', diff:'H', page:'p.262',
+    q:'A clearing member can potentially earn returns on EXCESS margins received from clients (above CCP requirements). What is the primary COST they must consider against this benefit?',
+    opts:['A. The reputational risk of appearing to profit from client positions','B. Capital requirements and leverage ratio for client clearing','C. The prohibition on rehypothecating client margin under EMIR','D. The cost of fire drill participation and default fund contributions'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'Reputational risk is not the specific cost mentioned in this context.'},
+      {l:'B',c:true,t:'Correct. "They must consider the cost of \'client clearing\' in terms of capital requirements and the leverage ratio (Section 13.6.4)." (§18.2, p.262)'},
+      {l:'C',c:false,t:'Rehypothecation rules are a separate consideration — not the cost cited here.'},
+      {l:'D',c:false,t:'Fire drills are operational — not the specific financial cost mentioned against excess margin earnings.'}
+    ],
+    trap:'This is the fundamental tension for clearing members: they earn fees and can profit from holding excess client margin, but client clearing creates leverage ratio exposure that consumes capital. Under Basel III leverage ratio, client cleared positions generate exposure regardless of collateralisation.',
+    expl:'Clearing members face a tension: client clearing generates fee income and potential margin spread, but increases balance sheet exposure (leverage ratio). Post-crisis capital rules made client clearing more expensive. This is partly why clearing members sometimes set high minimum clearing amounts — small clients are not economical to clear when capital costs are factored in.'
+  },
+  {
+    id:49, topic:'evolution', diff:'M', page:'p.256',
+    q:'Clearing rings (historical) are analogous to which MODERN mechanism in OTC derivatives markets?',
+    opts:['A. Variation margin requirements under BCBS-IOSCO','B. Portfolio compression','C. Trade repositories','D. Mandatory clearing of standardised derivatives'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'Bilateral margin requirements address collateralisation, not the offsetting/compression function of clearing rings.'},
+      {l:'B',c:true,t:'Correct. "In the current OTC derivatives market, portfolio compression (Section 6.2.4) offers a similar mechanism to the historical role of clearing rings." (§18.1, p.256)'},
+      {l:'C',c:false,t:'Trade repositories provide transparency/reporting — not offsetting.'},
+      {l:'D',c:false,t:'Mandatory clearing addresses novation to a CCP — a different concept from the multilateral offset of clearing rings.'}
+    ],
+    trap:'The analogy: clearing rings (3+ counterparties ring out offsetting positions) → modern portfolio compression (TriOptima etc. compress multilateral offsetting positions). Both reduce gross notional without changing net market risk.',
+    expl:'Clearing rings required participants to accept substitutes for their original counterparties — essential for the ring to work. Similarly, modern portfolio compression requires participants to accept replacement (or terminated) trades. The goal in both cases: reduce the number of outstanding contracts and gross notional while preserving net market risk.'
+  },
+  {
+    id:50, topic:'mechanics', diff:'H', page:'p.261',
+    q:'A clearing member can suffer default fund LOSSES even if it has NO net position with the CCP. Which of the following BEST explains this?',
+    opts:['A. The CCP allocates losses proportionally to all members based on trading volume regardless of position','B. The default fund is a collective resource — all members contribute and all share losses when it is depleted','C. The clearing member\'s clients may have caused the loss that depleted the DF','D. VMGH haircuts gains of ALL members including those with zero net position'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'While proportional allocation is one method, the explanation is more fundamental — the DF is collective.'},
+      {l:'B',c:true,t:'Correct. "A member can suffer default losses even if it never traded with the defaulted counterparty, has no net position with the CCP, or has a net position with the CCP in the same direction as the defaulter." The DF is a mutualised pool — all contributors absorb losses proportionally. (§18.2, p.261)'},
+      {l:'C',c:false,t:'Client losses are the clearing member\'s responsibility — not the direct DF mechanism here.'},
+      {l:'D',c:false,t:'VMGH haircutsm gains — members with ZERO net position have no gains to haircut. The DF mechanism is separate.'}
+    ],
+    trap:'This is a common source of confusion. In bilateral markets: losses are only between counterparties who traded with each other. In CCP: losses are SOCIALISED — you contribute to the DF and can lose DF contributions even if you had nothing to do with the defaulting member.',
+    expl:'The CCP default fund is insurance-like: all members pay premiums (DF contributions), and when a loss exceeds the defaulter\'s own resources, the pool is drawn down regardless of who has a claim against the defaulter. A member with no trades against the defaulter still loses their pro-rata DF contribution if the pool is tapped.'
+  },
+
+  // QUESTIONS 51-100 (covering all topics with additional depth)
+  {
+    id:51, topic:'margin', diff:'H', page:'p.263',
+    q:'Variation margin for different currencies at a CCP is typically:',
+    opts:['A. Netted across all currencies into a single payment','B. Netted within a single currency only — not cross-currency netted','C. Converted to USD and settled as a single USD amount','D. Settled individually per trade regardless of currency'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'Cross-currency netting of VM does NOT typically occur.'},
+      {l:'B',c:true,t:'Correct. "Variation margin and settlement amounts from clearing members\' other clearing activities in a single currency may be netted, resulting in a single payment or receipt per day. Usually, there is no netting of different currencies for variation margin purposes." (§18.3, p.263)'},
+      {l:'C',c:false,t:'No universal USD conversion is described — currencies are kept separate.'},
+      {l:'D',c:false,t:'Settlement is netted WITHIN currency — not trade-by-trade.'}
+    ],
+    trap:'VM netting IS possible — but only within the SAME currency. GBP positions net against each other; EUR positions net among themselves; but GBP and EUR are NOT netted against each other.',
+    expl:'The practical reason: settling one EUR payment and one GBP payment per day (each netted within currency) is far simpler than trade-level settlement. Cross-currency netting would require FX conversion mechanics, introduce FX risk, and create settlement complexity. CCP keeps currencies separate for clarity and risk management.'
+  },
+  {
+    id:52, topic:'waterfall', diff:'H', page:'p.266',
+    q:'Rights of assessment are CAPPED. What is the primary reason for this cap?',
+    opts:['A. Regulators limit default fund total size to avoid systemic overcollateralisation','B. Unlimited rights of assessment would create moral hazard and potentially destabilise markets at the worst time','C. CCP constitutions prevent amendment of default fund sizes mid-crisis','D. Unlimited assessment would eliminate the need for initial margin entirely'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'Regulatory caps on DF size exist but this is not the explanation for capping rights of assessment specifically.'},
+      {l:'B',c:true,t:'Correct. "This would create significant moral hazard and unlimited exposure for clearing members. Furthermore, it might destabilise markets as members would be required to contribute to default funds at the worst possible time." (§18.3, p.266)'},
+      {l:'C',c:false,t:'No such constitutional constraint is mentioned.'},
+      {l:'D',c:false,t:'Rights of assessment are about replenishing a depleted DF — not substituting for IM.'}
+    ],
+    trap:'The procyclicality argument: forcing members to make additional DF contributions in a crisis means they must raise cash at the worst moment. This is equivalent to calling capital from banks during a crisis — amplifies the downturn.',
+    expl:'Unlimited rights of assessment would mean: in a severe crisis, surviving members face unlimited calls. To meet calls, they may sell assets (further depressing prices), reduce lending, or themselves face liquidity crises. The text notes this concern explicitly — hence caps (typically as a multiple of regular DF contribution per period).'
+  },
+  {
+    id:53, topic:'mechanics', diff:'M', page:'p.262',
+    q:'"Portability" of client positions refers to:',
+    opts:['A. The ability of a CCP to clear across multiple asset classes','B. Transferring client positions from a defaulted clearing member to a surviving one','C. Moving trades between different CCPs for netting benefits','D. Converting non-clearable OTC trades into clearable formats'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'Multi-asset clearing is a feature of horizontal CCPs — not portability.'},
+      {l:'B',c:true,t:'Correct. Portability is the transfer ("porting") of client positions from a defaulted clearing member to a surviving clearing member, to provide continuity for the clients. (§18.2, p.262)'},
+      {l:'C',c:false,t:'Moving between CCPs is a different concept — portability is specifically about CM-to-CM transfer for clients.'},
+      {l:'D',c:false,t:'Converting non-clearable trades is a different standardisation/eligibility issue.'}
+    ],
+    trap:'Portability fails if: (1) not enough initial margin to make acceptance attractive to receiving CM, (2) wrong segregation structure. Individual segregation FACILITATES portability; omnibus can complicate it.',
+    expl:'In a clearing member default, clients need their trades moved to another clearing member ASAP. If this works smoothly (portability), clients experience minimal disruption. If it fails, the client trades are wound up in the defaulted CM\'s estate, potentially at distressed prices. High IM per client position makes acceptance by a new CM more attractive.'
+  },
+  {
+    id:54, topic:'im-df', diff:'H', page:'p.268',
+    q:'The loss distribution for a CCP default is described as "very heavy-tailed." What does this imply for the relationship between initial margin and the default fund?',
+    opts:['A. IM should be sized to cover 95th percentile losses; DF covers 95th-99th percentile','B. If IM is breached, losses escalate dramatically — the DF must cover extreme tail losses that are large relative to the breach probability','C. IM should equal 3× the expected loss; DF covers losses above 3× EL','D. IM covers daily losses; DF covers weekly accumulated losses'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'The percentile split is imprecise — the text does not give a 95th/99th split between IM and DF.'},
+      {l:'B',c:true,t:'Correct. "The distribution of losses is likely to be very heavy-tailed, meaning that if the margin is breached, then very large losses are possible." When IM is breached (a rare event), the conditional expected loss can be an order of magnitude higher than the unconditional expected loss. (§18.4, p.268)'},
+      {l:'C',c:false,t:'No 3× EL formula is given.'},
+      {l:'D',c:false,t:'Time horizon is not the relevant distinction for IM vs DF.'}
+    ],
+    trap:'The Bates & Craine (1999) reference: following the 1987 crash, losses CONDITIONAL ON a margin breach increased by an order of magnitude. This is the heavy tail: when you fall off the IM cliff, you fall very far.',
+    expl:'Heavy tail implication: IM at 99th percentile covers 99% of scenarios well. But in the 1% tail, losses are not just "slightly more" than IM — they can be dramatically more. The DF exists to absorb these extreme tail losses. This is why even small DF contributions (pooled) provide meaningfully more coverage than IM: the pooling absorbs the heavy tail through insurance-like mutualisation.'
+  },
+  {
+    id:55, topic:'evolution', diff:'H', page:'p.257',
+    q:'Which two factors does the text identify as the primary CCP advantages in the SIMPLIFIED view (Figure 18.3) of bilateral vs. central markets?',
+    opts:['A. Lower cost and faster settlement','B. Reduced interconnectedness and greater transparency on member positions','C. Elimination of counterparty credit risk and standardisation of products','D. Mandatory margining and centralised legal documentation'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'Cost and settlement speed are secondary benefits — not the two primary advantages from the simplified view.'},
+      {l:'B',c:true,t:'Correct. "Firstly, a CCP can reduce the interconnectedness within financial markets... Secondly, the CCP being at the heart of trading can provide more transparency on the positions of the members." (§18.1, p.257)'},
+      {l:'C',c:false,t:'CCPs do not eliminate counterparty credit risk — they centralise it. And standardisation is a PREREQUISITE, not a benefit.'},
+      {l:'D',c:false,t:'These are mechanisms of clearing, not the primary stated advantages.'}
+    ],
+    trap:'The text explicitly labels these as the "two obvious advantages" from the simplified view, and then notes the "true CCP landscape is much more complex." Knowing the limitations of the simplified view (client clearing, bilateral trades, multiple CCPs) is equally testable.',
+    expl:'Reduced interconnectedness: in a bilateral network, if Bank A defaults, all its counterparties are directly affected. Through a CCP, the exposure chains are broken — surviving members are only exposed to the CCP. Greater transparency: the CCP sees all positions of its members, allowing it to identify concentration and act — unlike the opaque bilateral web.'
+  },
+  {
+    id:56, topic:'margin', diff:'M', page:'p.264',
+    q:'What is the PRIMARY purpose of "fire drills" in CCP operations?',
+    opts:['A. Testing the CCP\'s risk models under simulated stress scenarios','B. Ensuring clearing members can participate effectively in the default management process and auctions','C. Verifying that all CCPs are operationally coordinated in a systemic crisis','D. Updating the default fund calibration with current market data'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'Model testing is done by the CCP risk team — fire drills are operational exercises for MEMBERS.'},
+      {l:'B',c:true,t:'Correct. Fire drills ensure clearing members can process, price, and bid on large portfolios within hours — the key operational requirement for the auction process. (§18.3, p.264)'},
+      {l:'C',c:false,t:'Inter-CCP coordination is a different matter — fire drills are within ONE CCP\'s membership.'},
+      {l:'D',c:false,t:'DF calibration via stress tests is a separate periodic exercise.'}
+    ],
+    trap:'Fire drills = operational readiness of clearing MEMBERS (not the CCP) for the AUCTION process. Held ~twice/year. New members take a "driving test." The goal: members can bid competitively within hours even on large, complex portfolios.',
+    expl:'If members cannot quickly price and bid on large portfolios during a real default, the auction fails. Failed auctions force the CCP to use more extreme loss allocation methods (VMGH, tear-up). Fire drills reduce this risk by ensuring operational capability exists BEFORE a crisis.'
+  },
+  {
+    id:57, topic:'waterfall', diff:'M', page:'p.266',
+    q:'The Korea Exchange (KRX) 2014 default case illustrates which specific gap in CCP risk management?',
+    opts:['A. Excessive initial margin requirements causing procyclicality','B. Inadequate "skin-in-the-game" — KRX mutualised losses without bearing any cost itself','C. The dangers of clearing CDSs with wrong-way risk','D. The failure of an auction process when members are unprepared'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'Procyclicality is not the KRX case lesson — it\'s about incentive alignment.'},
+      {l:'B',c:true,t:'Correct. KRX mutualised the $4.3m loss to member default funds without suffering any loss itself. KRX rules required it to suffer a loss only AFTER the ~$200m default fund was exhausted. This removes incentive for KRX to manage risk carefully. (§18.3, p.266)'},
+      {l:'C',c:false,t:'The KRX case involved a futures broker with an algorithmic trading error — not CDSs.'},
+      {l:'D',c:false,t:'The KRX case is about skin-in-the-game incentive design, not auction failure.'}
+    ],
+    trap:'KRX = incentive failure. Lehman = successful default management. Nasdaq = default fund was required (less successful). These three case studies each illustrate a different lesson. Know which is which.',
+    expl:'The KRX lesson: CCPs without skin-in-the-game have no financial cost from poor risk management. If they can immediately socialise losses to member default funds, there is no incentive to margin conservatively or manage defaults effectively. Skin-in-the-game creates alignment of interests between the CCP and its members.'
+  },
+  {
+    id:58, topic:'im-df', diff:'H', page:'p.269',
+    q:'Heller and Vause (2012) estimated that Cover 2 default funds may need to be approximately what percentage LARGER than Cover 1?',
+    opts:['A. 10%','B. 25%','C. 50%','D. 100%'],
+    ans:2,
+    optExp:[
+      {l:'A',c:false,t:'10% would suggest the second-largest default is small relative to the largest — understated.'},
+      {l:'B',c:false,t:'25% is not the cited estimate.'},
+      {l:'C',c:true,t:'Correct. "Heller and Vause (2012) studied dealers and estimated that CCP default funds may need to be about 50% larger to cover losses that could arise from the default of the two most important interest rate swap or CDS dealers, rather than just the single most important dealer." (§18.4, p.270)'},
+      {l:'D',c:false,t:'100% would imply the second-largest default equals the largest — overstated.'}
+    ],
+    trap:'This is a specific empirical figure. The 50% uplift reflects that the second-largest defaulter is substantial but not equal to the largest. In a crisis, multiple major banks can fail simultaneously.',
+    expl:'Cover 1 sizes for the SINGLE largest default. Cover 2 adds the second largest default. Because the second largest dealer might represent, say, half the exposure of the largest, the total default fund needs to be ~50% larger. This matters in practice — LCH SwapClear targets Cover 2, which explains its relatively large default fund versus Cover 1-only CCPs.'
+  },
+  {
+    id:59, topic:'mechanics', diff:'M', page:'p.259',
+    q:'Which feature of a product is described as potentially "transient" — creating a risk that the CCP may guarantee a product for its lifetime even as the feature diminishes?',
+    opts:['A. Standardisation — legal terms become non-standard over time','B. Liquidity — products may be liquid initially but become illiquid over time','C. Market volume — market size can shrink after clearing mandates','D. Complexity — products simplify over their lifecycle'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'Legal standardisation of cleared products is fixed at inception — it does not erode over time in the same way.'},
+      {l:'B',c:true,t:'Correct. "It should be noted that liquidity might be transient, as in many OTC derivatives; liquidity tends to decline over time and yet positions are guaranteed by the CCP for their lifetime." (§18.2, p.259)'},
+      {l:'C',c:false,t:'Market volume is about overall market size, not about the lifecycle of individual positions.'},
+      {l:'D',c:false,t:'Product complexity does not "simplify" over the lifecycle.'}
+    ],
+    trap:'This is a subtle risk: when a 30-year IRS is entered at clearing, the market may be highly liquid. But 20 years into its life, liquidity in that specific maturity/rate combination may have dried up. The CCP is still on the hook for the remaining 10 years even if the product is now illiquid.',
+    expl:'Illiquid positions are harder to replace in a default scenario (high bid-offer spreads, price impact), making close-out costs potentially very large. The CCP implicitly accepts liquidity risk for the product\'s full lifetime when it accepts the trade at inception — even if liquidity deteriorates significantly over time.'
+  },
+  {
+    id:60, topic:'impact', diff:'H', page:'p.270',
+    q:'Which of the following is described as an ADVANTAGE of central clearing specifically related to DEFAULT MANAGEMENT?',
+    opts:['A. CCPs eliminate counterparty credit risk entirely','B. A well-managed central auction may cause smaller price disruptions than uncoordinated bilateral replacement','C. CCPs remove the need for close-out netting agreements','D. Multilateral netting reduces total notional outstanding'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'CCPs do not eliminate counterparty risk — they centralise it.'},
+      {l:'B',c:true,t:'Correct. "A well-managed central auction may result in smaller price disruptions than the uncoordinated replacement of positions during a crisis period associated with the default of a clearing member." (§18.5, p.270)'},
+      {l:'C',c:false,t:'Close-out netting agreements remain important in bilateral markets and are not eliminated by CCPs.'},
+      {l:'D',c:false,t:'Notional reduction is a benefit of COMPRESSION, not of the default management function per se.'}
+    ],
+    trap:'In a bilateral default, every counterparty independently rushes to replace their hedge. All are selling/buying the same instruments simultaneously. This creates market dislocation. CCP auctions are coordinated — the CCP organises the process to minimise market impact.',
+    expl:'Bilateral default: Lehman\'s 2,000 counterparties all tried to replace their interest rate hedge positions simultaneously on 15 September 2008. This created enormous market distortion. CCP auction: the defaulter\'s positions are bundled into sub-portfolios, macro-hedged, then auctioned to surviving members in an orderly process. Dramatically less market impact.'
+  },
+  {
+    id:61, topic:'waterfall', diff:'M', page:'p.267',
+    q:'A member suffers a loss from the DEFAULT FUND drawdown, but their own portfolio has a NET POSITION IN THE SAME DIRECTION as the defaulter. Is this possible?',
+    opts:['A. No — members with same-direction positions have offsetting gains that cancel the DF loss','B. Yes — DF losses are not linked to the individual member\'s trading position relative to the defaulter','C. Only if the member also had direct trades with the defaulter','D. Only under VMGH — not under standard pro-rata DF allocation'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'Same-direction positions imply they also LOST on their portfolio (market moved against the defaulter\'s direction = their direction too). No automatic offset with DF loss.'},
+      {l:'B',c:true,t:'Correct. The text explicitly notes: a member can suffer default losses "even if it... has a net position with the CCP in the same direction as the defaulter." DF losses are socialised independently of portfolio direction. (§18.2, p.261)'},
+      {l:'C',c:false,t:'DF losses can occur even without direct trades with the defaulter.'},
+      {l:'D',c:false,t:'VMGH specifically haircuts GAINS — same-direction members likely have losses, not gains. Under standard DF pro-rata allocation, all members contribute regardless.'}
+    ],
+    trap:'Triple hit possible: (1) Member A has same direction as defaulter → portfolio loss on their own position. (2) Member A still owes variation margin. (3) Member A\'s DF contribution is drawn down. Three separate financial impacts, potentially all negative simultaneously.',
+    expl:'The DF is a mutual insurance pool — contributions are based on portfolio risk metrics (position size, volatility) not on whether you profit from the defaulter\'s direction. Even members who lose money because of the same market move that caused the default still bear DF costs. This is analogous to an insurer suffering a natural disaster: all policyholders\' premiums contribute to the claims pool regardless of whether their own property was damaged.'
+  },
+  {
+    id:62, topic:'mechanics', diff:'M', page:'p.264',
+    q:'In the SwapClear Lehman default, how were the 66,000 trades handled?',
+    opts:['A. Immediately terminated via full tear-up on Day 1','B. Macro-hedged in one week; then auctioned in 5 sub-portfolios by currency over three weeks','C. Transferred to surviving clearing members via portability within one business day','D. Wound down bilaterally between LCH and Lehman\'s administrators over 6 months'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'Tear-up was not used — the process was macro-hedge then auction, which is the standard CCP approach.'},
+      {l:'B',c:true,t:'Correct. "90% of their Lehman risk was neutralised (macro-hedged) in one week and all 66,000 trades were auctioned within three weeks." The auctions were of "five (currency-specific) sub-portfolios." (§18.3, p.264-265)'},
+      {l:'C',c:false,t:'Portability applies to CLIENT positions, not to the clearing member\'s own (Lehman\'s) proprietary portfolio.'},
+      {l:'D',c:false,t:'A 6-month bilateral wind-down would defeat the purpose of central clearing.'}
+    ],
+    trap:'Know the Lehman case details precisely: 90% hedged in 1 week, ALL 66,000 trades auctioned within 3 weeks, ~1/3 of IM used, rest returned to administrators, default fund NOT required, 5 currency sub-portfolios.',
+    expl:'The Lehman case is the benchmark "successful CCP default management" example. Key learnings: (1) macro-hedging worked quickly, (2) sub-portfolio structure (by currency) was effective, (3) member firms (in the default management group) contributed expertise, (4) less than half of IM was needed, (5) no default fund impact — the defaulter paid for their own default.'
+  },
+  {
+    id:63, topic:'mechanics', diff:'H', page:'p.264',
+    q:'The "default management group" in a CCP default consists of:',
+    opts:['A. CCP risk managers only — member firms are excluded to avoid conflicts of interest','B. Key CCP personnel plus senior traders from member firms seconded on a rotating basis','C. Representatives from the relevant national central banks and regulatory bodies','D. All clearing members\' risk officers acting as a committee'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'Member firm traders ARE included — but with a firewall between them and others at their firm.'},
+      {l:'B',c:true,t:'Correct. "A CCP also benefits from a default management group made up of key personnel from the CCP together with senior traders from member firms who may be seconded on a revolving basis." There will be "a firewall between seconded traders and other members of their firm." (§18.3, p.264)'},
+      {l:'C',c:false,t:'Regulators are not members of the default management group described.'},
+      {l:'D',c:false,t:'Not all members\' risk officers — specifically selected senior traders on a ROTATING secondment basis.'}
+    ],
+    trap:'The firewall is important: seconded traders cannot share information about the defaulter\'s portfolio with colleagues at their own firm (front-running / conflict of interest). They work exclusively for the CCP during the default management period.',
+    expl:'Why include member firm traders? CCPs have risk model expertise but member firms have deep product and market knowledge. Senior traders from dealer banks understand the nuances of specific IRS books, know liquidity in various maturities, and can execute macro-hedges efficiently. This hybrid approach leverages both the CCP\'s authority and the market\'s expertise.'
+  },
+  {
+    id:64, topic:'im-df', diff:'M', page:'p.268',
+    q:'The text compares default funds to "insurance." Which aspect of the INSURANCE analogy is MOST relevant?',
+    opts:['A. Insurance policies can be cancelled during a crisis — default funds cannot','B. Both solve the problem that individual risk is too large to self-insure, requiring pooling across many participants','C. Both are priced using actuarial loss models based on historical default rates','D. Both provide protection against moral hazard through deductibles'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'The cancellation aspect is not part of the analogy made in the text.'},
+      {l:'B',c:true,t:'Correct. "This is the classic problem of insurance and can only be mitigated by a pooling of risk." The DF is described as the solution to covering tail losses that are "improbable but potentially large" — the classic insurance problem. (§18.4, p.268)'},
+      {l:'C',c:false,t:'The text notes calculating the probability of CCP exhausting its DF is "impossible to quantify with any accuracy" — unlike standard actuarial models.'},
+      {l:'D',c:false,t:'Default funds do mitigate moral hazard somewhat (via skin-in-the-game and IM incentives) but this is not the INSURANCE analogy comparison point.'}
+    ],
+    trap:'The insurance analogy is specifically about POOLING to cover tail losses. Individual members cannot self-insure against extreme CCP scenarios. Pooling across all members makes coverage both feasible and cost-effective.',
+    expl:'Classic insurance logic: one person cannot self-insure against a low-probability, high-severity event (house fire, major car accident). But pooling across thousands makes coverage affordable — each person pays a small premium, and the pool covers whoever suffers the event. Similarly, each member\'s DF contribution is small but the pool covers whoever causes the catastrophic default.'
+  },
+  {
+    id:65, topic:'mechanics', diff:'H', page:'p.258',
+    q:'The text states the number of CCPs will likely be "relatively large" despite a single global CCP being optimal. Which TWO specific reasons for bifurcation are given?',
+    opts:['A. Technology limitations and regulatory burden','B. Regional (local CCPs in major jurisdictions) and Product (specialisation in specific product types)','C. Currency denomination and legal system differences','D. Settlement efficiency and tax treatment disparities'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'Technology and regulatory burden are not the two reasons given.'},
+      {l:'B',c:true,t:'Correct. "This is due to bifurcation on two levels: Regional... Product." Regional: major geographies want local CCPs for their currency/institutions. Product: OTC CCPs specialise in specific product types (IRS vs CDS). (§18.2, p.258)'},
+      {l:'C',c:false,t:'Currency is part of regional bifurcation but legal systems are not specifically identified.'},
+      {l:'D',c:false,t:'Settlement efficiency and tax are not the two reasons cited.'}
+    ],
+    trap:'The text is specific about two levels: REGIONAL (geography-driven) and PRODUCT (asset class driven). Examples: LCH Ltd is the major IRS CCP. ICE Clear Credit focuses on CDS. These are separate product-type CCPs, not competing for the same products.',
+    expl:'Regional: EU regulators required EU financial institutions to use EU CCPs for EUR-denominated products (EMIR). US regulators require CME/ICE for US entities. Japan has JSCC. No single global CCP can satisfy all regulators. Product: IRS require one type of pricing model; CDS require a different one with WWR considerations. CCPs naturally specialise.'
+  },
+  {
+    id:66, topic:'margin', diff:'H', page:'p.263',
+    q:'A clearing member is placed in default. The CCP has the right to "liquidate securities held as margin." What is the RISK associated with this right during a crisis?',
+    opts:['A. The securities may be in a different jurisdiction and legally inaccessible','B. Liquidating large quantities of securities during a crisis may depress prices and increase close-out costs','C. Regulations may prevent asset sales for 30 days after a default declaration','D. Liquidating securities converts collateral risk to cash risk'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'Jurisdictional access is a risk but the chapter text focuses on a different concern.'},
+      {l:'B',c:true,t:'Correct. This relates to the liquidity risk of IM assets. Securities must be "sufficiently liquid" to avoid large bid-offer spreads and price impact. Liquidating large positions in a crisis can depress prices and increase close-out costs. (§18.3, p.263)'},
+      {l:'C',c:false,t:'No 30-day prohibition is mentioned — CCPs have privileged positions with respect to bankruptcy law.'},
+      {l:'D',c:false,t:'Converting to cash is generally desirable — this is not a risk.'}
+    ],
+    trap:'This links two concepts: (1) IM can be securities (bonds), (2) those securities must be liquid. Illiquid IM securities create close-out risk because selling them during a crisis (when the CCP needs cash most) amplifies market impact.',
+    expl:'If the CCP holds government bonds as IM, these are normally liquid. But during a crisis (flight to quality, sovereign stress), even government bonds can have illiquid markets. The CCP may need to sell large quantities rapidly, pushing prices down and incurring significant transaction costs. This is why CCP IM eligibility criteria focus heavily on liquidity: price data available frequently, low credit risk, large and active market.'
+  },
+  {
+    id:67, topic:'evolution', diff:'H', page:'p.257',
+    q:'Why might a centrally-cleared OTC derivative be traded even if the product is NOT liquid enough to trade on an exchange?',
+    opts:['A. CCP clearing creates liquidity by standardising terms even for illiquid products','B. Central clearing only requires sufficient standardisation and liquidity for margining purposes — not exchange trading liquidity','C. Regulators require all OTC derivatives to be either exchange-traded or CCP-cleared','D. OTC derivatives have higher notional values and therefore always meet exchange listing requirements'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'The CCP does not CREATE liquidity — it requires it. But the liquidity bar for clearing is lower than for exchange trading.'},
+      {l:'B',c:true,t:'Correct. "It is possible to centrally clear an OTC derivative that is not liquid enough to trade on an exchange. However, central clearing does require an OTC derivative to have a certain level of standardisation and liquidity and not be too complex." (§18.1, p.257)'},
+      {l:'C',c:false,t:'Not all OTC derivatives need to be exchange-traded or CCP-cleared — exempt categories exist.'},
+      {l:'D',c:false,t:'Notional size is not the determinant of exchange listing.'}
+    ],
+    trap:'The liquidity threshold for clearing is LOWER than for exchange trading. Exchange trading requires continuous two-way markets, standardised lot sizes, public price discovery. Clearing only requires enough liquidity to value positions for margin purposes and to replace positions in a default.',
+    expl:'Example: a 30-year vanilla USD IRS may not trade on an exchange (no standardised futures contract) but CAN be centrally cleared through SwapClear. The clearing house can value it for daily VM using standard IRS pricing models, and can replace it in a default scenario via an over-the-counter auction. The bar is different: exchange trading requires electronic market-making; clearing requires valuability and replaceability.'
+  },
+  {
+    id:68, topic:'client', diff:'H', page:'p.262',
+    q:'Under the US LSOC (Legally Segregated, Operationally Commingled) model, client assets are:',
+    opts:['A. Both physically and legally segregated for each individual client','B. Legally separate for each client but physically commingled operationally','C. Physically separated per client but legally treated as a common pool','D. Commingled both legally and physically — the US equivalent of omnibus'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'Physical separation per client is NOT what LSOC achieves — the "operationally commingled" part means physical separation is absent.'},
+      {l:'B',c:true,t:'Correct. "In the US, individual segregation is achieved through the model \'legally segregated; operationally commingled\' (LSOC), which means that client assets are not physically segregated." (§18.2 footnote, p.262)'},
+      {l:'C',c:false,t:'LSOC is the opposite — legally individual, operationally pooled.'},
+      {l:'D',c:false,t:'LSOC achieves individual (not omnibus) protection at the legal level, even without physical separation.'}
+    ],
+    trap:'LSOC is a uniquely US approach. The "legally segregated" part means each client has a LEGAL CLAIM to their specific assets (protection against other clients\' defaults). But operationally, assets are held in a common pool for efficiency. This is different from pure omnibus (where legal AND operational treatment is pooled).',
+    expl:'Why LSOC? Physical segregation of every client is operationally expensive. LSOC maintains the legal protection (individual client claims) while allowing operational efficiency (pooled custody/operations). In a clearing member default, LSOC client accounts can be identified legally and ported — the key protection against fellow customer risk.'
+  },
+  {
+    id:69, topic:'mechanics', diff:'M', page:'p.259',
+    q:'ICE Clear Credit primarily clears which type of OTC derivatives?',
+    opts:['A. Interest rate swaps','B. Cross-currency swaps','C. Some CDSs (credit default swaps)','D. Equity volatility swaps'],
+    ans:2,
+    optExp:[
+      {l:'A',c:false,t:'Interest rate swaps are primarily cleared by SwapClear (LCH Ltd), not ICE Clear Credit.'},
+      {l:'B',c:false,t:'Cross-currency swaps are heading toward clearing but are not ICE Clear Credit\'s primary product.'},
+      {l:'C',c:true,t:'Correct. "ICE (Intercontinental Exchange) — which offers clearing for some CDSs through ICE Clear Credit." (§18.2, p.260)'},
+      {l:'D',c:false,t:'Equity vol swaps are not mentioned as an ICE Clear Credit product.'}
+    ],
+    trap:'Product-to-CCP mapping: SwapClear/LCH = IRS. ICE Clear Credit = CDS. CME and Eurex also clear various products. Know the mapping between major product classes and their primary CCPs.',
+    expl:'Table 18.1 and surrounding text map key CCPs to products. ICE Clear Credit specifically handles credit default swaps (CDSs), a product that is particularly challenging to clear due to wrong-way risk but was specifically targeted for clearing after the 2008 crisis where CDS played a central role.'
+  },
+  {
+    id:70, topic:'im-df', diff:'H', page:'p.268',
+    q:'A CCP has 5 members, each contributing 1 unit. In Scenario A: IM=4 units each, DF=0. In Scenario B: IM=1 unit each, DF=1 unit each. Both have the SAME total resources. Which scenario provides more coverage for the default of ONE member?',
+    opts:['A. Scenario A — higher IM means more defaulter-pays coverage','B. Scenario B — mutualised DF provides additional coverage from other members on top of the defaulter\'s IM','C. Both provide identical total coverage (4 units in A = 1+4 units in B)','D. Depends on the severity of the default — Scenario A for moderate defaults, Scenario B for extreme ones'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'In Scenario A: defaulter has 4 IM = only 4 units available. No DF to supplement.'},
+      {l:'B',c:true,t:'Correct. In Scenario B: defaulter has 1 IM + 1 DF. But ALSO the 4 other members\' DF contributions (4×1 = 4) are available. Total = 1+1+4 = 6 units vs only 4 in Scenario A. Mutualisation creates MORE total coverage despite same individual contributions! (§18.4, p.268, Fig 18.11)'},
+      {l:'C',c:false,t:'They are NOT identical. Scenario B has 5 units of DF (all members) available after IM. Total coverage for one default = IM + ALL members\' DF = 1 + 5 = 6 vs just 4 IM in A.'},
+      {l:'D',c:false,t:'The mutualisation benefit of Scenario B applies across ALL loss levels above IM.'}
+    ],
+    trap:'The power of mutualisation: In Scenario A, available resources = 4 (only defaulter\'s IM, no DF). In Scenario B, available resources = 1 (IM) + 1+1+1+1+1 (all 5 DFs) = 6. The non-defaulting members\' DF contributions are the additional resource.',
+    expl:'Figure 18.11 illustrates this exactly. The scenario with small IM and large DF actually provides MORE total coverage because the DF pool is available from ALL members, not just the defaulter. This is why clearing is cost-effective: you pay a small DF contribution and get access to a large pooled resource.'
+  },
+  {
+    id:71, topic:'mechanics', diff:'H', page:'p.263',
+    q:'What is the main reason CCPs invest margin assets in low-risk instruments (central banks, reverse repos, short-term government securities)?',
+    opts:['A. Regulatory requirements mandate 100% government securities','B. To avoid creating additional risk for the CCP through the investment of margin','C. To maximize returns for clearing members who receive interest on deposited margin','D. CCPs are prohibited from investing margin under Basel III rules'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'The text describes a principle, not a strict 100% government securities mandate.'},
+      {l:'B',c:true,t:'Correct. "Margin also needs to be invested extremely carefully so as to avoid creating additional risk for the CCP." (§18.3, p.264)'},
+      {l:'C',c:false,t:'Member returns are a secondary consideration — the primary reason is risk management for the CCP.'},
+      {l:'D',c:false,t:'No such Basel III prohibition is described.'}
+    ],
+    trap:'The CCP\'s role is to ABSORB risk, not to take on investment risk with margin assets. If a CCP invested IM in risky assets and those investments failed, the margin buffer would be depleted — defeating its purpose.',
+    expl:'The CCP\'s safety depends on its margin assets being immediately available at full value when needed. If margin is invested in corporate bonds or equities, those assets could fall in value exactly during a crisis (when margin is most needed). Low-risk investments (central bank deposits, short-term govies) preserve capital and ensure margin is available when called upon.'
+  },
+  {
+    id:72, topic:'impact', diff:'M', page:'p.270',
+    q:'Which of the following is correctly identified as an ADVANTAGE of CCPs rather than a disadvantage?',
+    opts:['A. Procyclicality — CCPs adjust margins during crises','B. Bifurcation — netting benefits split across cleared/non-cleared','C. Loss mutualisation — extreme losses shared across members','D. Adverse selection — risky products concentrated at under-pricing CCPs'],
+    ans:2,
+    optExp:[
+      {l:'A',c:false,t:'Procyclicality is listed as a DISADVANTAGE.'},
+      {l:'B',c:false,t:'Bifurcation is listed as a DISADVANTAGE.'},
+      {l:'C',c:true,t:'Correct. Loss mutualisation is listed as an ADVANTAGE: "Even when a default creates losses that exceed the financial commitments from the defaulter, these losses are distributed throughout the CCP members, reducing their impact on any one member." (§18.5, p.270)'},
+      {l:'D',c:false,t:'Adverse selection is listed as a DISADVANTAGE.'}
+    ],
+    trap:'FRM loves to mix advantages and disadvantages. Full list of advantages: Transparency, Multilateral offset, Loss mutualisation, Legal/operational efficiency, Liquidity, Default management. Full list of disadvantages: Moral hazard, Adverse selection, Bifurcation, Procyclicality, Single point of failure.',
+    expl:'Loss mutualisation spreads the cost of any single catastrophic default across all CCP members. Rather than a few direct counterparties bearing enormous losses (potentially causing a cascade of failures), the loss is absorbed by the entire clearing community. This reduces systemic impact of individual defaults — a core benefit of the CCP model.'
+  },
+  {
+    id:73, topic:'evolution', diff:'M', page:'p.257',
+    q:'Which factor made CBOT (Chicago Board of Trade) the most notable historical resister of central clearing?',
+    opts:['A. Lack of technological infrastructure for CCP risk management','B. Resistance because clearing homogenises credit quality — strong-credit members would subsidise weaker ones','C. Legal prohibition under early US securities law','D. Insufficient product standardisation across CBOT contracts'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'Technology was not the cited reason — the resistance was economic/incentive-based.'},
+      {l:'B',c:true,t:'Correct. CBOT resisted for ~30 years until 1925. The reason: "clearing homogenises counterparty risk and therefore would lead to strong-credit-quality members of the exchange suffering under central clearing compared to the weaker members." (§18.1, p.257)'},
+      {l:'C',c:false,t:'No legal prohibition is mentioned — government pressure actually pushed CBOT TO adopt clearing.'},
+      {l:'D',c:false,t:'CBOT had standardised futures contracts — that was not the obstacle.'}
+    ],
+    trap:'Government pressure was the FORCING mechanism — it pushed CBOT and LME toward clearing. But the RESISTANCE came from incumbent high-quality members who benefited from counterparty-specific credit quality differentiation.',
+    expl:'In a bilateral market, Goldman Sachs (hypothetically) charges lower rates to counterparties because its credit quality is superior — it creates value from that advantage. Under central clearing, Goldman faces the CCP just like every other member — its credit quality advantage disappears. Strong-credit firms rationally resisted clearing because it eliminated their competitive advantage.'
+  },
+  {
+    id:74, topic:'client', diff:'M', page:'p.261-262',
+    q:'A clearing member may require MORE margin from their clients than the CCP requires from the clearing member. This is called "over-margining" or "excess margin." What is the PRIMARY reason a clearing member does this?',
+    opts:['A. To generate profit from the investment spread on excess cash','B. To compensate for additional risk they take as an intermediary and to fund clearing services','C. To ensure LSOC compliance under US margin rules','D. Because regulators require clearing members to maintain a 10% buffer above CCP requirements'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'Investment spread income is a SECONDARY benefit. The primary reason is risk compensation.'},
+      {l:'B',c:true,t:'Correct. "Clearing members often require more margin from their clients than is required by CCPs. Clearing members can also potentially earn returns on excess margins received (above those required by the CCP) to compensate them for the clearing service they provide and the additional risk they take in doing this." (§18.2, p.262)'},
+      {l:'C',c:false,t:'LSOC is a segregation standard, not a margin sizing requirement.'},
+      {l:'D',c:false,t:'No such 10% buffer regulation is described in the text.'}
+    ],
+    trap:'Clearing members face the CCP for the FULL notional of their clients\' positions. If a client defaults but has posted insufficient margin, the clearing member must make up the shortfall to the CCP. Excess margin held from clients provides the clearing member with a buffer against this bilateral client default risk.',
+    expl:'The clearing member takes on bilateral credit risk to their clients (not covered by the CCP). If Client X defaults with only 80% of required margin, the clearing member must pay the full 100% to the CCP. The excess margin cushion reduces this gap. Additionally, investment income from excess cash partially offsets the cost of capital required for client clearing.'
+  },
+  {
+    id:75, topic:'waterfall', diff:'H', page:'p.267',
+    q:'Which statement about INITIAL MARGIN of NON-DEFAULTING members is CORRECT under European law?',
+    opts:['A. It can be used if more than 50% of the default fund is exhausted','B. It cannot be used to cover losses from another member\'s default','C. It can be haircutted (IM haircutting) as a permitted last-resort mechanism','D. It can be used by the CCP for its own operational purposes during a crisis'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'No threshold-based use of non-defaulter IM is permitted under EMIR.'},
+      {l:'B',c:true,t:'Correct. "EMIR Article 45(4) states that \'A CCP shall not use the margins posted by non-defaulting members to cover the losses resulting from the default of another clearing member.\'" (§18.3, p.267)'},
+      {l:'C',c:false,t:'Initial margin haircutting "has been suggested... but it has not been used in practice and may not be allowed by regulators." Not permitted.'},
+      {l:'D',c:false,t:'Operational use of client/member margin is strictly prohibited.'}
+    ],
+    trap:'IM of non-defaulters is theoretically risk-free — it does NOT appear in the loss waterfall. However, the text adds a caveat: "since other loss-allocation methods (such as tear-up) are potentially infinite, this may be of limited consolation to a surviving clearing member" — tear-up can impose losses without touching IM.',
+    expl:'Regulatory protection: non-defaulting members know their IM is safe from direct confiscation. This is important for confidence in the system. If non-defaulters feared their IM could be taken, they would be reluctant to clear or would demand premium returns — making clearing too expensive. The EMIR protection maintains clearing attractiveness for members.'
+  },
+  {
+    id:76, topic:'mechanics', diff:'M', page:'p.261',
+    q:'What is the key distinction between the "defaulter-pays" approach and "loss mutualisation" in central clearing?',
+    opts:['A. Defaulter-pays covers expected losses; loss mutualisation covers unexpected losses','B. Defaulter-pays uses the defaulter\'s own resources; loss mutualisation shares excess losses among all members','C. Defaulter-pays is bilateral; loss mutualisation only works in centrally cleared markets','D. Defaulter-pays applies to variation margin; loss mutualisation applies to initial margin'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'The expected/unexpected distinction is not how the text frames this — it is about who bears the loss.'},
+      {l:'B',c:true,t:'Correct. "If margins are sufficient, then the central clearing follows the so-called \'defaulter-pays\' approach... Another basic principle of central clearing is that of loss mutualisation, where losses above the resources contributed by the defaulter are shared between CCP members." (§18.2, p.261)'},
+      {l:'C',c:false,t:'Loss mutualisation can exist in bilateral markets too (e.g., industry bailout funds) — it is not uniquely a CCP concept.'},
+      {l:'D',c:false,t:'Both principles apply across margin types — the distinction is who bears losses, not which margin type.'}
+    ],
+    trap:'These are SEQUENTIAL principles. First: defaulter pays (their own IM + DF). If insufficient: mutualise (other members\' DF absorbs the excess). This ordering matters for the loss waterfall: defaulter-pays layers come BEFORE survivors-pay layers.',
+    expl:'Think of it as two lines of defence: Line 1 = defaulter-pays (IM + defaulter\'s own DF) — the defaulter covers their own mess. Line 2 = loss mutualisation (non-defaulters\' DF) — if the mess is bigger than Line 1, everyone else shares it. This two-tier structure balances individual accountability (Line 1) with collective stability (Line 2).'
+  },
+  {
+    id:77, topic:'impact', diff:'H', page:'p.271',
+    q:'Why is there a "growing need" to assess CVA on central counterparties (CCPs themselves), which is described as "not yet common practice"?',
+    opts:['A. Regulatory rules now require CVA capital charges for CCP exposures','B. As clearing mandates expand, bank exposures to CCPs grow, and CCPs are not risk-free — they can fail','C. IFRS 13 requires marking CCP clearing costs to market annually','D. CCP credit quality deteriorates as they take on more complex products'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'While regulatory capital for CCP exposures exists, this is not the specific reason cited in the text.'},
+      {l:'B',c:true,t:'Correct. As clearing mandates expand, banks\' exposures to CCPs become larger. CCPs are systemically important but NOT risk-free — they can fail. CVA (the cost of potential CCP default) should be assessed but "is not yet common practice." (§18.5, p.271)'},
+      {l:'C',c:false,t:'IFRS 13 fair value requirements are not specifically cited in this context.'},
+      {l:'D',c:false,t:'While product complexity is a concern, the text doesn\'t link it specifically to the need for CCP CVA.'}
+    ],
+    trap:'The conventional assumption is that CCP positions are "risk-free" from CVA perspective because CCPs are highly collateralised. But CCPs CAN fail (see Nasdaq example), and with mandatory clearing concentrating enormous risk at CCPs, ignoring CVA on CCP exposures becomes increasingly problematic.',
+    expl:'As clearing mandates expand, banks\' aggregate exposure to CCPs grows dramatically. If a major CCP fails (a low-probability but high-impact event), banks face enormous losses on positions that were assumed to be safe. CVA on CCP exposures should capture this risk. The fact it\'s "not yet common practice" reflects historical complacency about CCP failure probability.'
+  },
+  {
+    id:78, topic:'margin', diff:'H', page:'p.263-264',
+    q:'Initial margin at a CCP is calculated using "different scenarios for possible price movements over an assumed close-out period." Which MOST accurately characterises this calculation?',
+    opts:['A. Historical simulation over the past 2 years at 95% confidence','B. Stress scenarios for price movements over the MPoR (typically 5 days) at at least 99% confidence','C. Expected shortfall (CVaR) at 97.5% over a 10-day holding period','D. Monte Carlo simulation at 99.9% confidence over 1-day horizon'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'The text says "at least 99%" confidence — not 95%. The 2-year look-back is a specific methodology choice not cited.'},
+      {l:'B',c:true,t:'Correct. "Initial margin... is calculated using different scenarios for possible price movements over an assumed close-out period (MPoR or liquidation period), such as five days... calculated to high confidence levels (at least 99%)." (§18.3, p.263)'},
+      {l:'C',c:false,t:'Expected shortfall and 97.5% confidence (bilateral BCBS-IOSCO standard) are not cited for CCP IM calculation.'},
+      {l:'D',c:false,t:'99.9% and 1-day horizon are not cited.'}
+    ],
+    trap:'CCP IM: at least 99% confidence, 5-day MPoR for OTC. Bilateral IM (BCBS-IOSCO): 99% confidence, 10-day MPoR. The MPoR differs but confidence level is the same. Know both for comparison.',
+    expl:'The 5-day MPoR reflects the CCP\'s ability to quickly macro-hedge and auction. The 99% confidence ensures that in 99% of scenarios, the defaulter\'s own IM covers the close-out cost. The remaining 1% is addressed by the default fund (loss mutualisation). "Different scenarios" may include historical simulation, parametric VaR, or stress scenarios.'
+  },
+  {
+    id:79, topic:'mechanics', diff:'M', page:'p.259',
+    q:'Which of the following is listed as a reason why LIQUIDITY is specifically important for centrally-cleared products?',
+    opts:['A. Liquid products have lower bid-offer spreads, making it easier to replace positions in a default scenario','B. Liquid products generate higher variation margin flows, improving CCP income','C. Liquidity ensures clearing members can meet DF contributions from market-making revenues','D. Highly liquid products are exempt from initial margin requirements'],
+    ans:0,
+    optExp:[
+      {l:'A',c:true,t:'Correct. "Liquid products can be more efficiently replaced in default scenarios as illiquid trades will have high bid-offer spreads and may be more likely to be subjected to large risk premiums and negative price moves in turbulent markets." (§18.2, p.259)'},
+      {l:'B',c:false,t:'VM flows are related to price moves, not liquidity per se. Higher liquidity does not inherently mean higher VM flows.'},
+      {l:'C',c:false,t:'DF contributions are based on position sizing, not market-making revenues.'},
+      {l:'D',c:false,t:'There is no such IM exemption for liquid products.'}
+    ],
+    trap:'Liquidity serves TWO purposes in clearing: (1) Accurate pricing for variation margin calculation, (2) Efficient position replacement in defaults. Both are in the text. The question asks specifically about "why liquidity matters" — know both reasons.',
+    expl:'Two liquidity reasons for clearing: (1) Variation margin accuracy: liquid products have reliable observable prices — no subjective valuation disputes. (2) Default management: when the CCP needs to replace a defaulter\'s 10,000-contract IRS book, it needs a liquid market that can absorb that size without massive price impact. Illiquid products fail on reason 2 most directly.'
+  },
+  {
+    id:80, topic:'waterfall', diff:'M', page:'p.265',
+    q:'The loss waterfall is triggered. In the first layer, the DEFAULTER\'s initial margin is used. What is the SECOND layer?',
+    opts:['A. CCP skin-in-the-game','B. Default fund of the defaulter','C. Rights of assessment','D. Default fund of non-defaulting members'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'CCP SITG is the THIRD layer, not the second.'},
+      {l:'B',c:true,t:'Correct. After the defaulter\'s IM (Layer 1), the DEFAULTER\'S OWN DEFAULT FUND contribution is the second layer — still part of the "defaulter-pays" section. (§18.3, p.266, Fig 18.9)'},
+      {l:'C',c:false,t:'Rights of assessment come much later in the waterfall.'},
+      {l:'D',c:false,t:'Non-defaulting members\' DF is the fourth layer (after CCP SITG).'}
+    ],
+    trap:'A common error: skipping the defaulter\'s DF contribution and going straight to CCP SITG. The full defaulter-pays section includes BOTH IM and DF of the defaulter before the CCP and survivors contribute.',
+    expl:'Why include the defaulter\'s own DF as the second layer? The defaulter pre-funded a DF contribution proportional to their portfolio risk. It is equitable that these pre-funded resources are exhausted before involving non-defaulting members. This preserves the integrity of the "defaulter pays" principle up to a higher loss level.'
+  },
+  {
+    id:81, topic:'impact', diff:'H', page:'p.270',
+    q:'The text gives a SPECIFIC example of evidence for adverse selection in CCP markets. What is it?',
+    opts:['A. Large banks withdraw from CCPs when default fund requirements increase','B. Market participants are aware that different CCPs are cheaper for clearing pay-fixed vs receive-fixed IRS','C. CCPs refuse to clear products that their largest members engage in most','D. New entrant CCPs offer zero initial margin to gain market share'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'This would be a moral hazard issue (members avoiding cost), not adverse selection.'},
+      {l:'B',c:true,t:'Correct. "Anecdotal evidence on this point is already apparent, with market participants aware that different CCPs are cheaper, for example, when clearing pay-fixed and receive-fixed interest rate swaps." (§18.5, p.270)'},
+      {l:'C',c:false,t:'Not described in the text.'},
+      {l:'D',c:false,t:'Zero IM strategies are not described.'}
+    ],
+    trap:'The pay-fixed vs receive-fixed example shows that different CCPs underprice different trade directions. A bank that predominantly does one direction will route to the CCP that underprices it — selecting against that CCP\'s ability to accurately price and reserve for that risk.',
+    expl:'IRS directional bias: Banks may systematically receive-fixed (pay-fixed to clients). If CCP A underprices receive-fixed risk, banks route receive-fixed trades to CCP A and pay-fixed to CCP B. CCP A accumulates a skewed book of receive-fixed positions — exactly the risk it underpriced. This is classic adverse selection: the informed party (bank) exploits the uninformed party\'s (CCP\'s) pricing error.'
+  },
+  {
+    id:82, topic:'mechanics', diff:'H', page:'p.258-259',
+    q:'MiFID II Article 29 specifically proposes to give CCPs access rights to trading venues. What is the PRIMARY purpose of this provision?',
+    opts:['A. To allow CCPs to price products traded on multiple venues simultaneously','B. To allow market participants to use any CCP for any trade, not just the CCP linked to a specific exchange','C. To require all trading venues to become CCPs themselves','D. To mandate a minimum number of CCPs per asset class in each jurisdiction'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'Simultaneous pricing is not the stated purpose.'},
+      {l:'B',c:true,t:'Correct. "The European Commission (EC), under MiFID II Article 29, proposes to give CCPs access rights to trading venues, which would allow market participants to use a CCP other than the one defined by an exchange or other trading platform. This is seen as important to increase competition between CCPs." (§18.2, p.259)'},
+      {l:'C',c:false,t:'No such requirement for trading venues to become CCPs is described.'},
+      {l:'D',c:false,t:'No minimum CCP per asset class mandate is described.'}
+    ],
+    trap:'In a vertical structure, the exchange dictates which CCP clears its products — a monopoly. MiFID II breaks this by allowing market participants to route to any CCP, even if it\'s not the exchange\'s own CCP. This promotes horizontal (open/competitive) clearing.',
+    expl:'Without MiFID II Article 29: trade on Exchange X → must use CCP-X (exchange\'s own CCP, captive arrangement). With MiFID II Article 29: trade on Exchange X → can choose CCP-A, CCP-B, or CCP-C. Multiple CCPs compete for the clearing business → lower costs, better service, more innovation. This is why regulation "favours the increased competition that horizontal clearing allows."'
+  },
+  {
+    id:83, topic:'margin', diff:'M', page:'p.263',
+    q:'Why is the move from LIBOR to OIS discounting for interest rate swaps relevant to CCP variation margin?',
+    opts:['A. OIS discounting produces lower swap values, reducing variation margin calls','B. Variation margin requires timely, reliable price data — the discount rate methodology must evolve with market practice','C. LIBOR was phased out as manipulation risk made it unsuitable for settlement','D. OIS rates are more volatile, generating larger daily VM calls'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'Whether OIS produces lower/higher values depends on the rate environment — this is not the relevant point.'},
+      {l:'B',c:true,t:'Correct. "Variation margining clearly requires timely and reliable price data... market-standard valuation methods... may sometimes need to evolve with market practice, a good example being the move from LIBOR to OIS discounting for interest rate swaps." (§18.3, p.263)'},
+      {l:'C',c:false,t:'LIBOR manipulation is a real issue but not the reason cited in the text for the OIS transition in this context.'},
+      {l:'D',c:false,t:'OIS volatility characteristics are not the point — methodology accuracy is.'}
+    ],
+    trap:'The point is that CCPs must use MARKET-STANDARD valuation — not any internally chosen method. As the market transitioned from LIBOR to OIS discounting for IRS (reflecting actual collateralised transaction costs), CCPs had to update their pricing to maintain accurate, reliable variation margin calculations.',
+    expl:'Pre-2010, IRS were discounted at LIBOR curve. Post-2010, market practice shifted to OIS discounting for collateralised IRS (reflecting FedFunds/EONIA as the true discount rate for collateralised positions). LCH adopted OIS discounting in 2010 for its $218 trillion IRS portfolio. If the CCP used wrong discount rates, variation margin would be inaccurate — either over- or under-calling members.'
+  },
+  {
+    id:84, topic:'impact', diff:'H', page:'p.270',
+    q:'Which of the following CORRECTLY pairs a CCP function with an ALTERNATIVE non-CCP mechanism that can achieve the same function?',
+    opts:['A. Loss mutualisation → industry guarantee funds (e.g. SIPC)','B. Netting → portfolio compression / bilateral netting agreements','C. Default management → bilateral close-out netting under ISDA','D. Margining → trade repositories'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'The text does not cite industry guarantee funds as an equivalent to CCP loss mutualisation.'},
+      {l:'B',c:true,t:'Correct. The text explicitly lists: "trade compression can facilitate greater netting benefits" and bilateral netting agreements exist. "Bilateral markets can (and do) have margining mechanisms" (for margining). "Trade repositories can provide greater transparency." (§18.5, p.271)'},
+      {l:'C',c:false,t:'Bilateral close-out is less coordinated than CCP default management — it is an alternative to BILATERAL close-out, not a substitute.'},
+      {l:'D',c:false,t:'Trade repositories provide TRANSPARENCY, not margining.'}
+    ],
+    trap:'The text specifically names: Netting → compression/bilateral; Margining → bilateral CSA; Transparency → trade repositories. Three exact pairings. The question asks specifically about netting, which has two alternatives listed.',
+    expl:'This passage in §18.5 is important for the FRM: the authors acknowledge that many CCP benefits can be partially replicated outside clearing. This undermines the argument that clearing is uniquely necessary for all its stated benefits. The key truly unique CCP contribution is MULTILATERAL offset across all members simultaneously — something bilateral arrangements cannot replicate.'
+  },
+  {
+    id:85, topic:'mechanics', diff:'M', page:'p.262',
+    q:'A clearing member charges clients for clearing services "explicitly and implicitly." The IMPLICIT charge includes:',
+    opts:['A. The annual membership fee charged by the CCP','B. Subsidisation of the default fund contribution borne by the clearing member','C. The cost of insurance premiums on cleared positions','D. Variation margin calculations performed on the client\'s behalf'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'CCP membership fees are charged by the CCP to the clearing member — not something the clearing member charges clients.'},
+      {l:'B',c:true,t:'Correct. "Clearing members will charge their clients (explicitly and implicitly) for the clearing service that they provide, which will include elements such as the subsidisation of the default fund." (§18.2, p.262)'},
+      {l:'C',c:false,t:'Insurance premiums on cleared positions are not described.'},
+      {l:'D',c:false,t:'VM calculation is an operational service but not specifically identified as the implicit charge.'}
+    ],
+    trap:'The clearing member pays DF contributions proportional to all positions they clear — including client positions. Clients don\'t pay the CCP directly but they implicitly bear this cost through the fees (spread, markups, service charges) that clearing members charge them.',
+    expl:'Economics of client clearing: Clearing member has DF contribution of, say, $50m to the CCP for a portfolio that includes $30m attributable to clients. The clearing member charges clients fees that effectively recoup this $30m DF "subsidy." Clients also pay explicitly through transaction fees, bid-offer spreads on margin, and service charges.'
+  },
+  {
+    id:86, topic:'waterfall', diff:'H', page:'p.266-267',
+    q:'Unlike tear-up, forced allocation has one key feature that makes it potentially more FLEXIBLE but also more CONTROVERSIAL. What is it?',
+    opts:['A. Forced allocation can involve non-members while tear-up is restricted to clearing members','B. ANY member can be allocated positions under forced allocation — not just those with matching trades','C. Forced allocation generates revenue for the CCP; tear-up does not','D. Forced allocation is regulated under EMIR; tear-up is CCP-discretionary'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'Both mechanisms apply to clearing members, not non-members.'},
+      {l:'B',c:true,t:'Correct. "A forced allocation may be more random as any member can be allocated positions, whereas tear-up requires a member to have the appropriate trades in their portfolio." (§18.3, p.267)'},
+      {l:'C',c:false,t:'Neither mechanism generates CCP revenue — both are loss allocation tools.'},
+      {l:'D',c:false,t:'No such regulatory distinction is made in the text.'}
+    ],
+    trap:'Tear-up is targeted: it terminates trades of members who happen to HOLD matching opposite trades. Forced allocation is more aggressive: the CCP can impose any trade on any member regardless of their current portfolio. Forced allocation is more flexible but less predictable and harder to plan for.',
+    expl:'Why forced allocation is controversial: a member who never trades CDSs could suddenly receive a forced allocation of a large CDS portfolio. This is unexpected, potentially unwanted, and creates immediate risk management challenges. Members cannot pre-plan or hedge against a forced allocation as easily as against a tear-up (which only affects trades they already hold).'
+  },
+  {
+    id:87, topic:'mechanics', diff:'M', page:'p.260-261',
+    q:'The text states variation margin and settlement amounts for a clearing member "within a single currency may be netted." In practice, this means a clearing member makes:',
+    opts:['A. One payment or receipt per trade per day per currency','B. One payment or receipt per day per currency across all cleared products','C. One payment or receipt per month after all positions are netted across currencies','D. No payments — all VM is automatically debited from the initial margin account'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'Per trade settlement would negate the netting benefit — the CCP nets across all positions.'},
+      {l:'B',c:true,t:'Correct. "Variation margin and settlement amounts from clearing members\' other clearing activities in a single currency may be netted, resulting in a single payment or receipt per day." (§18.3, p.263)'},
+      {l:'C',c:false,t:'Monthly settlement is too infrequent — VM is a daily (or more frequent) requirement.'},
+      {l:'D',c:false,t:'VM is a SEPARATE cash payment — not a deduction from IM. IM and VM serve different purposes.'}
+    ],
+    trap:'Daily single payment per currency. For a clearing member with 1,000 IRS positions: all the daily MTM gains and losses net to ONE USD payment and ONE EUR payment (if applicable). This dramatically reduces settlement flows vs gross settlement.',
+    expl:'A single clearing member might have hundreds of IRS across multiple currencies. Without netting, each trade generates a daily cash flow. With netting: all USD-denominated IRS generate one net daily USD payment. All EUR-denominated IRS generate one net EUR payment. No cross-currency netting though (USD and EUR kept separate). This reduces operational complexity and liquidity requirements enormously.'
+  },
+  {
+    id:88, topic:'im-df', diff:'H', page:'p.268',
+    q:'A CCP sizes its default fund using stress tests. However, the text notes the ACTUAL PROBABILITY of exhausting the default fund is "impossible to quantify with any accuracy." Why?',
+    opts:['A. CCP risk models are proprietary and cannot be independently validated','B. The event requires simultaneous member defaults WITH extreme market movements AND illiquidity — a complex multivariate scenario','C. Historical data on CCP default fund exhaustion is insufficient (too few events)','D. Regulators prohibit CCPs from publishing probability estimates'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'Model proprietary is not the reason — even transparent models face this issue.'},
+      {l:'B',c:true,t:'Correct. "The actual probability of a CCP exhausting its default fund is impossible to quantify with any accuracy, as it is likely linked to events involving the default of one or more clearing members together with extreme market movements and illiquidity." (§18.4, p.269)'},
+      {l:'C',c:false,t:'Historical data scarcity is a real issue but the text specifically identifies the complex multivariate nature of the event as the key challenge.'},
+      {l:'D',c:false,t:'No regulatory prohibition on publishing estimates is mentioned.'}
+    ],
+    trap:'The complex joint probability problem: the DF is only stressed when (1) a major member defaults AND (2) markets are extreme AND (3) liquidity has dried up. Estimating the joint probability of these correlated rare events is essentially impossible with any statistical confidence.',
+    expl:'Statistical challenges: (1) Tail events have almost no historical observations. (2) The events are highly correlated (member defaults happen during market crises when liquidity is worst). (3) The severity depends on which member defaults, which product they trade, and specific market conditions — countless combinations. This is why DF sizing uses stress scenarios (qualitative) rather than quantitative probability models.'
+  },
+  {
+    id:89, topic:'mechanics', diff:'M', page:'p.264',
+    q:'After macro-hedging in a CCP default, the sub-portfolios are auctioned to surviving clearing members. What happens BETWEEN macro-hedging and the final auction?',
+    opts:['A. The defaulter\'s positions are immediately returned to their original bilateral counterparties','B. The sub-portfolios (together with macro-hedges) are offered for competitive bidding from clearing members','C. The CCP unilaterally determines the price and transfers positions to the strongest members','D. Regulators must approve each sub-portfolio transfer before the auction can proceed'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'Returning positions to original bilateral counterparties is not the CCP default management process — that would be bilateral unwinding, not central clearing.'},
+      {l:'B',c:true,t:'Correct. "The CCP auctions the portfolio amongst other clearing members by sub-portfolio (e.g. currency)... Surviving CCP members will submit two-way prices for sub-portfolios, and the member bidding the best price will win a given portfolio." (§18.3, p.264)'},
+      {l:'C',c:false,t:'The CCP does not unilaterally determine price — the competitive auction process determines price.'},
+      {l:'D',c:false,t:'No regulatory pre-approval is required for each transfer — the CCP has authority to act without such delays.'}
+    ],
+    trap:'The sub-portfolios in the auction INCLUDE the macro-hedges. This is important: because the macro-hedges neutralise directional risks, the net portfolios offered in the auction have "less sensitivity to market moves" — making it easier for members to bid accurately even in volatile conditions.',
+    expl:'Macro-hedges are bundled with the defaulter\'s trades in each sub-portfolio. If the defaulter had a large long-duration IRS book and the CCP macro-hedged the rate risk, the auctioned package has near-zero DV01. Bidders don\'t need to worry about directional market moves — they mainly face basis risk and bid-offer costs. This encourages competitive bidding.'
+  },
+  {
+    id:90, topic:'evolution', diff:'M', page:'p.256',
+    q:'When did "complete clearing" (CCP-based central clearing) begin on derivative exchanges?',
+    opts:['A. 1848 (founding of CBOT)','B. 1875 (first standardised futures contracts)','C. 1891','D. 1925 (when CBOT adopted CCP)'],
+    ans:2,
+    optExp:[
+      {l:'A',c:false,t:'1848 was the founding of CBOT — no CCP function at that time.'},
+      {l:'B',c:false,t:'1875 is not cited as the date of complete clearing beginning.'},
+      {l:'C',c:true,t:'Correct. "The final stage of the historical evolution of risk mitigation at derivatives exchanges was \'complete clearing\' (which began in 1891)." (§18.1, p.256)'},
+      {l:'D',c:false,t:'1925 was when CBOT ADOPTED a CCP (after ~30 years of resistance) — not when complete clearing began generally.'}
+    ],
+    trap:'1891 is when complete clearing first appeared somewhere. 1925 is when CBOT specifically adopted it (very late). LME adopted it in 1986. These dates measure historical resistance, not the invention of the concept.',
+    expl:'Timeline: 1891 = complete clearing invented (likely at a European exchange). CBOT (~1895 onwards) resisted for 30 years. 1925 = CBOT adopted (with government pressure). 1986 = LME adopted (last major exchange holdout, also with regulatory pressure). All exchange-traded contracts now use CCPs. OTC clearing began with SwapClear in late 1990s.'
+  },
+  {
+    id:91, topic:'mechanics', diff:'H', page:'p.263',
+    q:'Initial margin at a CCP "exists for the LIFE of the trade and can be increased or reduced depending on market conditions." This implies:',
+    opts:['A. IM is fixed at inception and does not change over the trade\'s life','B. IM is dynamic — it can increase if volatility rises or the position grows, and decrease as the trade matures','C. IM is returned to the member when more than 50% of the trade\'s life has elapsed','D. IM is calculated once per year regardless of market conditions'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'The text specifically says IM "can be increased or reduced" — the opposite of fixed.'},
+      {l:'B',c:true,t:'Correct. "Initial margin exists for the life of the trade and can be increased or reduced depending on market conditions and the remaining risk." (§18.3, p.263) As a 10Y IRS becomes a 1Y IRS (matures), the remaining risk is much smaller — IM decreases.'},
+      {l:'C',c:false,t:'No such 50% elapsed rule is described.'},
+      {l:'D',c:false,t:'IM can change more frequently than annually — market conditions can trigger increases.'}
+    ],
+    trap:'IM is not a one-time calculation. As market conditions change (volatility spikes: IM ↑; trade matures: IM ↓), the CCP recalculates and calls or returns IM. This dynamic adjustment is important — members must be able to meet IM calls at short notice (a membership requirement).',
+    expl:'IM lifecycle: when a 30Y IRS is first cleared, IM is calibrated to cover potential close-out losses over 5 days for a 30Y tenor. Ten years later (now a 20Y IRS), the remaining risk is different (different DV01, different market conditions). IM is recalculated — may be higher or lower. At expiry, IM is fully returned. This dynamic nature is part of why IM management is operationally intensive.'
+  },
+  {
+    id:92, topic:'impact', diff:'M', page:'p.270',
+    q:'The text says the TRANSPARENCY benefit of CCPs "should not be overstated." Which historical examples are given to support this caution?',
+    opts:['A. Lehman Brothers\' large CDS book was transparent but not prevented','B. The collapse of Barings Bank, and rogue trader incidents at Societe Generale and UBS — all involving exchange-traded (centrally cleared) products','C. The 2008 financial crisis despite extensive CCP clearing in interest rate swaps','D. The Hong Kong Futures Exchange 1987 crisis despite mandatory margin requirements'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'Lehman\'s CDS book is not cited as the transparency cautionary example.'},
+      {l:'B',c:true,t:'Correct. The text notes: "the transparency supposedly associated with exchange-traded derivatives did not prevent the collapse of Barings Bank. Nor did the margin requirements... More recent rogue trader incidents such as Societe Generale (2008) and UBS (2011) also involved exchange-traded products." (§18.5, p.270 footnote)'},
+      {l:'C',c:false,t:'The 2008 crisis example is used for other points — not specifically for the transparency caveat here.'},
+      {l:'D',c:false,t:'Hong Kong 1987 is cited for default fund risk, not for the transparency caveat.'}
+    ],
+    trap:'Transparency of clearing did NOT prevent Barings (Nick Leeson), Societe Generale (Jerome Kerviel), or UBS losses. Transparency helps with systemic risk assessment across the market but cannot prevent individual fraudulent or reckless trading within a firm.',
+    expl:'The CCP can see the FIRM\'s aggregate position — it can intervene if concentration becomes extreme. But it cannot see inside the firm to detect internal control failures (a rogue trader). Barings collapsed because Leeson hid losses internally, not because the exchange couldn\'t see positions. Transparency at the CCP level ≠ internal risk management transparency.'
+  },
+  {
+    id:93, topic:'mechanics', diff:'H', page:'p.258',
+    q:'The text suggests that having a SINGLE GLOBAL CCP would be "clearly optimal for a number of reasons." Yet this is unlikely. The PRIMARY structural reason is:',
+    opts:['A. No single CCP has the technological capacity to handle all global OTC derivatives','B. Major regions insist on their own local CCPs (regional bifurcation) and CCPs specialise by product type (product bifurcation)','C. Antitrust authorities prevent any single entity from monopolising clearing globally','D. International law does not permit cross-border netting within a single CCP'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'Technology capacity is not cited as the reason.'},
+      {l:'B',c:true,t:'Correct. "This is due to bifurcation on two levels: Regional... Product." (§18.2, p.258) Both regulatory requirements (regional) and market specialisation (product) drive multiple CCPs.'},
+      {l:'C',c:false,t:'Antitrust is not cited — regulatory requirements are the opposite (regulators require LOCAL CCPs).'},
+      {l:'D',c:false,t:'International cross-border netting in a single CCP is legally feasible — the obstacle is political/regulatory, not legal.'}
+    ],
+    trap:'A single CCP would maximise multilateral netting and minimise systemic risk. But politics intervene: regulators in each jurisdiction want domestic oversight, want their institutions to clear in their own jurisdiction, and want to avoid depending on foreign CCPs. Product specialisation is an additional market-driven reason.',
+    expl:'Why optimal but not achievable: (1) EU wants EUREX for EUR products. (2) US wants CME/ICE for USD products. (3) Japan wants JSCC for JPY products. (4) Each requires financial institutions to use the local CCP. (5) CCPs have developed expertise in specific product types. The sum: many CCPs persist despite the theoretical optimality of consolidation.'
+  },
+  {
+    id:94, topic:'margin', diff:'M', page:'p.261',
+    q:'Why is the CCP\'s default fund sometimes called a "guarantee fund" or "reserve fund"?',
+    opts:['A. It guarantees that no CCP member will ever face a loss','B. It guarantees that the CCP will meet its obligations to surviving members by having pre-funded reserves available','C. It is guaranteed by central banks in the event of CCP failure','D. It guarantees the defaulter\'s obligations to their original bilateral counterparties'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'The DF does NOT guarantee members will face no losses — it only covers up to a certain level; beyond that, losses are allocated via other mechanisms.'},
+      {l:'B',c:true,t:'Correct. The DF is a PRE-FUNDED pool that provides the CCP with reserves to meet its ongoing payment obligations to surviving members. The text notes "sometimes called a \'guarantee fund\' or \'reserve fund\'" (footnote 9). (§18.2, p.261)'},
+      {l:'C',c:false,t:'Central bank guarantees of the DF are not described — central banks are a last resort for LIQUIDITY, not DF guarantors.'},
+      {l:'D',c:false,t:'After novation, the defaulter has no direct obligations to their original bilateral counterparties — the CCP does.'}
+    ],
+    trap:'The language "guarantee fund" might imply a guarantee to members of no losses. Wrong. It guarantees that the CCP has reserved funds to continue operating and meeting its payment obligations — not that all losses are covered.',
+    expl:'The "guarantee" is from the CCP\'s perspective: it has guaranteed (contractually committed) to pay variation margin and other obligations to surviving members. The fund ensures these guarantees are backed by real assets. Without the fund, the CCP would be making promises it couldn\'t keep in a crisis. The fund name reflects the CCP\'s guarantee, not a guarantee to members against all losses.'
+  },
+  {
+    id:95, topic:'im-df', diff:'H', page:'p.269',
+    q:'The text notes that the DEFAULT FUND is sized via stress tests "in relation to member defaults and related market conditions." How is the DEFAULT FUND ALLOCATED to individual clearing members?',
+    opts:['A. Equally divided among all members regardless of portfolio size','B. Pro-rata with initial margins (possibly averaged over time) or based on position size, potentially subject to a floor','C. Based on each member\'s credit rating and probability of default','D. Inversely proportional to initial margin — members with less IM pay more DF'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'Equal allocation would penalise small members and subsidise large ones — not the approach described.'},
+      {l:'B',c:true,t:'Correct. "This may then be allocated to clearing members in a relatively simplistic way, such as pro rata with initial margins (maybe averaged over a time period) or based on the total size of positions (potentially also subject to a floor)." (§18.4, p.269)'},
+      {l:'C',c:false,t:'Credit rating-based DF allocation is not described — the focus is on portfolio-based metrics.'},
+      {l:'D',c:false,t:'Inverse relationship would create perverse incentives — members would reduce IM to avoid higher DF.'}
+    ],
+    trap:'DF allocation is proportional to risk contribution (proxied by IM size or position size), not credit quality. The "floor" means even very small members pay a minimum DF — preventing free-riding.',
+    expl:'The logic for pro-rata IM allocation: members with larger IMpost more IM because they take more risk. Their DF contribution should also reflect this greater risk contribution. Averaging over time prevents gaming (a member rapidly reducing positions right before DF contribution dates). The floor ensures all members have "skin in the game" regardless of size.'
+  },
+  {
+    id:96, topic:'waterfall', diff:'H', page:'p.266',
+    q:'The text states that "variation margin is NOT mentioned in the loss waterfall." What is the reason for this omission?',
+    opts:['A. Variation margin is exempt from CCP default processes under EMIR','B. Variation margin should already offset the MTM value of the portfolio — so it is implicitly included in the defaulter\'s position value','C. Variation margin is only applicable to bilateral markets, not CCP environments','D. CCPs do not hold variation margin — it passes through to members immediately'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'There is no EMIR exemption of VM from default processes.'},
+      {l:'B',c:true,t:'Correct. "Variation margin is not mentioned here as it should offset the value of the portfolio in question." (§18.3, p.266 footnote) VM keeps the portfolio MTM current — the IM is the additional buffer ABOVE the MTM-adjusted position.'},
+      {l:'C',c:false,t:'VM is central to CCP operations — it is the daily settlement mechanism.'},
+      {l:'D',c:false,t:'CCPs do hold VM — but the outstanding VM should offset the current MTM value of positions.'}
+    ],
+    trap:'Subtle accounting point: by the time default is declared, variation margin has been called and the portfolio\'s MTM value is roughly zero (fully collateralised to the last margin call). The IM then covers the ADDITIONAL losses from position movements AFTER the last VM call during the MPoR. Hence VM doesn\'t appear as a distinct waterfall layer.',
+    expl:'Imagine default happens at 3pm on Monday. Last VM call was 5pm Friday. The portfolio moved against the defaulter from Friday to Monday (3 days × movements = 3-day PnL). This 3-day loss is what IM is designed to cover. The Friday VM call already settled all gains/losses up to that point. The VM effectively "resets" the starting position, making IM the relevant remaining buffer.'
+  },
+  {
+    id:97, topic:'impact', diff:'H', page:'p.270',
+    q:'Which CCP advantage addresses the "domino effect" problem in bilateral markets?',
+    opts:['A. Transparency — CCP can see concentration and limit trading','B. Loss mutualisation — extreme losses distributed across all members','C. Multilateral offset — CCP intermediates and prevents cascade defaults','D. Legal efficiency — centralised rules prevent disputed close-outs'],
+    ans:2,
+    optExp:[
+      {l:'A',c:false,t:'Transparency helps identify concentration but the "domino effect" (cascade of defaults) is addressed by intermediation.'},
+      {l:'B',c:false,t:'Loss mutualisation reduces the IMPACT of any one default but the domino effect is about CASCADE prevention.'},
+      {l:'C',c:true,t:'Correct. In Figure 18.5: "the insolvency of C can no longer cause a knock-on effect to A, since the CCP has intermediated the position between the two." The CCP\'s multilateral netting removes the direct exposure from A to C, preventing cascade. (§18.2, p.260)'},
+      {l:'D',c:false,t:'Legal efficiency reduces disputes but does not address the cascade default mechanism.'}
+    ],
+    trap:'The domino/cascade mechanism: A owes money to C; if C defaults, A may be unable to pay A\'s creditors (because C owes A). With a CCP, A owes money to the CCP (not to C). C\'s default has no direct contractual impact on A — the CCP absorbs C\'s side and A\'s obligation to the CCP is unchanged.',
+    expl:'Bilateral web: if C defaults and cannot pay what it owes A, then A also might default on what A owes to others (domino). CCP solution: A\'s counterparty is the CCP, not C. C\'s default creates a loss at the CCP (absorbed by IM/DF/etc.) but A\'s obligation to the CCP is unchanged. A continues normally. The cascade is broken at the CCP level. This is why reducing "interconnectedness" (one of the two primary simplified advantages) matters.'
+  },
+  {
+    id:98, topic:'mechanics', diff:'M', page:'p.261',
+    q:'Which of the following statements MOST precisely describes what it means for a clearing member to contribute to the "loss mutualisation" principle?',
+    opts:['A. Each member\'s losses are exactly proportional to their trading activity that caused the default','B. Each member contributes a small amount to a DEFAULT FUND, providing collective coverage for extreme losses from any member\'s default','C. Members share the defaulter\'s remaining obligations equally at the time of default','D. Members receive less variation margin when another member defaults (VMGH)'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'Loss mutualisation is NOT proportional to the contribution to the default — even members with no connection to the defaulter contribute.'},
+      {l:'B',c:true,t:'Correct. Loss mutualisation means "losses above the resources contributed by the defaulter are shared between CCP members" via the collective default fund. (§18.2, p.261)'},
+      {l:'C',c:false,t:'Sharing remaining obligations equally is not how the DF works — it is pro-rata to DF contributions.'},
+      {l:'D',c:false,t:'VMGH is one specific mechanism for loss allocation — not the definition of loss mutualisation broadly.'}
+    ],
+    trap:'Loss mutualisation = pre-funded mutual pool. It is the DEFAULT FUND mechanism. Contrast with VMGH (haircuts gains), rights of assessment (ex-post calls), tear-up (forced portfolio termination). Loss mutualisation specifically refers to the pre-funded DF pool covering losses beyond the defaulter\'s own resources.',
+    expl:'The term "mutualisation" comes from mutual insurance. All members pay premiums (DF contributions) in advance. When a loss event occurs (member defaults with more losses than their IM + own DF cover), the mutual pool (all members\' DF contributions) absorbs the excess. This is the fundamental mechanism that makes clearing economically viable — individual members couldn\'t self-insure against catastrophic defaults.'
+  },
+  {
+    id:99, topic:'margin', diff:'H', page:'p.264',
+    q:'The CCP\'s "privileged position with respect to bankruptcy law" is important because it allows the CCP to:',
+    opts:['A. Avoid paying creditors of the defaulting clearing member','B. Declare a member in default and manage the portfolio WITHOUT legal challenges from bankruptcy administrators','C. Override the clearing member\'s own risk management decisions during a default','D. Exempt itself from regulatory reporting obligations during a default scenario'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'CCPs do not avoid paying creditors — they manage the position to cover obligations.'},
+      {l:'B',c:true,t:'Correct. "CCPs can also close out positions more quickly than in bilateral markets, as they can declare a member in default without any external obstructions... thanks to a privileged position with respect to bankruptcy law." The contrast: "in a bilateral market the methodology for closing out trades... may be challenged by the bankruptcy administrators." (§18.3, p.265)'},
+      {l:'C',c:false,t:'During a default, the CCP takes over management of the defaulter\'s portfolio — this is different from overriding normal risk management.'},
+      {l:'D',c:false,t:'No such regulatory reporting exemption is described.'}
+    ],
+    trap:'In bilateral markets, close-out netting is subject to legal challenges (can bankruptcy administrators argue the close-out was premature or incorrect?). CCPs have statutory authority to declare defaults and manage positions without these legal challenges — enabling the swift MPoR and auction process.',
+    expl:'Bilateral close-out problem: when Lehman defaulted, its counterparties in bilateral trades faced legal uncertainty about close-out methodology. Were their macro-hedges valid? Lehman\'s administrators might challenge the close-out prices. CCP context: once a member is declared in default (which the CCP can do quickly and with clear legal authority), the CCP has defined, legally protected rights to macro-hedge, auction, and close out positions — no administrator challenges possible.'
+  },
+  {
+    id:100, topic:'impact', diff:'H', page:'p.271',
+    q:'FINAL QUESTION — INTEGRATION: Which of the following statements provides the MOST accurate overall assessment of central clearing\'s net impact?',
+    opts:['A. Central clearing eliminates all counterparty credit risk in derivatives markets','B. Central clearing redistributes and reshapes risk rather than eliminating it — reducing bilateral credit risk but creating CCP concentration risk, increasing MVA, and introducing moral hazard','C. Central clearing is unambiguously beneficial — all regulators and market participants support mandatory clearing','D. Central clearing reduces systemic risk by ensuring all OTC derivatives are ultimately guaranteed by central banks'],
+    ans:1,
+    optExp:[
+      {l:'A',c:false,t:'Central clearing CENTRALISES risk at the CCP — it does not eliminate it. CCP failure risk is a real concern.'},
+      {l:'B',c:true,t:'Correct. The overall message of Chapter 18: clearing reduces bilateral credit risk (CVA), increases multilateral netting, but creates CCP concentration risk (single point of failure), increases MVA (funding IM), introduces moral hazard (members stop monitoring each other), and has procyclicality concerns. Net effect is ambiguous — must be assessed holistically. (§18.5, p.271)'},
+      {l:'C',c:false,t:'The chapter explicitly notes resistance to clearing (CBOT, LME), the "race to the bottom" concern among competing CCPs, and multiple disadvantages.'},
+      {l:'D',c:false,t:'Central banks are a LAST RESORT liquidity provider for failing CCPs — they do not guarantee CCP obligations.'}
+    ],
+    trap:'The FRM exam expects nuanced judgment. The correct answer is NEVER "universally beneficial" or "eliminates risk." Risk management is about reshaping, reducing, and redistributing risk — with trade-offs. Central clearing is a major regulatory initiative with significant benefits AND costs that must be weighed holistically.',
+    expl:'Summary assessment: Central clearing moves risk from a complex bilateral web to a hub-and-spoke CCP structure. Benefits: reduced interconnectedness, multilateral netting, coordinated default management, transparency. Costs: CCP single point of failure, moral hazard, adverse selection, bifurcation, procyclicality, MVA increase. CVA only modestly reduced (85% from exempt end-users persists). Net impact must be assessed trade-by-trade, market-by-market, and holistically across all xVA components.'
+  }
+];
+
+// ─── STATE ───
+let state = {
+  answers: {},     // questionId → chosen option index (or -1 for skip)
+  filter: 'all',
+  search: '',
+  visibleIds: QS.map(q=>q.id)
+};
+
+function getVisible(){
+  return QS.filter(q=>{
+    const topicOk = state.filter==='all' || q.topic===state.filter;
+    const searchOk = !state.search || q.q.toLowerCase().includes(state.search.toLowerCase());
+    return topicOk && searchOk;
+  });
+}
+
+function updateStats(){
+  const total = Object.keys(state.answers).length;
+  const correct = Object.values(state.answers).filter(a=>a.result==='correct').length;
+  const wrong = Object.values(state.answers).filter(a=>a.result==='wrong').length;
+  const pct = total>0 ? Math.round(correct/total*100) : null;
+
+  document.getElementById('st-total').textContent = `${total} / ${QS.length} answered`;
+  document.getElementById('st-correct').textContent = `✓ ${correct} correct`;
+  document.getElementById('st-wrong').textContent = `✗ ${wrong} wrong`;
+  document.getElementById('st-pct').textContent = pct!==null ? `Score: ${pct}%` : 'Score: —';
+  document.getElementById('prog-bar').style.width = `${total/QS.length*100}%`;
+
+  if(total===QS.length) setTimeout(showScore, 800);
+}
+
+function handleAnswer(qId, chosen){
+  const q = QS.find(x=>x.id===qId);
+  if(state.answers[qId]) return; // already answered
+  const correct = chosen === q.ans;
+  state.answers[qId] = {chosen, result: correct?'correct':'wrong'};
+  renderCard(q);
+  updateStats();
+}
+
+function handleSkip(qId){
+  if(state.answers[qId]) return;
+  state.answers[qId] = {chosen:-1, result:'skip'};
+  updateStats();
+  const card = document.getElementById('card-'+qId);
+  if(card) card.style.opacity='0.5';
+}
+
+function renderCard(q){
+  const a = state.answers[q.id];
+  const answered = !!a;
+  const card = document.getElementById('card-'+q.id);
+  if(!card) return;
+
+  if(answered && a.result==='correct') card.className='q-card answered-correct';
+  if(answered && a.result==='wrong') card.className='q-card answered-wrong';
+
+  // update option buttons
+  const opts = card.querySelectorAll('.opt-btn');
+  opts.forEach((btn, i) => {
+    btn.disabled = answered;
+    if(answered){
+      if(i === q.ans) btn.classList.add('correct');
+      else if(a.chosen === i && i !== q.ans) btn.classList.add('wrong');
+      else if(i !== q.ans) btn.classList.add('missed');
+    }
+  });
+
+  // show explanation
+  if(answered && a.result !== 'skip'){
+    const expl = document.getElementById('expl-'+q.id);
+    if(expl){
+      expl.classList.add('show');
+      const banner = expl.querySelector('.result-banner');
+      if(a.result==='correct'){
+        banner.className='result-banner correct';
+        banner.innerHTML='🎉 CORRECT!';
+      } else {
+        banner.className='result-banner wrong';
+        banner.innerHTML='❌ INCORRECT — see below';
+      }
+    }
+  }
+}
+
+function buildCard(q){
+  const diffCls = q.diff==='H' ? 'pill-diff-H' : 'pill-diff-M';
+  const diffLabel = q.diff==='H' ? '🔥 Hard' : '⚡ Medium';
+  const topicLabel = {
+    evolution:'📜 Evolution', mechanics:'⚙️ Mechanics', novation:'🔄 Novation',
+    margin:'💰 Margin', waterfall:'🌊 Waterfall', 'im-df':'⚖️ IM vs DF',
+    impact:'💡 Impact', client:'👥 Client Clearing'
+  }[q.topic] || q.topic;
+
+  // option analysis HTML
+  let optHtml = q.optExp.map((o,i)=>{
+    const cls = o.c ? 'opt-analysis ca' : 'opt-analysis wa';
+    const icon = o.c ? '✓' : '✗';
+    return `<div class="${cls}"><span class="oa-label">${icon} ${o.l}:</span>${o.t}</div>`;
+  }).join('');
+
+  const optsHtml = q.opts.map((opt,i)=>`
+    <button class="opt-btn" onclick="handleAnswer(${q.id},${i})" id="opt-${q.id}-${i}">
+      <span class="opt-label">${String.fromCharCode(65+i)}.</span>
+      <span>${opt}</span>
+    </button>`).join('');
+
+  return `
+  <div class="q-card" id="card-${q.id}">
+    <div class="q-header">
+      <div class="q-num" style="color:var(--yellow)">${q.id}</div>
+      <div style="flex:1">
+        <div class="q-meta">
+          <span class="pill pill-topic">${topicLabel}</span>
+          <span class="pill ${diffCls}">${diffLabel}</span>
+          <span class="pill pill-page">📖 ${q.page}</span>
+        </div>
+        <div class="q-text">${q.q}</div>
+      </div>
+    </div>
+    <div class="options">${optsHtml}</div>
+    <div class="expl" id="expl-${q.id}">
+      <div class="expl-inner">
+        <div class="result-banner correct"></div>
+        <div class="expl-section">
+          <h4>📊 Option Analysis</h4>
+          ${optHtml}
+        </div>
+        <div class="expl-section">
+          <div class="trap-box"><strong>⚠️ Where Students Go Wrong</strong>${q.trap}</div>
+        </div>
+        <div class="expl-section">
+          <h4>💡 Full Explanation</h4>
+          <p>${q.expl}</p>
+        </div>
+        <div class="src-box">📖 Source: ${q.page} — Jon Gregory, xVA Challenge Ch.18</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderAll(){
+  const visible = getVisible();
+  const list = document.getElementById('q-list');
+  if(visible.length === 0){
+    list.innerHTML='<div class="empty">No questions match this filter.</div>';
+    return;
+  }
+  list.innerHTML = visible.map(q=>buildCard(q)).join('');
+  visible.forEach(q=>{ if(state.answers[q.id]) renderCard(q); });
+}
+
+function filterTopic(t){
+  state.filter = t;
+  document.querySelectorAll('.fbtn:not(.reset-btn)').forEach(b=>{
+    b.classList.toggle('active', b.getAttribute('onclick').includes(`'${t}'`));
+  });
+  renderAll();
+}
+
+function filterSearch(){
+  state.search = document.getElementById('search-box').value;
+  renderAll();
+}
+
+function resetAll(){
+  if(!confirm('Reset ALL answers? This cannot be undone.')) return;
+  state.answers = {};
+  state.filter = 'all';
+  state.search = '';
+  document.getElementById('search-box').value = '';
+  document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.fbtn')[0].classList.add('active');
+  document.getElementById('score-screen').classList.remove('show');
+  document.getElementById('main-view').style.display='block';
+  renderAll();
+  updateStats();
+}
+
+function showScore(){
+  const correct = Object.values(state.answers).filter(a=>a.result==='correct').length;
+  const wrong = Object.values(state.answers).filter(a=>a.result==='wrong').length;
+  const skip = Object.values(state.answers).filter(a=>a.result==='skip').length;
+  const pct = Math.round(correct/QS.length*100);
+
+  document.getElementById('sc-pct').textContent = pct+'%';
+  document.getElementById('sc-correct').textContent = correct;
+  document.getElementById('sc-wrong').textContent = wrong;
+  document.getElementById('sc-skip').textContent = skip;
+
+  // topic breakdown
+  const topics = [...new Set(QS.map(q=>q.topic))];
+  const topicLabels = {
+    evolution:'Evolution', mechanics:'Mechanics', novation:'Novation',
+    margin:'Margin', waterfall:'Waterfall', 'im-df':'IM vs DF',
+    impact:'Advantages', client:'Client Clearing'
+  };
+  let tableHtml = '<table><tr><th>Topic</th><th>Correct</th><th>Total</th><th>Score</th></tr>';
+  topics.forEach(t=>{
+    const qs = QS.filter(q=>q.topic===t);
+    const c = qs.filter(q=>state.answers[q.id]?.result==='correct').length;
+    const total = qs.length;
+    const pctT = total>0 ? Math.round(c/total*100) : 0;
+    const cls = pctT >= 70 ? 't-score-good' : 't-score-bad';
+    tableHtml += `<tr><td>${topicLabels[t]||t}</td><td style="color:var(--teal)">${c}</td><td>${total}</td><td class="${cls}">${pctT}%</td></tr>`;
+  });
+  tableHtml += '</table>';
+  document.getElementById('topic-table').innerHTML = tableHtml;
+
+  document.getElementById('main-view').style.display='none';
+  document.getElementById('score-screen').classList.add('show');
+}
+
+function restartAll(){
+  state.answers = {};
+  document.getElementById('score-screen').classList.remove('show');
+  document.getElementById('main-view').style.display='block';
+  renderAll();
+  updateStats();
+  window.scrollTo(0,0);
+}
+
+function navPrev(){ window.scrollBy(0, -400); }
+function navNext(){ window.scrollBy(0, 400); }
+function navSkip(){
+  // Find first unanswered visible question
+  const vis = getVisible();
+  const next = vis.find(q=>!state.answers[q.id]);
+  if(next){
+    const el = document.getElementById('card-'+next.id);
+    if(el) el.scrollIntoView({behavior:'smooth', block:'center'});
+  }
+}
+
+// Init
+renderAll();
+updateStats();
+</script>
+</body>
+</html>
