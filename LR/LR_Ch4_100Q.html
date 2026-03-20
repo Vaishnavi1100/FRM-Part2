@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FRM P2 · LR · Ch4 · QB</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --pink: #FF4E91; --orange: #FF6B35; --teal: #00C9A7;
+  --blue: #5B8CFF; --yellow: #FFD700; --purple: #A259FF;
+  --dark: #1a1a2e; --darker: #12121f; --card: #22223a;
+  --text: #f0f0ff; --muted: #9090b8;
+  --border: 3px solid #000; --shadow: 4px 4px 0px #000; --shadow-lg: 6px 6px 0px #000;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Nunito', sans-serif; background: var(--darker); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+body::before {
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+  background-image: radial-gradient(circle at 20% 20%, #FF4E9115 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, #5B8CFF15 0%, transparent 50%);
+}
+#header {
+  background: var(--dark); border-bottom: var(--border);
+  padding: 12px 20px; position: sticky; top: 0; z-index: 200;
+  box-shadow: 0 4px 0 #000;
+}
+.header-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+#header h1 { font-family:'Fredoka One',cursive; font-size:1.4rem; color: #ffffff; }
+.subtitle { font-size:.7rem; color:var(--muted); font-weight:700; letter-spacing:1px; text-transform:uppercase; }
+.scoreboard { display:flex; gap:8px; align-items:center; flex-shrink:0; }
+.score-pill { background:var(--card); border:var(--border); box-shadow:var(--shadow); border-radius:20px; padding:4px 12px; font-weight:800; font-size:.82rem; }
+.score-pill.correct { color:var(--teal); } .score-pill.wrong { color:var(--pink); } .score-pill.total { color:var(--yellow); }
+.controls-bar { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+.search-wrap { position:relative; flex:1; min-width:200px; }
+.search-wrap svg { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--muted); pointer-events:none; }
+#search-input {
+  width:100%; background:var(--darker); border:var(--border); border-radius:12px;
+  padding:9px 14px 9px 38px; font-family:'Nunito',sans-serif; font-size:.9rem; font-weight:700;
+  color:var(--text); outline:none; transition:border-color .15s, box-shadow .15s;
+}
+#search-input:focus { border-color:var(--blue); box-shadow:3px 3px 0 var(--blue); }
+#search-input::placeholder { color:var(--muted); }
+#topic-select {
+  background:var(--darker); border:var(--border); border-radius:12px;
+  padding:9px 14px; font-family:'Nunito',sans-serif; font-size:.88rem; font-weight:700;
+  color:var(--text); outline:none; cursor:pointer; min-width:180px;
+  transition:border-color .15s;
+}
+#topic-select:focus { border-color:var(--purple); }
+#diff-select {
+  background:var(--darker); border:var(--border); border-radius:12px;
+  padding:9px 14px; font-family:'Nunito',sans-serif; font-size:.88rem; font-weight:700;
+  color:var(--text); outline:none; cursor:pointer;
+  transition:border-color .15s;
+}
+.clear-btn {
+  background:var(--pink); border:var(--border); box-shadow:var(--shadow); border-radius:12px;
+  padding:9px 16px; font-family:'Fredoka One',cursive; font-size:.85rem; color:#fff; cursor:pointer;
+  white-space:nowrap; transition:transform .1s, box-shadow .1s;
+}
+.clear-btn:hover { transform:translate(-1px,-1px); box-shadow:5px 5px 0 #000; }
+#progress-bar-wrap { width:100%; height:8px; background:var(--card); border-bottom:2px solid #000; }
+#progress-bar { height:100%; background:linear-gradient(90deg,var(--pink),var(--orange),var(--yellow)); transition:width .4s; }
+#results-info { text-align:center; padding:14px 0 4px; font-family:'Fredoka One',cursive; font-size:.95rem; color:var(--muted); }
+#app { max-width:860px; margin:0 auto; padding:10px 16px 80px; position:relative; z-index:1; }
+.q-card {
+  background:var(--card); border:var(--border); box-shadow:var(--shadow-lg);
+  border-radius:18px; padding:22px 24px; margin-bottom:20px;
+  animation: fadeUp .25s ease;
+  scroll-margin-top: 200px;
+}
+.q-card.hidden { display:none; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+.q-meta { display:flex; gap:6px; align-items:center; flex-wrap:wrap; margin-bottom:12px; }
+.badge { font-family:'Fredoka One',cursive; font-size:.68rem; padding:3px 10px; border-radius:20px; border:2px solid #000; box-shadow:2px 2px 0 #000; letter-spacing:.5px; text-transform:uppercase; white-space:nowrap; }
+.badge-num { background:var(--purple); color:#fff; }
+.badge-type { background:var(--blue); color:#fff; }
+.badge-topic { background:var(--orange); color:#fff; font-size:.62rem; }
+.badge-diff-easy { background:var(--teal); color:#000; }
+.badge-diff-medium { background:var(--yellow); color:#000; }
+.badge-diff-hard { background:var(--pink); color:#fff; }
+.badge-page { background:var(--teal); color:#000; font-size:.6rem; }
+.q-text { font-size:1rem; font-weight:700; line-height:1.65; margin-bottom:16px; color:#fff; }
+.options { display:flex; flex-direction:column; gap:8px; margin-bottom:14px; }
+.opt-btn { background:var(--darker); border:var(--border); box-shadow:var(--shadow); border-radius:12px; padding:11px 16px; text-align:left; cursor:pointer; font-family:'Nunito',sans-serif; font-size:.9rem; font-weight:700; color:var(--text); transition:transform .12s, box-shadow .12s; display:flex; align-items:flex-start; gap:10px; }
+.opt-btn:hover:not(:disabled) { transform:translate(-2px,-2px); box-shadow:6px 6px 0px #000; }
+.opt-btn:disabled { cursor:default; }
+.opt-btn .opt-letter { font-family:'Fredoka One',cursive; font-size:1rem; min-width:26px; height:26px; display:flex;align-items:center;justify-content:center; background:var(--card); border:2px solid #000; border-radius:7px; flex-shrink:0; }
+.opt-btn.correct-ans { background:#00C9A730; border-color:var(--teal); box-shadow:4px 4px 0 var(--teal); }
+.opt-btn.correct-ans .opt-letter { background:var(--teal); color:#000; }
+.opt-btn.wrong-ans { background:#FF4E9130; border-color:var(--pink); box-shadow:4px 4px 0 var(--pink); }
+.opt-btn.wrong-ans .opt-letter { background:var(--pink); color:#fff; }
+.opt-btn.dimmed { opacity:.4; }
+.opt-label { flex:1; line-height:1.5; }
+.tf-row { display:flex; gap:12px; margin-bottom:14px; }
+.tf-btn { flex:1; padding:14px; border:var(--border); box-shadow:var(--shadow); border-radius:12px; font-family:'Fredoka One',cursive; font-size:1.1rem; cursor:pointer; background:var(--darker); color:var(--text); transition:transform .12s, box-shadow .12s; }
+.tf-btn:hover:not(:disabled) { transform:translate(-2px,-2px); box-shadow:6px 6px 0 #000; }
+.tf-btn:disabled { cursor:default; }
+.tf-btn.true-btn { border-color:var(--teal); } .tf-btn.false-btn { border-color:var(--pink); }
+.tf-btn.correct-ans { background:#00C9A730; box-shadow:4px 4px 0 var(--teal); }
+.tf-btn.wrong-ans { background:#FF4E9130; box-shadow:4px 4px 0 var(--pink); }
+.hint-btn { background:var(--yellow); border:var(--border); box-shadow:var(--shadow); border-radius:10px; padding:8px 16px; font-family:'Fredoka One',cursive; font-size:.88rem; color:#000; cursor:pointer; transition:transform .1s, box-shadow .1s; }
+.hint-btn:hover { transform:translate(-1px,-1px); box-shadow:5px 5px 0 #000; }
+.hint-box { background:#FFD70015; border:2px solid var(--yellow); border-radius:10px; padding:12px 16px; margin-top:10px; font-size:.87rem; font-weight:700; color:var(--yellow); display:none; }
+.hint-box.show { display:block; }
+.explain-box { margin-top:14px; border-radius:12px; overflow:hidden; border:var(--border); box-shadow:var(--shadow); display:none; }
+.explain-box.show { display:block; }
+.explain-header { padding:10px 16px; font-family:'Fredoka One',cursive; font-size:.95rem; display:flex;align-items:center;gap:8px; }
+.explain-header.correct-h { background:var(--teal); color:#000; }
+.explain-header.wrong-h { background:var(--pink); color:#fff; }
+.explain-body { background:#1a1a2e; padding:14px 16px; }
+.explain-section { margin-bottom:10px; }
+.explain-section:last-child { margin-bottom:0; }
+.explain-label { font-family:'Fredoka One',cursive; font-size:.7rem; letter-spacing:1px; text-transform:uppercase; margin-bottom:5px; display:flex;align-items:center;gap:5px; }
+.explain-label.why { color:var(--blue); } .explain-label.trap { color:var(--orange); } .explain-label.ref { color:var(--purple); } .explain-label.options-label { color:var(--teal); }
+.explain-text { font-size:.85rem; font-weight:600; line-height:1.6; color:#ddd; }
+.opt-explain-item { margin-bottom:6px; padding:7px 11px; border-radius:7px; font-size:.83rem; font-weight:700; }
+.opt-explain-item.oe-correct { background:#00C9A720; border-left:3px solid var(--teal); }
+.opt-explain-item.oe-wrong { background:#FF4E9115; border-left:3px solid var(--pink); }
+.card-bottom { display:flex; gap:10px; align-items:center; margin-top:8px; }
+.answered-badge { font-family:'Fredoka One',cursive; font-size:.75rem; padding:4px 12px; border-radius:20px; border:2px solid #000; }
+.answered-badge.ab-correct { background:var(--teal); color:#000; }
+.answered-badge.ab-wrong { background:var(--pink); color:#fff; }
+#empty-state { text-align:center; padding:60px 20px; display:none; }
+#empty-state .e-title { font-family:'Fredoka One',cursive; font-size:2rem; color:var(--muted); }
+#empty-state .e-sub { color:var(--muted); margin-top:8px; }
+#sticky-stats {
+  position:fixed; bottom:20px; right:20px; z-index:300;
+  background:var(--dark); border:var(--border); box-shadow:var(--shadow-lg); border-radius:16px;
+  padding:10px 16px; display:flex; gap:10px; align-items:center;
+}
+.stat-item { display:flex; flex-direction:column; align-items:center; }
+.stat-num { font-family:'Fredoka One',cursive; font-size:1.3rem; line-height:1; }
+.stat-label { font-size:.6rem; color:var(--muted); font-weight:700; text-transform:uppercase; }
+.stat-num.c { color:var(--teal); } .stat-num.w { color:var(--pink); } .stat-num.t { color:var(--yellow); }
+.stat-div { width:2px; height:30px; background:#333; }
+.reset-all-btn { background:var(--purple); border:var(--border); box-shadow:var(--shadow); border-radius:10px; padding:6px 14px; font-family:'Fredoka One',cursive; font-size:.8rem; color:#fff; cursor:pointer; transition:transform .1s; }
+.reset-all-btn:hover { transform:translate(-1px,-1px); box-shadow:4px 4px 0 #000; }
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+@media(max-width:600px){
+  .controls-bar{flex-direction:column; align-items:stretch;}
+  #topic-select,#diff-select{width:100%;}
+  .q-card{padding:16px 12px;}
+  #sticky-stats{bottom:10px;right:10px;padding:8px 12px;}
+}
+</style>
+</head>
+<body>
+<div id="header">
+  <div class="header-top">
+    <div>
+      <h1>📚 FRM Part 2 · Liquidity Risk · Ch 4 · Investment Function in Financial Services</h1>
+      <div class="subtitle">Investment Instruments, Risk Factors & Maturity Strategies · 100 Questions</div>
+    </div>
+    <div class="scoreboard">
+      <div class="score-pill correct">✅ <span id="sc">0</span></div>
+      <div class="score-pill wrong">❌ <span id="sw">0</span></div>
+      <div class="score-pill total">📊 <span id="sq">0</span>/100</div>
+    </div>
+  </div>
+  <div class="controls-bar">
+    <div class="search-wrap">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="search-input" placeholder="Search questions, topics, keywords..." oninput="applyFilters()">
+    </div>
+    <select id="topic-select" onchange="applyFilters()">
+      <option value="">📂 All Topics</option>
+    </select>
+    <select id="diff-select" onchange="applyFilters()">
+      <option value="">⚡ All Difficulties</option>
+      <option value="easy">🟢 Easy</option>
+      <option value="medium">🟡 Medium</option>
+      <option value="hard">🔴 Hard</option>
+    </select>
+    <button class="clear-btn" onclick="clearFilters()">✕ Clear</button>
+  </div>
+</div>
+<div id="progress-bar-wrap"><div id="progress-bar" style="width:0%"></div></div>
+
+<div id="app">
+  <div id="results-info">Showing all 100 questions</div>
+  <div id="q-list"></div>
+  <div id="empty-state">
+    <div class="e-title">🔍 No matches found</div>
+    <div class="e-sub">Try different search terms or clear filters</div>
+  </div>
+</div>
+
+<div id="sticky-stats">
+  <div class="stat-item"><div class="stat-num c" id="ss-c">0</div><div class="stat-label">Correct</div></div>
+  <div class="stat-div"></div>
+  <div class="stat-item"><div class="stat-num w" id="ss-w">0</div><div class="stat-label">Wrong</div></div>
+  <div class="stat-div"></div>
+  <div class="stat-item"><div class="stat-num t" id="ss-t">0</div><div class="stat-label">Done</div></div>
+  <button class="reset-all-btn" onclick="resetAll()">🔁 Reset</button>
+</div>
+
+<script>
+const QUESTIONS = [
+
+// ── Q1 ──
+{id:1,type:'mcq',difficulty:'easy',topic:'Investment Portfolio Functions',page:'p.56',
+text:'Which of the following best describes the PRIMARY function of investments in a bank\'s asset portfolio?',
+options:['To maximize short-term trading profits','To supplement loan income, provide liquidity, diversify risk, and offer tax shelter','To replace loans when credit risk is too high','To fund interbank lending exclusively'],
+correct:1,
+hint:'Investments serve multiple roles beyond just income generation.',
+explanation:'Investment portfolios in financial firms fulfill multiple vital functions: supplementing loan income, supplying liquidity when cash is low, serving as collateral, reducing tax exposure, offsetting loan portfolio risk, and providing flexibility in asset management.',
+optionExplains:['Wrong. Trading profits are incidental; this is not the primary function.','CORRECT. This is a comprehensive and accurate description of the investment portfolio\'s role.','Wrong. Investments complement loans; they do not replace them as the core business.','Wrong. Interbank lending is a treasury/money market function, not investment portfolio management.'],
+trap:'Students mistake the investment portfolio for a pure trading or income function — it is fundamentally a multi-role balance sheet tool.'},
+
+// ── Q2 ──
+{id:2,type:'mcq',difficulty:'easy',topic:'Investment Portfolio Functions',page:'p.57',
+text:'When loan demand is LOW and cash is EXCESS, what does a bank typically do with its investment portfolio?',
+options:['Sell investments to raise more cash','Buy more investments to deploy excess cash','Pledge investments as collateral for deposits','Hold investments to maturity without any action'],
+correct:1,
+hint:'Investments are the "crossroads account" — they absorb excess cash.',
+explanation:'Per the crossroads account concept: when cash is high, the bank buys more investments to put that excess cash to work earning a return. When cash is low, it sells investments to raise cash.',
+optionExplains:['Wrong. Selling investments raises cash — but the scenario says cash is EXCESS.','CORRECT. Excess cash → add to investments. This is the crossroads account logic.','Wrong. Pledging is related to deposit collateral requirements, not the cash-management decision.','Wrong. "No action" is inefficient — excess cash earns nothing if left idle.'],
+trap:'Confusing the direction: excess cash → BUY investments. Insufficient cash → SELL investments.'},
+
+// ── Q3 ──
+{id:3,type:'truefalse',difficulty:'easy',topic:'Investment Portfolio Functions',page:'p.57',
+text:'TRUE or FALSE: When loan demand is HIGH, a bank typically sells some investments to fund new loans.',
+correct:true,
+hint:'Think about which direction the crossroads account moves when loans are in demand.',
+explanation:'TRUE. When loan demand is strong, the bank sells investments to free up funds for lending. This is the "crossroads account" mechanism: high loan demand → sell investments to accommodate borrowers.',
+wrongPart:'Any answer of FALSE misunderstands the crossroads account logic.',
+trap:'Students sometimes think banks always keep investments regardless of loan demand.'},
+
+// ── Q4 ──
+{id:4,type:'mcq',difficulty:'easy',topic:'Money Market Instruments',page:'p.57',
+text:'U.S. Treasury bills are classified as money market instruments because they:',
+options:['Are issued by the federal government and are therefore risk-free','Mature within one year from date of issue and are highly liquid','Carry coupon interest payments paid semi-annually','Can only be purchased by large institutional investors'],
+correct:1,
+hint:'Money market = short maturity. What is the defining feature of T-bills?',
+explanation:'Money market instruments are defined by maturities within one year and high liquidity. T-bills must by law mature within one year, and they are supported by the U.S. government\'s taxing power with very active secondary markets.',
+optionExplains:['Partially true but not the classification reason — the key criterion is maturity, not issuer.','CORRECT. Maturity ≤ 1 year + high liquidity = money market classification.','Wrong. T-bills are discount instruments — they pay NO coupon; return comes from price appreciation.','Wrong. T-bills are widely accessible, not restricted to institutional buyers.'],
+trap:'T-bills are discount instruments — NO coupon. Confusing T-bills with T-notes or T-bonds is a common error.'},
+
+// ── Q5 ──
+{id:5,type:'mcq',difficulty:'medium',topic:'Money Market Instruments',page:'p.57',
+text:'A T-bill is issued at a discount from par value. If a 90-day T-bill has a par value of $10,000 and is purchased at $9,800, what is the investor\'s return and how is it generated?',
+options:['$200 coupon paid at maturity','$200 price appreciation as the bill approaches maturity','$200 interest income paid quarterly','$200 capital gain taxable at long-term rates'],
+correct:1,
+hint:'Discount instruments: no coupon. Return = price rises toward par as maturity approaches.',
+explanation:'T-bills are pure discount instruments. There is no coupon payment. The investor buys at a discount ($9,800) and the bill appreciates toward par ($10,000) by maturity. The $200 difference is the entire return, representing price appreciation.',
+optionExplains:['Wrong. T-bills have NO coupon payments.','CORRECT. Return = price appreciation from discount to par. No coupon.','Wrong. No quarterly payments on T-bills.','Wrong. The tax treatment of T-bill income is as ordinary income, and it\'s not technically a "capital gain."'],
+trap:'Students frequently assume all bonds pay coupons. T-bills are zero-coupon/discount instruments.'},
+
+// ── Q6 ──
+{id:6,type:'mcq',difficulty:'medium',topic:'Money Market Instruments',page:'p.59',
+text:'Which characteristic makes Federal Agency Securities yields typically HIGHER than Treasury bill yields?',
+options:['They have longer original maturities','They are not formally guaranteed by the federal government, carrying implied rather than explicit backing','They are illiquid and rarely traded','They are subject to additional state and local taxation'],
+correct:1,
+hint:'Risk premium: explicit vs. implied guarantee.',
+explanation:'Agency securities like Fannie Mae and Freddie Mac are NOT formally guaranteed by the U.S. government — only "implied" congressional rescue is assumed. This credit uncertainty commands a small yield premium over pure Treasuries. The implied support still keeps yields close to Treasuries, but the premium exists.',
+optionExplains:['Partially relevant for capital market instruments; not the primary reason for yield difference.','CORRECT. Lack of explicit guarantee → small additional credit/uncertainty premium over Treasuries.','Wrong. Agency securities have good liquidity and active secondary markets.','Wrong. Taxation affects after-tax yield comparison, not the gross yield difference.'],
+trap:'Students assume agency securities ARE government-guaranteed. They carry implied, not explicit, backing.'},
+
+// ── Q7 ──
+{id:7,type:'mcq',difficulty:'easy',topic:'Money Market Instruments',page:'p.59',
+text:'A Certificate of Deposit (CD) issued by a depository institution primarily serves what purpose for the ISSUING bank?',
+options:['To invest excess cash in money markets','To provide an additional source of funds','To reduce the bank\'s credit risk exposure','To collateralize Treasury borrowings'],
+correct:1,
+hint:'CDs are a funding instrument for the issuer.',
+explanation:'CDs are interest-bearing receipts for deposited funds. From the issuing bank\'s perspective, CDs are a LIABILITY — they provide the bank with additional funding. Banks also BUY CDs issued by other institutions as an investment.',
+optionExplains:['Wrong. The issuer of a CD is raising funds, not investing excess cash.','CORRECT. CDs are a liability/funding instrument for the issuing bank.','Wrong. CDs don\'t directly reduce credit risk.','Wrong. Collateralization uses government securities, not CDs.'],
+trap:'Don\'t confuse the perspective: CDs are liabilities for the issuer but assets (investments) for the buyer.'},
+
+// ── Q8 ──
+{id:8,type:'mcq',difficulty:'medium',topic:'Money Market Instruments',page:'p.59',
+text:'Bankers\' Acceptances (BAs) are considered among the safest money market instruments because:',
+options:['They are guaranteed by the Federal Reserve','The issuing financial institution becomes the PRIMARY OBLIGOR on the underlying credit','They are backed by physical commodities as direct collateral','They are issued only by AAA-rated corporations'],
+correct:1,
+hint:'What happens to the bank\'s liability when it stamps an acceptance?',
+explanation:'When a bank accepts (stamps) a draft, it becomes the primary obligor — it is now legally committed to pay the holder at maturity, regardless of what happens to the original customer. This bank guarantee is what makes BAs safe.',
+optionExplains:['Wrong. BAs are not Fed-guaranteed; Fed can discount ELIGIBLE BAs, but that is different.','CORRECT. Bank becomes primary obligor — its credit substitutes for the customer\'s weaker credit.','Wrong. BAs arise from trade transactions but the safety comes from bank credit, not commodity collateral.','Wrong. BAs are issued by various-rated institutions; the bank\'s guarantee provides the safety.'],
+trap:'The safety of BAs comes from the issuing BANK\'s credit standing, not a government guarantee.'},
+
+// ── Q9 ──
+{id:9,type:'mcq',difficulty:'medium',topic:'Money Market Instruments',page:'p.60',
+text:'Commercial paper is best described as:',
+options:['Long-term secured debt issued by governments','Short-term, unsecured IOUs offered by major corporations','Medium-term notes backed by mortgage pools','Asset-backed securities issued by bank subsidiaries'],
+correct:1,
+hint:'Think: who issues it, what maturity, what security?',
+explanation:'Commercial paper = short-term (typically ≤90 days), unsecured promissory notes issued by highly rated corporations. "Unsecured" is key — unlike bonds, there is no collateral behind CP. Safety depends entirely on issuer creditworthiness.',
+optionExplains:['Wrong. Commercial paper is short-term and corporate, not government or long-term.','CORRECT. Short-term, unsecured, corporate — classic commercial paper definition.','Wrong. Medium-term mortgage-backed notes are a different instrument (CMOs, pass-throughs).','Wrong. Commercial paper issuers are typically corporations, not bank subsidiaries per se.'],
+trap:'The UNSECURED nature of CP is critical. Students often assume it has backing like T-bills.'},
+
+// ── Q10 ──
+{id:10,type:'mcq',difficulty:'easy',topic:'Money Market Instruments',page:'p.60',
+text:'Interest earned on SHORT-TERM municipal obligations (tax-anticipation notes, revenue-anticipation notes) is:',
+options:['Fully taxable at federal, state, and local levels','Exempt from U.S. federal income taxation','Taxable at the federal level but state-exempt','Subject to capital gains tax only'],
+correct:1,
+hint:'Municipal obligations have a special tax feature.',
+explanation:'All interest earned on municipal notes (TANs, RANs) is exempt from U.S. federal income taxation. This tax-exempt feature makes them attractive to investors in higher tax brackets, though their attractiveness to banks has diminished due to tax reform.',
+optionExplains:['Wrong. Municipal interest is NOT federally taxable — that\'s the defining advantage.','CORRECT. Federal tax exemption is the key characteristic of municipal securities.','Wrong. The exemption is FEDERAL, not state; state treatment varies.','Wrong. Capital gains on munis are fully taxable — only interest is exempt.'],
+trap:'Students confuse interest income (tax-exempt on munis) with capital gains (fully taxable on munis).'},
+
+// ── Q11 ──
+{id:11,type:'mcq',difficulty:'medium',topic:'Capital Market Instruments',page:'p.60',
+text:'What is the PRIMARY distinction between General Obligation (GO) municipal bonds and Revenue bonds?',
+options:['GO bonds have higher yields than revenue bonds','GO bonds are backed by the full taxing power of the issuer; revenue bonds are payable only from specific revenue sources','Revenue bonds are federally guaranteed; GO bonds are not','GO bonds have shorter maturities than revenue bonds'],
+correct:1,
+hint:'Think about the SOURCE of repayment for each type.',
+explanation:'GO bonds are backed by the full faith and credit of the issuing government — the government can raise taxes to repay them. Revenue bonds are repayable ONLY from revenues generated by the specific project they finance (toll bridge, highway, etc.).',
+optionExplains:['Wrong. Revenue bonds typically carry HIGHER yields due to their more limited repayment source.','CORRECT. Full taxing power vs. specific revenue source — the defining distinction.','Wrong. Neither type carries federal guarantees.','Wrong. Maturity is not the distinguishing feature.'],
+trap:'Revenue bonds are riskier than GO bonds — they have no taxing power backstop.'},
+
+// ── Q12 ──
+{id:12,type:'mcq',difficulty:'medium',topic:'Capital Market Instruments',page:'p.61',
+text:'Corporate notes vs. corporate bonds: the key difference is:',
+options:['Corporate notes carry coupons; bonds do not','Corporate notes mature within five years; corporate bonds carry longer maturities','Corporate notes are secured by real property; bonds are unsecured','Corporate notes are issued by banks; bonds by non-financial corporations'],
+correct:1,
+hint:'It\'s about time, not structure.',
+explanation:'Terminology is purely about maturity. Corporate notes: mature within 5 years. Corporate bonds: longer maturities. Both can be secured or unsecured; the note/bond label simply reflects the maturity horizon.',
+optionExplains:['Wrong. Both instruments can pay coupons.','CORRECT. Notes: ≤5 years; bonds: longer maturities. Pure maturity distinction.','Wrong. Secured status varies for both; the label doesn\'t determine security structure.','Wrong. Both are issued by corporations regardless of sector.'],
+trap:'The note/bond distinction is ONLY about maturity, not about coupon structure, security, or issuer type.'},
+
+// ── Q13 ──
+{id:13,type:'mcq',difficulty:'hard',topic:'Securitized Assets',page:'p.61',
+text:'In a mortgage pass-through security, principal and interest payments from the underlying mortgage pool are:',
+options:['Held in a reserve fund until maturity, then paid in a lump sum','Passed through directly to investors holding the securities as cash flows are received','Reinvested automatically in new mortgage pools','Paid only after all operating expenses of the trust are covered'],
+correct:1,
+hint:'What does "pass-through" literally mean?',
+explanation:'Pass-through securities work as stated in the name: as homeowners make mortgage payments (principal + interest) on the pooled loans, these cash flows are "passed through" to the investors holding the securities. There is no pooling at maturity — cash flows are transmitted as received.',
+optionExplains:['Wrong. Pass-throughs transmit cash flows as received, not at maturity.','CORRECT. Cash flows (P&I) from the mortgage pool are directly passed to investors as received.','Wrong. Pass-throughs distribute to investors, not reinvest automatically.','Wrong. Pass-throughs are not structured as expense-covering instruments.'],
+trap:'Pass-throughs transmit cash CONTINUOUSLY as borrowers make payments — not at maturity in a lump sum.'},
+
+// ── Q14 ──
+{id:14,type:'mcq',difficulty:'hard',topic:'Securitized Assets',page:'p.62',
+text:'What key risk do Collateralized Mortgage Obligations (CMOs) attempt to REDUCE compared to simple pass-through securities?',
+options:['Credit risk from mortgage defaults','Cash-flow uncertainty (prepayment risk) by partitioning into tranches with different risk exposures','Interest rate risk through floating-rate coupons','Liquidity risk by creating a central exchange'],
+correct:1,
+hint:'CMOs partition cash flows. Why would you partition them?',
+explanation:'CMOs divide the mortgage pool\'s cash flows into multiple tranches (classes), each with different promised rates and risk exposure. The purpose is to reduce CASH-FLOW UNCERTAINTY — particularly prepayment risk — by channeling prepayments to specific tranches first, providing more predictable cash flows to other tranches.',
+optionExplains:['Wrong. CMOs don\'t eliminate mortgage default risk — that depends on underlying loan quality and guarantees.','CORRECT. CMO tranching reduces cash-flow uncertainty / prepayment risk distribution.','Wrong. CMOs don\'t automatically create floating rates.','Wrong. Liquidity depends on the tranche market, not the CMO structure itself.'],
+trap:'CMOs reduce PREPAYMENT UNCERTAINTY by tranching — not credit risk, which depends on underlying mortgages.'},
+
+// ── Q15 ──
+{id:15,type:'mcq',difficulty:'hard',topic:'Securitized Assets',page:'p.62',
+text:'A Mortgage-Backed Bond (MBB) differs from a pass-through security primarily because:',
+options:['MBBs pay higher coupon rates','MBBs keep mortgage loans on the issuer\'s balance sheet; pass-throughs remove them','MBBs are guaranteed by GNMA; pass-throughs are not','MBBs are issued only for commercial mortgages'],
+correct:1,
+hint:'Balance sheet treatment is the key difference.',
+explanation:'Pass-throughs remove the mortgage loans from the issuer\'s balance sheet into a legal trust. MBBs keep the mortgage loans ON the issuer\'s balance sheet and use them as pledged collateral. The loans don\'t leave — they are segregated and dedicated to support the bonds.',
+optionExplains:['Wrong. Coupon rates are not the defining structural difference.','CORRECT. Pass-throughs: off-balance-sheet. MBBs: on-balance-sheet (pledged collateral).','Wrong. GNMA may guarantee certain pass-throughs, but that is not the structural distinction.','Wrong. MBBs can be backed by residential mortgages too.'],
+trap:'The on-vs-off balance sheet distinction is critical and frequently tested.'},
+
+// ── Q16 ──
+{id:16,type:'mcq',difficulty:'medium',topic:'Securitized Assets',page:'p.62',
+text:'Stripped securities are created by:',
+options:['Bundling multiple mortgage pools into a single trust','Separating the principal and interest payments from an underlying debt security and selling claims to each separately','Removing foreign currency exposure from international bonds','Stripping the credit enhancement from agency-backed securities'],
+correct:1,
+hint:'What does "stripping" literally do to a bond\'s cash flows?',
+explanation:'Security dealers strip a bond by separating its two cash flow streams — principal (PO = Principal Only) and interest (IO = Interest Only) — and selling each stream separately. Each strip is essentially a zero-coupon bond.',
+optionExplains:['Wrong. That describes securitization, not stripping.','CORRECT. Strip = separate P and I, sell as distinct instruments (PO and IO).','Wrong. Currency stripping is a different concept.','Wrong. Credit enhancement is not stripped in this context.'],
+trap:'PO = principal only. IO = interest only. Both are zero-coupon since they make no periodic combined payments.'},
+
+// ── Q17 ──
+{id:17,type:'truefalse',difficulty:'medium',topic:'Securitized Assets',page:'p.62',
+text:'TRUE or FALSE: Both PO (Principal Only) and IO (Interest Only) stripped securities carry zero reinvestment risk because they pay no periodic interest.',
+correct:true,
+hint:'Zero-coupon bonds have a specific reinvestment risk property.',
+explanation:'TRUE. Both PO and IO strips are essentially zero-coupon bonds — they make no periodic coupon payments. Since there are no intermediate cash flows to reinvest, reinvestment risk (uncertainty about the rate at which intermediate coupons can be reinvested) is zero.',
+wrongPart:'Any FALSE answer misunderstands zero-coupon bond reinvestment risk mechanics.',
+trap:'Zero-coupon bonds eliminate reinvestment risk precisely because there are no intermediate payments.'},
+
+// ── Q18 ──
+{id:18,type:'mcq',difficulty:'medium',topic:'Expected Rate of Return',page:'p.65',
+text:'The Yield to Maturity (YTM) formula finds the rate that:',
+options:['Maximizes the present value of all future cash flows','Equates the current market price of a security with the present value of its expected cash flows','Minimizes the duration of a security','Equals the coupon rate adjusted for tax effects'],
+correct:1,
+hint:'YTM is a discount rate that equates price to PV of cash flows.',
+explanation:'YTM is the internal rate of return on a bond — the single discount rate that makes the present value of all future cash flows (coupon payments + principal) equal to the current market price. It represents the annualized return if held to maturity.',
+optionExplains:['Wrong. YTM equates, not maximizes, present values.','CORRECT. YTM = IRR of bond: PV(cash flows) = market price.','Wrong. Duration is a separate concept from YTM.','Wrong. YTM is a pre-tax concept; tax adjustment comes separately.'],
+trap:'YTM ≠ coupon rate. A bond trading at a discount has YTM > coupon rate; at premium, YTM < coupon.'},
+
+// ── Q19 ──
+{id:19,type:'mcq',difficulty:'hard',topic:'Expected Rate of Return',page:'p.65',
+text:'A $1,000 par T-note with an 8% annual coupon, priced at $900, maturing in 5 years. Its YTM is approximately 10.74%. If instead the note is sold after 2 years for $950, which yield measure applies?',
+options:['Yield to Call (YTC)','Holding Period Yield (HPY)','Tax-Equivalent Yield (TEY)','Current Yield'],
+correct:1,
+hint:'The bond is SOLD before maturity. What yield covers the actual holding period?',
+explanation:'When a security is sold BEFORE maturity, the relevant measure is the Holding Period Yield (HPY) — the discount rate that equates the purchase price with the stream of income received during the actual holding period plus the selling price.',
+optionExplains:['Wrong. YTC applies when a bond is called, not voluntarily sold.','CORRECT. HPY = return for the actual holding period until sale, not to maturity.','Wrong. TEY adjusts for tax-exempt comparisons; not the issue here.','Wrong. Current yield = coupon/price; a simplified measure ignoring capital gain/loss.'],
+trap:'HPY ≠ YTM. YTM assumes hold to maturity. Any early sale requires HPY.'},
+
+// ── Q20 ──
+{id:20,type:'mcq',difficulty:'medium',topic:'Tax Exposure',page:'p.65',
+text:'A bank in the 35% federal income tax bracket holds a corporate bond with a before-tax yield of 7%. What is its after-tax gross yield?',
+options:['7.00%','4.55%','2.45%','10.77%'],
+correct:1,
+hint:'After-tax yield = before-tax yield × (1 – tax rate)',
+explanation:'Formula: After-tax yield = Before-tax yield × (1 – marginal tax rate). = 7% × (1 – 0.35) = 7% × 0.65 = 4.55%.',
+optionExplains:['Wrong. 7% is the pre-tax yield; taxes reduce this.','CORRECT. 7% × 0.65 = 4.55%. Standard after-tax gross yield calculation.','Wrong. 2.45% = 7% × 0.35 — this is the TAX paid, not the after-tax yield.','Wrong. 10.77% is not a valid result from any standard formula here.'],
+trap:'Students compute the tax amount (2.45%) and call it the after-tax yield. After-tax yield = what REMAINS after tax.'},
+
+// ── Q21 ──
+{id:21,type:'mcq',difficulty:'medium',topic:'Tax Exposure',page:'p.66',
+text:'The Tax-Equivalent Yield (TEY) of a municipal bond tells an investor:',
+options:['The yield on the muni after adjusting for state and local taxes','The before-tax yield a taxable investment must offer to match the muni\'s after-tax return','The yield earned if the muni is held to maturity without taxation','The minimum yield required to justify holding the muni under Basel rules'],
+correct:1,
+hint:'TEY converts a tax-exempt yield into a comparable taxable yield.',
+explanation:'TEY = (Tax-exempt yield) / (1 – Tax rate). It answers: "What taxable bond yield would give me the same after-tax return as this tax-exempt muni?" This enables apples-to-apples comparison between taxable and tax-exempt investments.',
+optionExplains:['Wrong. TEY converts to taxable equivalent, not adjusts for state taxes.','CORRECT. TEY = after-tax exempt return / (1 – tax rate). Comparison tool.','Wrong. TEY is not about holding to maturity; it\'s a rate comparison concept.','Wrong. TEY has no Basel regulatory connection.'],
+trap:'TEY is always HIGHER than the tax-exempt yield — it grosses up the exempt yield for comparison.'},
+
+// ── Q22 ──
+{id:22,type:'mcq',difficulty:'hard',topic:'Tax Exposure',page:'p.66',
+text:'A bank in the 35% tax bracket considers a AAA municipal bond yielding 5.50% after taxes. What is the TEY?',
+options:['5.50%','8.46%','3.58%','7.86%'],
+correct:1,
+hint:'TEY = tax-exempt yield / (1 – tax rate)',
+explanation:'TEY = 5.50% / (1 – 0.35) = 5.50% / 0.65 = 8.46%. Any taxable investment must yield at least 8.46% before taxes to match the muni\'s 5.50% after-tax return for this bank.',
+optionExplains:['Wrong. 5.50% is the muni\'s own tax-exempt rate; TEY must be higher.','CORRECT. 5.50 / 0.65 = 8.46%. Standard TEY formula.','Wrong. 3.58% = 5.50% × (1 – 0.35) — this is an after-tax adjustment, not TEY.','Wrong. 7.86% is not the correct formula result.'],
+trap:'TEY grosses UP the tax-exempt rate. It is always higher than the stated municipal yield.'},
+
+// ── Q23 ──
+{id:23,type:'mcq',difficulty:'hard',topic:'Tax Exposure',page:'p.67',
+text:'A bank buys a bank-qualified municipal bond with a 7% nominal return. The bank borrows at 6.5% to fund the purchase and is in the 35% tax bracket. What is the net after-tax return?',
+options:['0.50%','2.32%','3.50%','1.82%'],
+correct:1,
+hint:'Net after-tax return = (nominal return – borrowing cost) + tax advantage on borrowing cost',
+explanation:'Net after-tax return = (7.0 – 6.5) + (0.35 × 0.80 × 6.5) = 0.50% + 1.82% = 2.32%. Bank-qualified bonds allow 80% deduction on interest expense, creating the 1.82% tax advantage.',
+optionExplains:['Wrong. 0.50% is only the gross spread before the tax advantage.','CORRECT. 0.50% + (0.35 × 0.80 × 6.5%) = 0.50% + 1.82% = 2.32%.','Wrong. 3.50% does not result from the correct formula.','Wrong. 1.82% is only the tax advantage component, not the total return.'],
+trap:'Bank-qualified bonds allow 80% deduction of interest expense. Non-qualified bonds get zero deduction.'},
+
+// ── Q24 ──
+{id:24,type:'truefalse',difficulty:'medium',topic:'Tax Exposure',page:'p.67',
+text:'TRUE or FALSE: In a tax swap, a bank sells lower-yielding securities at a LOSS to reduce current taxable income, while buying higher-yielding securities for the future.',
+correct:true,
+hint:'Tax swapping intentionally recognizes losses to offset income.',
+explanation:'TRUE. A tax swap is a deliberate strategy: sell a lower-yielding security at a loss (creates a tax deduction against current taxable income), then reinvest in higher-yielding securities (boosts future returns). The after-tax loss is often smaller than the future income gain.',
+wrongPart:'Any FALSE answer misses the intentional loss-harvesting nature of tax swaps.',
+trap:'The "loss" is not a failure — it is a strategic tax tool. The after-tax cost of the loss is only (1 – tax rate) × loss.'},
+
+// ── Q25 ──
+{id:25,type:'mcq',difficulty:'medium',topic:'Interest Rate Risk',page:'p.69',
+text:'When market interest rates RISE, the market value of previously issued bonds:',
+options:['Rises proportionally to the rate increase','Falls, with the longest-term issues suffering the greatest losses','Remains unchanged due to fixed coupon rates','Falls equally across all maturities'],
+correct:1,
+hint:'Duration concept: longer = more price sensitive.',
+explanation:'Rising interest rates cause bond prices to fall (inverse relationship). Longer-maturity bonds have higher duration and therefore suffer GREATER price declines than shorter-maturity bonds for the same interest rate change.',
+optionExplains:['Wrong. Bond prices FALL when rates rise.','CORRECT. Prices fall, and duration dictates that long-term issues lose the most.','Wrong. Market prices change continuously even with fixed coupons.','Wrong. Losses are NOT equal — they are proportional to duration/maturity.'],
+trap:'Interest rate risk = price risk. Longer duration = greater price sensitivity to rate changes.'},
+
+// ── Q26 ──
+{id:26,type:'mcq',difficulty:'medium',topic:'Credit/Default Risk',page:'p.69',
+text:'U.S. bank regulations generally prohibit purchasing securities rated below which threshold?',
+options:['AAA by Moody\'s or AAA by S&P','Baa by Moody\'s or BBB by Standard & Poor\'s','Ba by Moody\'s or BB by S&P','B by Moody\'s or B by S&P'],
+correct:1,
+hint:'Investment grade vs. speculative grade — where is the line?',
+explanation:'Investment-grade minimum: Baa (Moody\'s) or BBB (S&P) or BBB (Fitch). Below this is speculative/junk territory. Bank regulators prohibit acquiring securities below this threshold to protect depositors.',
+optionExplains:['Wrong. AAA is the highest quality — the minimum threshold is much lower.','CORRECT. Baa/BBB is the investment grade floor. Below = not permitted for banks.','Wrong. Ba/BB is below investment grade — speculative.','Wrong. B is well into speculative/junk territory — clearly prohibited.'],
+trap:'Baa/BBB is the MINIMUM — not the preferred — grade. Banks CAN hold BBB; they CANNOT hold BB or below.'},
+
+// ── Q27 ──
+{id:27,type:'mcq',difficulty:'medium',topic:'Credit/Default Risk',page:'p.70',
+text:'In Moody\'s rating system, a "1" modifier on a rating (e.g., Aa1 vs Aa2 vs Aa3) means:',
+options:['The bond is in its first year of issuance','The security ranks at the UPPER END of its letter category','The bond carries one notch of subordination','The security is held to maturity only'],
+correct:1,
+hint:'Numerical modifiers refine within a letter grade.',
+explanation:'Moody\'s adds 1, 2, 3 to letter grades to refine within the category. 1 = upper end of the grade, 2 = middle, 3 = lower end. So Aa1 > Aa2 > Aa3 in quality within the Aa category.',
+optionExplains:['Wrong. The modifier has nothing to do with issuance date.','CORRECT. 1 = top of category, 2 = middle, 3 = bottom of category.','Wrong. Subordination is a separate structural concept.','Wrong. Hold-to-maturity is an accounting decision unrelated to rating modifiers.'],
+trap:'Higher number = LOWER quality within the category. Aa1 is better than Aa3.'},
+
+// ── Q28 ──
+{id:28,type:'mcq',difficulty:'medium',topic:'Business Risk',page:'p.70',
+text:'To manage BUSINESS RISK in its investment portfolio, a bank in Dallas might purchase:',
+options:['Additional Dallas municipal bonds to support local communities','Municipal bonds from Los Angeles or New York to diversify geographically','Only U.S. Treasury securities to eliminate all credit risk','Commercial paper from local Dallas corporations'],
+correct:1,
+hint:'Business risk = local economic downturn risk. What reduces geographic concentration?',
+explanation:'Business risk arises from a local economic downturn that simultaneously harms the loan portfolio AND local securities. To offset this, banks purchase securities from DIFFERENT geographic regions — so a Dallas bank buys New York or LA bonds to reduce correlation between loan losses and investment losses.',
+optionExplains:['Wrong. Buying more local bonds INCREASES concentration and business risk.','CORRECT. Geographic diversification offsets local business cycle exposure.','Wrong. T-securities eliminate credit risk but not geographic income concentration.','Wrong. Local corporate paper increases, not decreases, local economic exposure.'],
+trap:'Concentrating both loans AND investments in the same region doubles the damage in a local downturn.'},
+
+// ── Q29 ──
+{id:29,type:'mcq',difficulty:'medium',topic:'Liquidity Risk',page:'p.71',
+text:'Which investment securities have the MOST LIQUID resale markets among bank-held investments?',
+options:['Mortgage-backed securities','Municipal bonds','U.S. Treasury securities','Corporate bonds'],
+correct:2,
+hint:'Think about what government backing + huge market depth does for liquidity.',
+explanation:'Treasury securities have the deepest and most active secondary markets of any investment type. Their liquidity ranking: Treasuries > Agency securities > Municipals > Mortgage-backed securities. High liquidity is a core reason banks hold substantial Treasury positions.',
+optionExplains:['Wrong. MBS markets can be illiquid, especially in stress (as shown in 2007-09).','Wrong. Municipal markets are often thin — relatively few issues trade on any given day.','CORRECT. Treasuries have the deepest, most active resale markets globally.','Wrong. Corporate bonds have more limited resale markets than Treasuries.'],
+trap:'Liquidity comes at a cost — the most liquid securities (Treasuries) offer lower yields.'},
+
+// ── Q30 ──
+{id:30,type:'mcq',difficulty:'medium',topic:'Call Risk',page:'p.71',
+text:'Call risk in bond investing refers to the risk that:',
+options:['The bond issuer defaults before paying interest','The issuer repays the bond before maturity, forcing reinvestment at lower rates','Credit rating agencies downgrade the bond, triggering margin calls','The bond\'s price falls below the call price in secondary markets'],
+correct:1,
+hint:'When do calls typically happen? When interest rates FALL.',
+explanation:'Call risk: when rates decline, issuers CALL their bonds (retire them early) to refinance at lower costs. The investor receives principal back but must reinvest it at the now-lower prevailing rates — earning less than expected. This is the "call risk" earnings loss.',
+optionExplains:['Wrong. Default before maturity is credit risk, not call risk.','CORRECT. Early repayment forces reinvestment at lower rates — that\'s call risk.','Wrong. Rating downgrades are credit/event risk.','Wrong. Price below call price is not the definition of call risk.'],
+trap:'Calls happen when it BENEFITS THE ISSUER (when rates fall). The INVESTOR bears the reinvestment pain.'},
+
+// ── Q31 ──
+{id:31,type:'mcq',difficulty:'hard',topic:'Prepayment Risk',page:'p.71',
+text:'Prepayment risk in asset-backed securities accelerates when:',
+options:['Market interest rates RISE above the rates on loans in the pool','Market interest rates FALL below the rates on loans in the pool','The unemployment rate decreases significantly','The credit rating of the underlying borrowers improves'],
+correct:1,
+hint:'Borrowers refinance when they can save money. When do they save?',
+explanation:'When market rates fall below the rates on existing loans, borrowers benefit from refinancing. They pay off old high-rate loans and take new low-rate loans. This prepayment accelerates cash return to ABS investors but at potentially lower reinvestment rates.',
+optionExplains:['Wrong. Rising rates REDUCE prepayments (refinancing is not beneficial).','CORRECT. Falling rates → refinancing → accelerated prepayment → prepayment risk materializes.','Wrong. Unemployment changes affect default risk more directly than prepayment speed.','Wrong. Better credit quality might marginally help, but rate differential drives prepayment.'],
+trap:'Prepayment is GOOD for borrowers but BAD for investors when they must reinvest at lower rates.'},
+
+// ── Q32 ──
+{id:32,type:'truefalse',difficulty:'medium',topic:'Prepayment Risk',page:'p.72',
+text:'TRUE or FALSE: Accelerating prepayments are always harmful to investors in asset-backed securities, because they reduce future interest income.',
+correct:false,
+hint:'Think about reinvestment opportunities when cash comes back faster.',
+explanation:'FALSE. Accelerating prepayments are NOT always harmful. If the institution has other profitable uses for the returned cash, receiving funds sooner is BENEFICIAL. Also, lower interest rates that trigger prepayments increase the PV of projected cash flows — bond prices may RISE. The net effect depends on reinvestment opportunities vs. lost future income.',
+wrongPart:'The statement ignores the potential benefits of faster cash recovery and the PV effect of lower rates.',
+trap:'The PSA model and prepayment analysis always require comparing costs (lost interest, lower reinvestment) vs. benefits (faster cash, potentially higher PV).'},
+
+// ── Q33 ──
+{id:33,type:'mcq',difficulty:'easy',topic:'Prepayment Risk',page:'p.72',
+text:'The PSA (Public Securities Association) prepayment model assumes insured home mortgages prepay at what rate in the FIRST MONTH?',
+options:['6% annually','0.2% annually','2% annually','0.5% annually'],
+correct:1,
+hint:'PSA starts very slow and builds over 30 months.',
+explanation:'The PSA model assumes: 0.2% annual prepayment rate in month 1, growing by 0.2% per month for 30 months, then leveling off at 6% annually for the remainder of the pool\'s life. Month 1 = 0.2% annual prepayment rate.',
+optionExplains:['Wrong. 6% is the STEADY-STATE rate after 30 months, not the starting rate.','CORRECT. PSA starts at 0.2% in month 1 and ramps up 0.2% per month for 30 months.','Wrong. 2% is somewhere in the middle of the ramp-up, not the starting point.','Wrong. 0.5% is not a PSA parameter.'],
+trap:'PSA starts SLOW (0.2%) and ramps up — it does not start at the steady-state 6%.'},
+
+// ── Q34 ──
+{id:34,type:'mcq',difficulty:'medium',topic:'Inflation Risk',page:'p.72',
+text:'TIPS (Treasury Inflation-Protected Securities) protect investors from inflation by:',
+options:['Paying floating coupon rates that track short-term interest rates','Adjusting both the coupon rate and principal (face) value annually to match changes in the CPI','Eliminating reinvestment risk through zero-coupon structure','Providing guaranteed real returns above 10% during high inflation periods'],
+correct:1,
+hint:'TIPS adjust both the coupon AND principal.',
+explanation:'TIPS adjust both the coupon rate AND the principal (face) value annually in line with changes in the Consumer Price Index. As inflation rises, principal grows and coupon payments (calculated on inflated principal) increase too. The yield spread between TIPS and nominal Treasuries of the same maturity reflects expected inflation.',
+optionExplains:['Wrong. TIPS do not pay floating rates — they adjust principal.','CORRECT. Both coupon and principal adjust with CPI annually.','Wrong. TIPS do pay periodic coupons, so they carry reinvestment risk.','Wrong. TIPS provide inflation protection, not guaranteed double-digit returns.'],
+trap:'TIPS adjust PRINCIPAL (and therefore coupon dollar amounts) — not just the coupon rate itself.'},
+
+// ── Q35 ──
+{id:35,type:'mcq',difficulty:'medium',topic:'Pledging Requirements',page:'p.72',
+text:'Depository institutions accepting deposits from FEDERAL, STATE, AND LOCAL governments must:',
+options:['Hold 100% reserve requirements against those deposits','Post acceptable collateral (typically Treasury and agency securities) to safeguard the public funds','Purchase FDIC insurance for each government deposit account','Maintain a separate legal entity for government deposit management'],
+correct:1,
+hint:'Government deposits require a safety backstop beyond FDIC insurance.',
+explanation:'Banks accepting government deposits must PLEDGE collateral — typically Treasury and federal agency securities — to secure the portion of deposits above the FDIC insurance limit ($250,000 threshold). This collateral protects the government entity if the bank fails.',
+optionExplains:['Wrong. 100% reserves are not required for government deposits.','CORRECT. Pledging collateral (Treasuries, agencies) is the regulatory requirement.','Wrong. FDIC only covers the first $250,000; pledging handles the rest.','Wrong. A separate legal entity is not required.'],
+trap:'Pledging applies to the EXCESS over FDIC insurance limits — it is not a complete replacement of deposit insurance.'},
+
+// ── Q36 ──
+{id:36,type:'mcq',difficulty:'easy',topic:'Investment Maturity Strategies',page:'p.73',
+text:'The Ladder (Spaced-Maturity) strategy invests the portfolio:',
+options:['Entirely in short-term securities for maximum liquidity','In equal proportions across multiple maturity intervals up to a maximum maturity','Heavily in long-term bonds to maximize yield','In a ratio of 70% short-term and 30% long-term securities'],
+correct:1,
+hint:'The name "ladder" suggests evenly spaced rungs.',
+explanation:'The ladder strategy: choose a maximum maturity (e.g., 5 years), then invest equal proportions (e.g., 20% each) in 1-year, 2-year, 3-year, 4-year, and 5-year securities. This reduces income fluctuations and requires little expertise, with some securities always rolling over.',
+optionExplains:['Wrong. That describes the front-end load strategy.','CORRECT. Equal proportions across all maturity intervals — the "ladder" structure.','Wrong. That describes the back-end load strategy.','Wrong. That is closer to a barbell, not a ladder.'],
+trap:'Ladder = EQUAL proportions across ALL maturity buckets, not concentrated at either end.'},
+
+// ── Q37 ──
+{id:37,type:'mcq',difficulty:'easy',topic:'Investment Maturity Strategies',page:'p.74',
+text:'The Front-End Load Maturity strategy places all investments in:',
+options:['Long-term bonds (5-10 years) for maximum income','Short-term securities within a brief maturity interval for maximum liquidity','An equal spread across all available maturities','50% short-term and 50% long-term securities'],
+correct:1,
+hint:'"Front" = near term = short maturities.',
+explanation:'Front-end load: 100% of investable funds in short-term securities (e.g., all in 3-year and under). This emphasizes the investment portfolio as a LIQUIDITY source rather than an income source. Good for avoiding capital losses when rates rise.',
+optionExplains:['Wrong. Long-term concentration is the back-end load strategy.','CORRECT. All short-term — maximizes liquidity, avoids capital loss if rates rise.','Wrong. Equal spread is the ladder strategy.','Wrong. 50/50 split is the barbell strategy.'],
+trap:'Front-end load = ALL short-term. There is no income focus here — it\'s purely a liquidity strategy.'},
+
+// ── Q38 ──
+{id:38,type:'mcq',difficulty:'easy',topic:'Investment Maturity Strategies',page:'p.75',
+text:'The Back-End Load Maturity strategy invests primarily in:',
+options:['Securities maturing within 1 year','Securities in the 5 to 10-year maturity range to maximize income','Equal proportions from 1 to 10 years','Only Treasury bills and money market instruments'],
+correct:1,
+hint:'"Back" = far end = long maturities = income focus.',
+explanation:'Back-end load: all investment in longer maturities (5-10 years) to maximize income. The institution relies heavily on money market borrowing to meet liquidity needs. Higher potential returns but more interest rate and liquidity risk.',
+optionExplains:['Wrong. Short-term concentration is front-end load.','CORRECT. Back-end load = 5-10 year maturities = income maximization strategy.','Wrong. Equal proportions is the ladder.','Wrong. T-bills / money market = front-end or cash management, not back-end.'],
+trap:'Back-end load requires BORROWING in the money market for liquidity — it does not self-fund liquidity.'},
+
+// ── Q39 ──
+{id:39,type:'mcq',difficulty:'medium',topic:'Investment Maturity Strategies',page:'p.75',
+text:'The Barbell strategy splits investments between:',
+options:['Government securities and corporate bonds','Short-term and long-term maturities, with minimal intermediate holdings','Domestic and foreign securities in equal proportions','Fixed-rate and floating-rate securities'],
+correct:1,
+hint:'Like a barbell — heavy at both ends, light in the middle.',
+explanation:'Barbell strategy: concentrate investments at the SHORT end (for liquidity) and the LONG end (for income), with minimal holdings in intermediate maturities. The visual metaphor is a barbell — weight at both ends.',
+optionExplains:['Wrong. The barbell is a maturity structure strategy, not an asset class split.','CORRECT. Short + Long, minimal intermediate = barbell. Liquidity from short end, income from long end.','Wrong. Domestic vs. foreign is a geographic diversification concept.','Wrong. Fixed vs. floating is an interest rate risk management tool.'],
+trap:'The barbell is intentionally EMPTY in the middle — this is by design, not an oversight.'},
+
+// ── Q40 ──
+{id:40,type:'mcq',difficulty:'hard',topic:'Investment Maturity Strategies',page:'p.75',
+text:'The Rate Expectations (Total Performance) approach involves:',
+options:['Maintaining a stable maturity distribution regardless of interest rate forecasts','Continuously shifting maturities based on interest rate forecasts — toward long-term when rates are expected to fall, short-term when rising','Purchasing only the highest-rated securities regardless of maturity','Matching asset duration to liability duration at all times'],
+correct:1,
+hint:'This is the MOST aggressive strategy — it bets on rate direction.',
+explanation:'Rate expectations approach: shift to LONG maturities when rates are expected to FALL (to capture capital gains from price appreciation) and to SHORT maturities when rates are expected to RISE (to avoid capital losses). Highest potential gains AND highest potential losses of all strategies.',
+optionExplains:['Wrong. Stable maturity = ladder strategy; rate expectations requires ACTIVE shifts.','CORRECT. Shift to long when rates expected to fall; short when expected to rise.','Wrong. Credit quality is independent of maturity shifting strategy.','Wrong. Asset-liability matching is immunization/duration management, not rate expectations.'],
+trap:'Rate expectations provides the MOST potential income but also the MOST potential losses — and requires the deepest market knowledge.'},
+
+// ── Q41 ──
+{id:41,type:'truefalse',difficulty:'medium',topic:'Investment Maturity Strategies',page:'p.75',
+text:'TRUE or FALSE: The Rate Expectations strategy is typically used by the SMALLEST financial institutions due to its simplicity.',
+correct:false,
+hint:'Which institutions have the analytical depth for aggressive forecasting?',
+explanation:'FALSE. The Rate Expectations strategy is typically used by the LARGEST financial institutions. It requires in-depth knowledge of market forces, sophisticated forecasting, and willingness to accept high risk. Smaller institutions typically prefer the ladder strategy for its simplicity.',
+wrongPart:'Size matters: large banks have the analytical resources; small banks prefer passive, simple strategies.',
+trap:'Larger banks = more sophisticated strategies. Smaller banks = simpler, more passive approaches like the ladder.'},
+
+// ── Q42 ──
+{id:42,type:'mcq',difficulty:'medium',topic:'Yield Curve',page:'p.76',
+text:'A positively sloped yield curve (upward sloping) implies that the market expects:',
+options:['Future short-term interest rates to be LOWER than current rates','Future short-term interest rates to be HIGHER than current rates','No change in future interest rates','Inverted term structure in the long run'],
+correct:1,
+hint:'Positive slope = investors demand premium for long maturities = they expect rates to rise.',
+explanation:'A positively sloped (upward) yield curve reflects the market\'s average expectation that short-term rates will be HIGHER in the future. Investors demand a term premium for locking up funds longer, reflecting expected rate increases ahead.',
+optionExplains:['Wrong. Lower expected future rates would produce a downward-sloping or flat curve.','CORRECT. Positive slope → market expects future short-term rates to rise.','Wrong. No-change expectation would produce a flat yield curve.','Wrong. Inverted term structure IS a downward-sloping yield curve.'],
+trap:'Upward slope = rates expected to RISE. Downward slope = rates expected to FALL.'},
+
+// ── Q43 ──
+{id:43,type:'mcq',difficulty:'hard',topic:'Yield Curve',page:'p.76',
+text:'If a security\'s yield lies ABOVE the prevailing yield curve for its maturity, this represents:',
+options:['A sell signal — the security is overpriced','A buy signal — the security\'s yield is temporarily too high (price too low)','A hold signal — the security is fairly priced','A signal of imminent credit downgrade'],
+correct:1,
+hint:'Yield above curve = price below fair value = opportunity.',
+explanation:'If a security\'s yield exceeds what the prevailing yield curve says it should yield for that maturity, its price is too LOW (yield and price are inversely related). This is a BUY opportunity — the yield is temporarily above equilibrium and the price will likely rise toward fair value.',
+optionExplains:['Wrong. Above-curve yield = below-curve price = CHEAP, not overpriced.','CORRECT. Yield > curve = price < fair value = buy signal (temporarily underpriced).','Wrong. The deviation from the curve signals mis-pricing, not fair pricing.','Wrong. Credit downgrades affect all securities in a category, not individual yield-curve deviations.'],
+trap:'Yield and price move INVERSELY. Higher-than-curve yield = lower-than-curve price = buy opportunity.'},
+
+// ── Q44 ──
+{id:44,type:'mcq',difficulty:'hard',topic:'Yield Curve',page:'p.77',
+text:'The carry trade in the context of yield curve management involves:',
+options:['Trading corporate bonds against Treasury securities for credit spread income','Borrowing at the short end of the yield curve and investing in higher-yielding instruments farther out the curve','Purchasing long-duration bonds and hedging with interest rate swaps','Selling short-term T-bills and buying long-term bonds simultaneously'],
+correct:1,
+hint:'Carry = borrow cheap short, lend expensive long.',
+explanation:'Carry trade: borrow short-term at low rates (using liquid securities as collateral) and invest the proceeds in longer-maturity, higher-yielding assets. Carry income = long yield – short borrowing cost. Greatest when yield curve is steeply upward sloping.',
+optionExplains:['Wrong. That is a credit spread trade, not carry trade as defined here.','CORRECT. Borrow short (cheap), invest long (higher yield). Net = carry income.','Wrong. Duration hedging with swaps is interest rate risk management, not the carry trade.','Wrong. The carry trade involves actual borrowing and investing, not simultaneous buying and selling of different instruments.'],
+trap:'Carry income is the SPREAD between long yield and short borrowing cost — greatest with steep positive yield curves.'},
+
+// ── Q45 ──
+{id:45,type:'mcq',difficulty:'hard',topic:'Yield Curve',page:'p.77',
+text:'"Riding the yield curve" generates gains when:',
+options:['Interest rates rise sharply, pushing bond prices up','A bond approaches maturity with a rising price (falling yield) and is sold at a capital gain, with proceeds reinvested in longer maturities','The yield curve inverts and short rates exceed long rates','The Federal Reserve announces rate cuts unexpectedly'],
+correct:1,
+hint:'Riding the curve = buy, wait for price to rise as maturity shortens, sell, reinvest.',
+explanation:'Riding the yield curve: buy a longer-term security at a higher yield. As time passes, its remaining maturity shortens. On an upward-sloping curve, shorter-maturity instruments have lower yields and therefore HIGHER prices. When the price has risen sufficiently, sell at a capital gain and reinvest in longer-dated securities. Works only if the yield curve maintains its positive slope.',
+optionExplains:['Wrong. Rising rates LOWER bond prices — riding the curve requires stable or steepening curve.','CORRECT. Time passes → maturity shortens → price rises (on positive curve) → sell at gain → reinvest longer.','Wrong. An inverted curve makes riding impossible or harmful.','Wrong. Unexpected rate cuts create a windfall but are not "riding the yield curve."'],
+trap:'Riding the yield curve ONLY works if the yield curve stays positively sloped. If the curve flattens or inverts, this strategy fails.'},
+
+// ── Q46 ──
+{id:46,type:'mcq',difficulty:'medium',topic:'Duration',page:'p.77',
+text:'Duration is best defined as:',
+options:['The number of years until a bond matures','A present-value-weighted measure of the average time needed for all cash flows from a security to reach the investor','The total interest payments received over the life of a bond','The sensitivity of a bond\'s price to changes in its credit spread'],
+correct:1,
+hint:'Duration weights cash flow timing by present value.',
+explanation:'Duration = weighted average time to receive all cash flows, where the weights are the present values of those cash flows. It measures how long, on average, you wait to receive the bond\'s economic value. Longer duration = more price sensitivity to interest rate changes.',
+optionExplains:['Wrong. That is just "time to maturity" — duration accounts for timing of ALL cash flows (including coupons).','CORRECT. PV-weighted average maturity of all cash flows — the formal definition.','Wrong. Total interest income is a return concept, not duration.','Wrong. Credit spread sensitivity is a different (credit) risk measure.'],
+trap:'Duration ≤ maturity always (for coupon bonds). A zero-coupon bond\'s duration = its maturity exactly.'},
+
+// ── Q47 ──
+{id:47,type:'mcq',difficulty:'hard',topic:'Duration',page:'p.77',
+text:'If a Treasury note has a duration of 4.26 years and market rates rise from 10.73% to 12%, approximately what percentage change in price occurs?',
+options:'+1.27%',
+options:['Price rises by approximately 5%','Price falls by approximately 5%','Price falls by approximately 1.27%','Price rises by approximately 1.27%'],
+correct:1,
+hint:'% price change ≈ –Duration × (Δrate / (1 + initial rate))',
+explanation:'% price change = –Duration × (Δr / (1 + r)) = –4.26 × (0.0127 / 1.1073) = –4.26 × 0.01147 ≈ –4.89% ≈ –5%. Rates rose, so price FALLS by approximately 5%.',
+optionExplains:['Wrong. Rates rose → price FALLS, not rises.','CORRECT. –4.26 × (0.0127/1.1073) ≈ –4.89% ≈ –5% price decline.','Wrong. –1.27% conflates the rate change with the price change.','Wrong. Price rises happen when rates FALL, not rise.'],
+trap:'The formula has a NEGATIVE sign — rates up = price down. The magnitude uses duration as the multiplier, not a 1:1 ratio.'},
+
+// ── Q48 ──
+{id:48,type:'mcq',difficulty:'hard',topic:'Duration / Immunization',page:'p.78',
+text:'Portfolio immunization using duration works because:',
+options:['Duration eliminates all forms of risk including credit and default risk','Interest rate risk and reinvestment risk OFFSET each other when duration equals the planned holding period','Setting duration to zero removes all sensitivity to rate changes','Matching duration to maturity maximizes yield to maturity'],
+correct:1,
+hint:'Two risks move in OPPOSITE directions when rates change — they cancel out at duration = holding period.',
+explanation:'Immunization: when duration = planned holding period, two effects EXACTLY offset. If rates rise: bond prices fall (negative) BUT reinvestment earnings on intermediate cash flows rise (positive). If rates fall: bond prices rise BUT reinvestment rates drop. The net result is an approximately frozen total return.',
+optionExplains:['Wrong. Immunization only addresses interest rate + reinvestment risk; credit risk remains.','CORRECT. The price effect and reinvestment effect offset each other when duration = holding period.','Wrong. Duration = 0 would mean instantaneous cash flows; that\'s not practical or correct.','Wrong. Matching duration to maturity ≠ matching duration to holding period.'],
+trap:'Immunization freezes TOTAL RETURN — capital gains/losses are offset by reinvestment gains/losses. It doesn\'t eliminate risk individually.'},
+
+// ── Q49 ──
+{id:49,type:'mcq',difficulty:'medium',topic:'Duration / Immunization',page:'p.78',
+text:'An investments officer plans to sell a Treasury note in ONE year. To immunize this holding against interest rate risk, the officer should choose notes with:',
+options:['Maturity = 1 year','Duration = 1 year','Highest coupon rate available','Zero duration'],
+correct:1,
+hint:'Immunization: duration = planned holding period.',
+explanation:'Immunization formula: Duration of security = Length of planned holding period. If the officer plans to hold for 1 year, she needs notes with DURATION = 1 year (not necessarily maturity = 1 year — a note with a duration of 1 year via coupon payments may have a longer maturity).',
+optionExplains:['Wrong. Maturity ≠ duration. A note with 1-year maturity and a coupon has duration slightly less than 1 year.','CORRECT. Duration = planned holding period (1 year) is the immunization condition.','Wrong. High coupon reduces duration but doesn\'t automatically immunize for any specific holding period.','Wrong. Zero duration means instantaneous cash flows — impractical.'],
+trap:'Match DURATION to holding period, not maturity. For coupon bonds, duration < maturity.'},
+
+// ── Q50 ──
+{id:50,type:'mcq',difficulty:'hard',topic:'PO and IO Strips',page:'p.62',
+text:'Comparing PO (Principal Only) strips to regular bonds, which statement is correct?',
+options:['PO strips are LESS price-sensitive than regular bonds to interest rate changes','PO strips are MORE price-sensitive than regular bonds to interest rate changes','PO and IO strips have identical price sensitivity','IO strips are more price-sensitive than PO strips'],
+correct:1,
+hint:'No coupon payments = all value concentrated at a distant date = higher duration.',
+explanation:'PO strips are more price-sensitive because all their value is at maturity (no intermediate coupon cash flows). This means higher effective duration and therefore greater price swings with interest rate changes. IO strips are LESS price-sensitive.',
+optionExplains:['Wrong. POs are MORE sensitive, not less.','CORRECT. PO = zero-coupon bond concentrated at maturity → high duration → high price sensitivity.','Wrong. PO and IO strips have very different price sensitivities.','Wrong. It is PO strips, not IO strips, that carry greater price sensitivity.'],
+trap:'PO strips = all value at maturity = maximum duration for that maturity horizon = maximum price sensitivity.'},
+
+// ── Q51 ──
+{id:51,type:'mcq',difficulty:'easy',topic:'Investment Portfolio Functions',page:'p.57',
+text:'When a bank uses investment securities as COLLATERAL to secure government deposits, this fulfills which function of the investment portfolio?',
+options:['Tax sheltering','Pledging','Geographic diversification','Liquidity management'],
+correct:1,
+hint:'Government deposits require specific collateral posted against them.',
+explanation:'Pledging function: investment securities (primarily Treasuries and agency securities) are pledged as collateral to secure deposits from federal, state, and local governments. This is a specific regulatory requirement protecting government funds above FDIC limits.',
+optionExplains:['Wrong. Tax sheltering refers to offsetting taxable loan income with tax-exempt investments.','CORRECT. Pledging = posting investments as collateral for government deposits.','Wrong. Geographic diversification is about reducing local business risk through out-of-market securities.','Wrong. Liquidity management involves the ability to sell securities for cash, not pledging them.'],
+trap:'Pledging LOCKS securities up as collateral — they cannot be freely sold while pledged.'},
+
+// ── Q52 ──
+{id:52,type:'mcq',difficulty:'medium',topic:'Investment Securities Held by Banks',page:'p.63',
+text:'According to Table 4.3, what proportion of U.S. bank investment portfolios consisted of U.S. government obligations (including Treasuries and agency securities) in 2010?',
+options:['About 20%','About 53%','About 35%','About 70%'],
+correct:1,
+hint:'Federal government-related IOUs dominate bank portfolios.',
+explanation:'U.S. government obligations (including mortgage-backed agency securities) accounted for about 53.4% of all insured bank investment holdings in 2010. Federal-government-related IOUs are the dominant investment type for U.S. banks.',
+optionExplains:['Wrong. 20% is the approximate share of total assets held in investments, not the composition within those investments.','CORRECT. ~53% of bank investment portfolios = U.S. government obligations.','Wrong. 35% underestimates the government securities dominance.','Wrong. 70% overestimates; ~53% is correct.'],
+trap:'Distinguish between investments-to-total-assets ratio (~19%) and the composition WITHIN the investment portfolio (~53% government).'},
+
+// ── Q53 ──
+{id:53,type:'mcq',difficulty:'medium',topic:'Investment Securities Held by Banks',page:'p.63',
+text:'SMALLEST banks tend to hold higher percentages of government securities compared to LARGEST banks because:',
+options:['Smallest banks have more capital to invest in risk-free assets','Smallest banks face more concentrated local economic risk and use safe securities to offset it','Largest banks are legally restricted from holding government securities','Smallest banks earn higher yields on Treasury securities due to volume discounts'],
+correct:1,
+hint:'Small banks = more local loan concentration = need higher-quality offsets.',
+explanation:'Smaller banks serve more concentrated local markets. Their loan portfolios are more exposed to local economic downturns. To offset this concentrated risk, they hold higher proportions of the safest, lowest-risk securities (Treasuries, agencies). Largest banks are more diversified and can handle higher-risk investments.',
+optionExplains:['Wrong. Having more capital doesn\'t explain the government security preference.','CORRECT. More concentrated local risk → use safe government securities as offsets.','Wrong. No such legal restriction exists.','Wrong. Volume discounts on T-bills don\'t apply — yields are market-determined.'],
+trap:'Bank size and investment risk tolerance are inversely related: smaller banks = safer, lower-risk portfolios.'},
+
+// ── Q54 ──
+{id:54,type:'mcq',difficulty:'easy',topic:'Investment Portfolio Functions',page:'p.56',
+text:'Which of the following is NOT listed as a function of the investment security portfolio?',
+options:['Providing geographic diversification','Serving as collateral for borrowings','Generating fee income from investment banking','Helping hedge against losses from changing interest rates'],
+correct:2,
+hint:'Fee income from investment banking is a separate business line, not a portfolio function.',
+explanation:'The investment security PORTFOLIO functions include: stabilizing income, offsetting credit risk, geographic diversification, liquidity backup, tax shelter, collateral, interest rate hedge, and asset flexibility. Fee income from investment banking is NOT a function of holding investment securities.',
+optionExplains:['Wrong. Geographic diversification IS a stated function of investment portfolios.','Wrong. Serving as collateral IS a stated function of investment portfolios.','CORRECT. Fee income from investment banking is separate — NOT a portfolio holding function.','Wrong. Hedging against interest rate losses IS a stated function.'],
+trap:'Investment PORTFOLIO functions ≠ investment BANKING functions. Holding bonds ≠ underwriting or advising.'},
+
+// ── Q55 ──
+{id:55,type:'mcq',difficulty:'medium',topic:'Factors Affecting Investment Choice',page:'p.64',
+text:'Which of the following is NOT among the ten principal factors affecting an investments officer\'s choice of securities?',
+options:['Expected rate of return','Tax exposure','Pledging requirements','Management tenure and personal investment philosophy'],
+correct:3,
+hint:'The chapter lists 10 objective factors. Management tenure is not among them.',
+explanation:'The 10 factors are: (1) Expected rate of return, (2) Tax exposure, (3) Interest rate risk, (4) Credit/default risk, (5) Business risk, (6) Liquidity risk, (7) Call risk, (8) Prepayment risk, (9) Inflation risk, (10) Pledging requirements. Management tenure is a personal attribute, not a listed portfolio factor.',
+optionExplains:['Wrong. Expected rate of return IS factor #1.','Wrong. Tax exposure IS factor #2.','Wrong. Pledging requirements IS factor #10.','CORRECT. Management tenure is not among the 10 listed factors — it is not an objective portfolio criterion.'],
+trap:'The 10 factors are all objective, market/regulatory/portfolio-based criteria.'},
+
+// ── Q56 ──
+{id:56,type:'mcq',difficulty:'easy',topic:'Money Market vs Capital Market',page:'p.57',
+text:'What is the PRIMARY distinction between money market instruments and capital market instruments?',
+options:['Money market instruments are government-issued; capital market instruments are corporate-issued','Money market instruments mature within one year; capital market instruments have remaining maturities beyond one year','Money market instruments pay coupons; capital market instruments are zero-coupon','Money market instruments are non-negotiable; capital market instruments are negotiable'],
+correct:1,
+hint:'It\'s all about time to maturity.',
+explanation:'The defining classification is maturity: money market instruments = mature within 1 year (low risk, high liquidity); capital market instruments = maturities beyond 1 year (higher expected return, capital gains potential, more risk).',
+optionExplains:['Wrong. Both governments and corporations issue instruments in both markets.','CORRECT. Maturity horizon is the defining criterion: ≤1 year = money market; >1 year = capital market.','Wrong. Both markets include coupon and zero-coupon instruments.','Wrong. Negotiability varies within each market; it is not the defining distinction.'],
+trap:'Short-term T-notes (near their maturity) are classified as money market instruments — it\'s about REMAINING maturity, not original maturity.'},
+
+// ── Q57 ──
+{id:57,type:'mcq',difficulty:'medium',topic:'Money Market Instruments',page:'p.59',
+text:'A bank-issued Certificate of Deposit (CD) with a denomination over $100,000 is typically called a:',
+options:['Consumer CD','Jumbo or negotiable CD','Savings certificate','Euro CD'],
+correct:1,
+hint:'Large CDs have special market status and names.',
+explanation:'CDs over $100,000 are called "jumbos" or "negotiable CDs." Security dealers provide a secondary market for these large CDs maturing within six months. They differ from smaller consumer-oriented CDs ($500–$100,000) in negotiability and secondary market treatment.',
+optionExplains:['Wrong. Consumer CDs are the SMALL denominations ($500–$100,000).','CORRECT. $100,000+ CDs = jumbo or negotiable CDs with secondary market trading.','Wrong. "Savings certificate" is a generic term not specific to large CDs.','Wrong. Euro CDs are issued in the Eurocurrency market, not the domestic U.S. market.'],
+trap:'Only the first $250,000 is FDIC-insured, even for jumbo CDs. The excess carries credit risk.'},
+
+// ── Q58 ──
+{id:58,type:'mcq',difficulty:'medium',topic:'Money Market Instruments',page:'p.59',
+text:'Eurocurrency deposits are characterized by all of the following EXCEPT:',
+options:['Typically 30, 60, or 90-day maturities','Issued in million-dollar units','FDIC-insured up to $250,000 per account','Carry slightly higher yields than comparable domestic U.S. bank deposits'],
+correct:2,
+hint:'Eurocurrency deposits are international — does FDIC apply?',
+explanation:'Eurocurrency deposits are NOT FDIC-insured. They are time deposits issued by major international banks in financial centers globally (heart = London). Because they carry higher perceived credit risk (no insurance), they offer slightly higher yields than comparable domestic U.S. deposits.',
+optionExplains:['Wrong. 30/60/90 days IS a characteristic of Eurocurrency deposits.','Wrong. Million-dollar units IS a characteristic.','CORRECT. NOT FDIC-insured — that\'s a domestic U.S. feature. This is what distinguishes them and justifies their higher yield.','Wrong. Higher yields than domestic CDs IS a characteristic due to uninsured credit risk.'],
+trap:'The lack of FDIC insurance on Eurocurrency deposits is why they yield more than domestic deposits.'},
+
+// ── Q59 ──
+{id:59,type:'mcq',difficulty:'medium',topic:'Capital Market Instruments',page:'p.60',
+text:'Why are corporate bonds generally MORE attractive to INSURANCE COMPANIES and PENSION FUNDS than to banks?',
+options:['Insurance companies and pension funds are tax-exempt, making corporate bond income more valuable','Corporate bonds have higher credit risk and less liquidity, which suits the longer time horizons of insurers and pension funds','Banks are legally prohibited from holding corporate bonds','Corporate bonds offer negative duration which matches insurance liabilities'],
+correct:1,
+hint:'Think about who can absorb more risk and who has long-term liabilities to match.',
+explanation:'Corporate bonds carry higher credit risk AND have more limited resale markets than government securities. Banks prioritize safety and liquidity (due to demand deposits). Insurers and pension funds have LONGER investment horizons and can accept more illiquidity and credit risk for the higher yields corporate bonds offer.',
+optionExplains:['Partially relevant but not the primary structural reason.','CORRECT. Higher risk + lower liquidity suits long-horizon institutions, not short-horizon banks.','Wrong. Banks CAN hold corporate bonds (though preference is limited).','Wrong. Corporate bonds have positive duration; negative duration is not a relevant concept here.'],
+trap:'Bank deposits are short-term liabilities → banks need liquid assets. Pension liabilities are long-term → can hold illiquid higher-yield assets.'},
+
+// ── Q60 ──
+{id:60,type:'mcq',difficulty:'hard',topic:'Structured Notes',page:'p.61',
+text:'A structured note that pays interest ONLY if an agreed-upon market index stays within a specified range (e.g., 2%-4%) is called a:',
+options:['CMO (Collateralized Mortgage Obligation)','Range note','Step-up bond','REMIC'],
+correct:1,
+hint:'The key feature is a conditional payout tied to whether a rate stays within a range.',
+explanation:'Range notes are callable securities paying high coupon interest ONLY when a reference market index remains within a designated range. If the index moves outside the range, there is NO interest payment. This creates complex risk/return profiles.',
+optionExplains:['Wrong. CMOs are mortgage-backed securities with tranches, not conditional coupon structures.','CORRECT. Range note = interest paid only if reference index stays within a specified band.','Wrong. Step-up bonds have periodically increasing coupons, not conditional range-based payments.','Wrong. REMICs are a type of mortgage-backed securitization structure.'],
+trap:'Range notes seem to offer high yields but carry SIGNIFICANT interest rate risk — if rates move outside the range, investors earn zero.'},
+
+// ── Q61 ──
+{id:61,type:'mcq',difficulty:'hard',topic:'Structured Notes',page:'p.68',
+text:'An equity-linked CD with a call option (bull CD) pays additional return when:',
+options:['The reference stock index FALLS below the strike price','The reference stock index RISES above the strike price','Interest rates decline below the base CD rate','The issuing bank\'s credit rating improves'],
+correct:1,
+hint:'Call option = profits when underlying rises above the strike.',
+explanation:'A bull CD with an embedded CALL option on a stock index pays additional bonus returns when the market index RISES above the designated strike price. A bear CD with a PUT option pays off when the index FALLS below the strike.',
+optionExplains:['Wrong. FALLING below strike activates a PUT option (bear CD), not a call option (bull CD).','CORRECT. Bull CD = call option = pays bonus when index rises above strike.','Wrong. Interest rate movements are not the trigger for equity-linked CDs.','Wrong. Bank credit rating changes don\'t trigger equity-linked CD payoffs.'],
+trap:'Bull CD = call option (upside bet). Bear CD = put option (downside bet). Don\'t confuse the two.'},
+
+// ── Q62 ──
+{id:62,type:'truefalse',difficulty:'easy',topic:'Investment Portfolio Functions',page:'p.57',
+text:'TRUE or FALSE: Investment securities are described as the "crossroads account" because they interact with cash, loans, and deposits on a bank\'s balance sheet.',
+correct:true,
+hint:'Think about how investments absorb excess cash or fund excess loan demand.',
+explanation:'TRUE. Investments are called the crossroads account because they literally stand between cash, loans, and deposits: they absorb excess cash, are sold to fund loan demand, serve as collateral for nondeposit borrowings when deposits fall, and are replenished when deposits are growing. No other account has such broad interconnections.',
+wrongPart:'Any FALSE answer misses the multi-directional balance sheet role of the investment portfolio.',
+trap:'The "crossroads" metaphor captures the fact that investments are actively managed to balance ALL other balance sheet needs.'},
+
+// ── Q63 ──
+{id:63,type:'mcq',difficulty:'medium',topic:'Yield to Maturity',page:'p.65',
+text:'A financial firm does not plan to hold an investment to maturity. Which yield measure should the investments officer calculate?',
+options:['Yield to Maturity (YTM)','Tax-Equivalent Yield (TEY)','Holding Period Yield (HPY)','Bank Discount Yield (BDY)'],
+correct:2,
+hint:'The holding period ends at SALE, not maturity.',
+explanation:'HPY (Holding Period Yield) measures the actual return between purchase and the planned sale date. Unlike YTM which assumes holding to maturity, HPY accounts for the capital gain or loss at the time of early sale and the coupons received during the holding period.',
+optionExplains:['Wrong. YTM assumes the security is held to maturity — not appropriate for early-sale planning.','Wrong. TEY converts tax-exempt yields to taxable equivalents — a comparison tool.','CORRECT. HPY = return for actual holding period until planned sale.','Wrong. BDY is used for discount securities (T-bills); not the general yield for early-sale planning.'],
+trap:'YTM is often discussed as the "the" yield of a bond, but it only applies if you hold to maturity.'},
+
+// ── Q64 ──
+{id:64,type:'mcq',difficulty:'hard',topic:'Municipal Bonds Tax',page:'p.60',
+text:'Capital gains on municipal bonds are:',
+options:['Fully tax-exempt, like interest income','Fully taxable, with one exception: bonds sold at a discount where price appreciation to par counts as part of tax-exempt interest','Taxable only at the state and local level','Tax-exempt only for bank-qualified bonds'],
+correct:1,
+hint:'Interest = exempt. Gains = usually taxable. But what is the exception?',
+explanation:'On municipal bonds: INTEREST income is tax-exempt. CAPITAL GAINS are fully taxable — EXCEPT for bonds purchased at a discount, where the gain from purchase price to par value is treated as part of the tax-exempt interest income (not capital gain).',
+optionExplains:['Wrong. Capital gains are NOT tax-exempt; only interest is.','CORRECT. Gains taxable, with the discount bond exception for the price-to-par appreciation.','Wrong. Capital gains on munis are federal taxable (the federal interest exemption doesn\'t apply to gains).','Wrong. Bank-qualified status affects interest expense deductibility, not capital gain tax treatment.'],
+trap:'The critical distinction: muni INTEREST = tax-exempt. Muni CAPITAL GAINS = taxable (with the specific discount exception).'},
+
+// ── Q65 ──
+{id:65,type:'mcq',difficulty:'medium',topic:'Factors Affecting Investment Choice',page:'p.64',
+text:'Why do banks generally prefer making LOANS over purchasing CORPORATE BONDS from the same borrower?',
+options:['Corporate bonds offer lower yields than loans','Purchasing bonds generates no new deposits for the bank, while loans often bring new deposit relationships','Bonds have shorter maturities than business loans','Corporate bonds carry higher default risk than equivalent bank loans'],
+correct:1,
+hint:'Loans bring a customer relationship; bond purchases don\'t.',
+explanation:'Banks prefer loans over bonds for two reasons: (1) direct loans often yield MORE than purchased securities, and (2) making loans typically GENERATES new deposit relationships and other business from borrowers. Bond purchases are purely arms-length transactions that generate no ancillary business.',
+optionExplains:['Wrong. Loans typically yield MORE than comparable bonds, not less.','CORRECT. Loans bring deposits and relationships; bond purchases do not. Two advantages for loans.','Wrong. Banks make both short-term and long-term loans; maturity is not the issue.','Wrong. A bank lending to a company and buying that same company\'s bonds faces similar credit risk.'],
+trap:'The relationship advantage of loans is as important as the yield advantage. Banks are relationship businesses.'},
+
+// ── Q66 ──
+{id:66,type:'mcq',difficulty:'medium',topic:'Investment Securities Held by Banks',page:'p.64',
+text:'Most bank-held investment securities are classified as "available for sale" rather than "held to maturity." This primarily means:',
+options:['The securities earn higher yields in the available-for-sale category','Management targets these investments for eventual resale to meet cash needs or capture opportunities','Available-for-sale securities are exempt from credit risk assessments','These securities are subject to more lenient accounting standards'],
+correct:1,
+hint:'Why would you classify something as "available for sale"?',
+explanation:'"Available for sale" signals that management INTENDS to eventually sell these securities — to fund cash withdrawals, make loans, or capture better opportunities. In contrast, "held to maturity" means the firm commits to holding until maturity. >94% of bank investments were available for sale in 2010.',
+optionExplains:['Wrong. Accounting classification doesn\'t directly affect yield.','CORRECT. Available for sale = intended for eventual sale when needed or opportunistic.','Wrong. All securities face credit risk assessments regardless of accounting classification.','Wrong. Available-for-sale securities must be marked to market through other comprehensive income — more discipline, not less.'],
+trap:'Available for sale does NOT mean the bank is actively trading — it means the door is open for sale if needed.'},
+
+// ── Q67 ──
+{id:67,type:'truefalse',difficulty:'easy',topic:'Investment Portfolio Functions',page:'p.56',
+text:'TRUE or FALSE: Investment securities typically represent over half of total bank assets.',
+correct:false,
+hint:'What is the approximate investment-to-total-assets ratio for banks?',
+explanation:'FALSE. Investment securities represent only about ONE-FIFTH (roughly 19-20%) of total bank assets. Loans dominate, typically representing over HALF of all bank assets. Investments play an important but secondary role to lending in the balance sheet.',
+wrongPart:'Any TRUE answer overestimates the relative importance of investment securities vs. loans.',
+trap:'Investments = ~20% of assets. Loans = >50% of assets. Investments are important but NOT the largest asset category.'},
+
+// ── Q68 ──
+{id:68,type:'mcq',difficulty:'medium',topic:'Capital Market Instruments',page:'p.61',
+text:'Which organization was primarily responsible for developing the Collateralized Mortgage Obligation (CMO) in 1983?',
+options:['Fannie Mae (FNMA)','Ginnie Mae (GNMA)','Freddie Mac (FHLMC)','The Federal Reserve'],
+correct:2,
+hint:'One of the GSEs created this specific instrument.',
+explanation:'Freddie Mac (Federal Home Loan Mortgage Corporation / FHLMC) developed the CMO in 1983. CMOs divide pass-through security cash flows into multiple tranches (classes) with different coupon rates and risk levels.',
+optionExplains:['Wrong. Fannie Mae creates and guarantees pass-through securities.','Wrong. Ginnie Mae guarantees timely principal/interest on government-insured mortgage securities.','CORRECT. Freddie Mac developed CMOs in 1983 as a pass-through with multiple tranches.','Wrong. The Federal Reserve is not a mortgage securitization entity.'],
+trap:'Know the three agencies: GNMA = government agency (guarantee); FNMA = pass-throughs; FHLMC = created CMOs.'},
+
+// ── Q69 ──
+{id:69,type:'mcq',difficulty:'hard',topic:'Securitized Assets',page:'p.62',
+text:'REMICs (Real Estate Mortgage Investment Conduits) are MOST similar to:',
+options:['Stripped securities (PO and IO)','CMOs — they partition mortgage cash flows into multiple maturity classes to reduce cash-flow uncertainty','Simple pass-through securities without tranching','Mortgage-backed bonds (MBBs) that stay on-balance-sheet'],
+correct:1,
+hint:'REMICs partition cash flows — sound familiar?',
+explanation:'REMICs are closely related to CMOs. Both partition the cash flow from pools of mortgage loans or mortgage-backed securities into multiple maturity classes to reduce cash-flow uncertainty for investors. The key difference is tax treatment — REMICs have a specific favorable tax structure.',
+optionExplains:['Wrong. Stripped securities separate P and I; REMICs partition by maturity/risk class.','CORRECT. REMICs are functionally similar to CMOs — partitioning cash flows into classes to reduce uncertainty.','Wrong. Simple pass-throughs have no tranching.','Wrong. MBBs stay on-balance-sheet; REMICs are securitizations.'],
+trap:'REMIC ≈ CMO in structure. The distinction is primarily legal/tax treatment.'},
+
+// ── Q70 ──
+{id:70,type:'mcq',difficulty:'medium',topic:'Credit Risk',page:'p.69',
+text:'Investments officers can use CREDIT OPTIONS to:',
+options:['Replace all fixed-rate bonds with floating-rate instruments','Protect the market value of a bond if the issuer defaults or the credit rating is lowered','Eliminate prepayment risk from mortgage-backed securities','Convert taxable bond income into tax-exempt income'],
+correct:1,
+hint:'Options provide payoffs when bad things happen to credit quality.',
+explanation:'Credit options provide a payoff when a bond issuer defaults OR when its credit rating is downgraded. This at least partially offsets the loss in market value suffered on the bond itself. Credit options are a hedging tool for credit risk in the investment portfolio.',
+optionExplains:['Wrong. Converting fixed to floating uses interest rate swaps, not credit options.','CORRECT. Credit options hedge against default or rating downgrades — compensate for bond value losses.','Wrong. Prepayment risk is different from credit risk; different instruments address it.','Wrong. Tax conversion is not a function of credit options.'],
+trap:'Credit options ≠ interest rate options. Credit options trigger on CREDIT EVENTS (default, downgrade), not rate moves.'},
+
+// ── Q71 ──
+{id:71,type:'mcq',difficulty:'easy',topic:'Capital Market Instruments',page:'p.60',
+text:'Which type of municipal bond is backed by the full faith and credit of the issuing government, including its taxing power?',
+options:['Revenue bond','General Obligation (GO) bond','Private activity bond','Industrial Development Bond (IDB)'],
+correct:1,
+hint:'"General Obligation" — what obligation does it place on the government?',
+explanation:'GO bonds are backed by the full faith and credit of the issuing government — meaning the government can levy additional taxes if needed to repay bondholders. This is the strongest form of municipal bond security.',
+optionExplains:['Wrong. Revenue bonds are payable ONLY from specific project revenues — weaker security.','CORRECT. GO bonds = full faith and credit = taxing power backstop = strongest municipal security.','Wrong. Private activity bonds lose tax exemption if too much benefit goes to private entities.','Wrong. IDBs are a type of revenue bond, not backed by full taxing power.'],
+trap:'GO bonds = taxing power. Revenue bonds = project revenues only. GO bonds are generally SAFER than revenue bonds.'},
+
+// ── Q72 ──
+{id:72,type:'mcq',difficulty:'medium',topic:'Yield Curve',page:'p.76',
+text:'A downward-sloping yield curve (inverted) signals:',
+options:['The economy is in a strong expansion phase','Market expectations of DECLINING short-term interest rates in the future','Extremely high default risk in the bond market','An upcoming Federal Reserve rate hike'],
+correct:1,
+hint:'What do investors do when they expect falling rates? They lock in long-term yields.',
+explanation:'A downward-sloping (inverted) yield curve reflects the market\'s expectation that short-term interest rates will DECLINE in the future. Investors buy long-term bonds aggressively (driving long yields down), while short-term rates remain elevated, causing the inversion. Inverted curves often precede recessions.',
+optionExplains:['Wrong. Inverted yield curves typically signal economic slowdown, not expansion.','CORRECT. Inverted curve → market expects short rates to fall. Historically precedes recessions.','Wrong. The shape of the curve reflects rate expectations, not absolute default risk levels.','Wrong. An expected rate HIKE would push short rates UP (possibly steepening, not inverting, the curve).'],
+trap:'Inverted yield curve = recession warning sign historically. Short > long yield = expectation of future rate cuts.'},
+
+// ── Q73 ──
+{id:73,type:'mcq',difficulty:'medium',topic:'Investment Portfolio Functions',page:'p.57',
+text:'The investment portfolio helps "DRESS UP the balance sheet" by:',
+options:['Recording investments at historical cost to avoid mark-to-market volatility','Holding high-quality marketable securities that make the institution look financially stronger','Structuring securities to reduce reported leverage ratios','Shifting loans off-balance-sheet through securitization'],
+correct:1,
+hint:'What does holding high-quality securities do for your balance sheet appearance?',
+explanation:'"Dressing up the balance sheet" means that high-quality marketable securities (Treasuries, agencies) in the investment portfolio give external parties (regulators, analysts, depositors) confidence in the institution\'s financial strength and asset quality.',
+optionExplains:['Wrong. Available-for-sale securities are marked to market — the function is visual, not accounting.','CORRECT. High-quality securities in the portfolio improve the perceived financial strength of the institution.','Wrong. Investment securities affect asset quality, not leverage ratios directly.','Wrong. Securitization removes assets from the balance sheet; investing keeps them on it.'],
+trap:'"Dressing up" is a legitimate portfolio function — it uses investment quality to signal institutional strength.'},
+
+// ── Q74 ──
+{id:74,type:'mcq',difficulty:'medium',topic:'Expected Rate of Return',page:'p.65',
+text:'An investments officer calculating YTM assumes which of the following?',
+options:['The security will be sold halfway through its life','The security will be held to maturity AND all intermediate cash flows will be reinvested at the YTM rate','The coupon rate will change annually based on market rates','The investor will only hold the security for one year'],
+correct:1,
+hint:'YTM has an embedded assumption about reinvestment.',
+explanation:'YTM implicitly assumes (1) the security is held to maturity and (2) all intermediate cash flows (coupons) are reinvested at the YTM rate. If reinvestment rates differ, realized return will differ from YTM. This is one of YTM\'s limitations.',
+optionExplains:['Wrong. YTM assumes holding to FULL maturity, not halfway.','CORRECT. Hold to maturity + reinvest all coupons at YTM rate — the twin assumptions.','Wrong. YTM uses the PROMISED coupon, which is fixed.','Wrong. Holding for one year uses HPY, not YTM.'],
+trap:'YTM is only realized if you hold to maturity AND reinvest at YTM. In practice, reinvestment rates vary, creating a gap.'},
+
+// ── Q75 ──
+{id:75,type:'mcq',difficulty:'hard',topic:'Tax Exposure',page:'p.67',
+text:'In a PORTFOLIO SHIFTING strategy, a bank sells a $10M bond recorded at par but currently worth $9.5M, and purchases a new higher-yielding bond. What is the after-tax cost of this loss for a bank in the 35% tax bracket?',
+options:['$500,000','$325,000','$175,000','$0 because the loss offsets future gains'],
+correct:1,
+hint:'After-tax loss = pre-tax loss × (1 – tax rate)',
+explanation:'Pre-tax loss = $10M – $9.5M = $500,000. After-tax loss = $500,000 × (1 – 0.35) = $500,000 × 0.65 = $325,000. The tax system absorbs 35% of the loss, so the actual cost to the bank is $325,000.',
+optionExplains:['Wrong. $500,000 is the PRE-TAX loss before tax benefit.','CORRECT. $500,000 × (1 – 0.35) = $325,000 after-tax loss.','Wrong. $175,000 = $500,000 × 0.35 = the TAX BENEFIT, not the after-tax loss.','Wrong. The loss is not zero — it reduces current earnings even if it generates tax savings.'],
+trap:'After-tax loss = pre-tax loss × (1 – t). The tax benefit is the loss × t ($175,000), not the loss itself.'},
+
+// ── Q76 ──
+{id:76,type:'truefalse',difficulty:'medium',topic:'Credit Risk',page:'p.70',
+text:'TRUE or FALSE: Unrated securities cannot be purchased by regulated banks under any circumstances.',
+correct:false,
+hint:'Regulations specify minimum quality, but unrated ≠ automatically prohibited.',
+explanation:'FALSE. Unrated securities CAN be acquired by regulated institutions, BUT the institution must be able to DEMONSTRATE that the unrated security is of investment-grade quality. The burden of proof falls on the institution.',
+wrongPart:'Any TRUE answer wrongly assumes unrated = prohibited. Unrated means you must justify the quality yourself.',
+trap:'The rule is investment-grade quality, not investment-grade RATING. Demonstrable quality allows unrated security purchases.'},
+
+// ── Q77 ──
+{id:77,type:'mcq',difficulty:'medium',topic:'Factors Affecting Investment Choice',page:'p.71',
+text:'The primary trade-off an investments officer faces between LIQUIDITY and PROFITABILITY in the securities portfolio is:',
+options:['More liquid securities tend to offer higher yields than illiquid ones','More liquid securities (like Treasuries) tend to offer LOWER yields, reducing profitability; less liquid securities offer higher yields','Liquid securities are riskier and therefore more profitable','Government securities are always the most profitable choice'],
+correct:1,
+hint:'What premium do investors demand for giving up liquidity?',
+explanation:'Liquid securities (Treasuries, agencies) offer lower yields because investors accept less return for liquidity. Illiquid securities (corporates, certain munis) offer higher yields as a liquidity premium. Holding more liquid assets = safer and more flexible but LESS profitable.',
+optionExplains:['Wrong. Liquid securities yield LESS, not more.','CORRECT. Liquidity premium: hold more liquid → lower yield → lower profitability.','Wrong. Liquidity and risk are different dimensions — liquid securities are generally SAFER.','Wrong. Government securities offer safety and liquidity but NOT the highest yields.'],
+trap:'The liquidity-profitability trade-off must be re-evaluated DAILY as market rates and liquidity risk change.'},
+
+// ── Q78 ──
+{id:78,type:'mcq',difficulty:'hard',topic:'Inflation Risk',page:'p.72',
+text:'The spread between nominal Treasury bond yields and TIPS yields of the same maturity represents:',
+options:['The default risk premium on Treasury bonds','The market\'s implied expectation of future inflation','The liquidity risk premium on TIPS','The tax advantage of TIPS over nominal bonds'],
+correct:1,
+hint:'TIPS adjust for inflation; nominal bonds don\'t. The difference between them reveals...',
+explanation:'TIPS provide a REAL yield (inflation-adjusted). Nominal Treasury bonds provide a NOMINAL yield. The spread between them = the BREAKEVEN INFLATION RATE — the market\'s collective expectation of average future inflation. If expected inflation rises, TIPS become relatively more valuable.',
+optionExplains:['Wrong. Treasury bonds are sovereign — default risk premium is negligible.','CORRECT. Nominal yield – TIPS yield = implied expected inflation (breakeven inflation rate).','Wrong. TIPS typically have LOWER liquidity than nominal Treasuries, suggesting the spread is NOT a liquidity premium on TIPS.','Wrong. Tax treatment of TIPS vs. nominal bonds is similar.'],
+trap:'TIPS yield = real yield. Nominal yield = real yield + expected inflation. Spread = expected inflation.'},
+
+// ── Q79 ──
+{id:79,type:'mcq',difficulty:'medium',topic:'Pledging Requirements',page:'p.73',
+text:'When a bank uses repurchase agreements (RPs) to raise funds, it must:',
+options:['Buy Treasuries from the counterparty and sell them back later','Pledge some of its own securities (usually Treasuries/agencies) as collateral to receive funds at the lowest RP rate','Issue commercial paper collateralized by loan portfolios','Pay the Federal Funds Rate plus a spread to the counterparty'],
+correct:1,
+hint:'RP = secured borrowing. What secures it?',
+explanation:'In a repo (repurchase agreement), the institution selling securities (borrowing cash) pledges those securities (typically Treasuries or agency issues) as collateral. The lowest RP rate is obtained by using the highest-quality collateral — hence the preference for Treasuries and agencies.',
+optionExplains:['Wrong. In a repo, the institution SELLS securities for cash (borrowing). The reverse repo is buying.','CORRECT. RP = sell securities for cash + pledge those securities as collateral. Best rate with best collateral.','Wrong. Repos use already-held securities, not loan portfolios as collateral.','Wrong. RP rate is negotiated based on collateral quality; Fed Funds Rate + spread is for unsecured interbank lending.'],
+trap:'Repos are SECURED borrowing. The institution is temporarily transferring ownership of securities in exchange for cash, with an agreement to buy them back.'},
+
+// ── Q80 ──
+{id:80,type:'truefalse',difficulty:'medium',topic:'Investment Maturity Strategies',page:'p.74',
+text:'TRUE or FALSE: The Ladder (Spaced-Maturity) strategy maximizes investment income.',
+correct:false,
+hint:'What does the ladder explicitly sacrifice?',
+explanation:'FALSE. The chapter explicitly states: "This strategy certainly does NOT maximize investment income." The ladder reduces income fluctuations, requires little expertise, and builds in flexibility as some securities always roll over into cash — but it sacrifices maximum income for stability and simplicity.',
+wrongPart:'Any TRUE answer confuses stability of income with maximization of income.',
+trap:'Laddering SMOOTHS and STABILIZES income — it does not maximize it. Maximum income requires concentration in longer maturities.'},
+
+// ── Q81 ──
+{id:81,type:'mcq',difficulty:'hard',topic:'Duration',page:'p.78',
+text:'PO strips are SOLD AT A DISCOUNT from par. The investor\'s return comes from:',
+options:['Periodic interest payments twice yearly','Price appreciation from discount to par over the life of the security','Capital gains from selling before maturity at a premium','Dividend income from the underlying mortgage pool'],
+correct:1,
+hint:'No coupon = return must come entirely from price appreciation.',
+explanation:'Stripped securities (both PO and IO) are zero-coupon instruments sold at a discount. Return comes ENTIRELY from price appreciation as the strip approaches maturity (for POs: the lump-sum principal payment). No periodic coupon payments are made.',
+optionExplains:['Wrong. Zero-coupon instruments pay NO periodic interest.','CORRECT. Discount instrument → price rises toward par (or maturity value) → price appreciation = total return.','Wrong. This would be an HPY scenario — but the FUNDAMENTAL return source is still price appreciation.','Wrong. Strips are securities, not equity interests; no dividend income.'],
+trap:'All discount instruments (T-bills, PO strips, zero-coupon bonds) earn returns through price appreciation ONLY.'},
+
+// ── Q82 ──
+{id:82,type:'mcq',difficulty:'medium',topic:'Investment Maturity Strategies',page:'p.75',
+text:'The Rate Expectations strategy carries greater transaction costs than other maturity strategies because it:',
+options:['Uses derivatives instead of cash market instruments','May require frequent security trading and switching as rate forecasts change','Invests only in illiquid securities','Requires regulatory approval for each trade'],
+correct:1,
+hint:'Frequent adjustments = frequent trading costs.',
+explanation:'The rate expectations strategy requires CONTINUAL portfolio shifts as interest rate forecasts are updated. Each shift involves buying and selling securities — generating broker/dealer commissions, bid-ask spreads, and potentially tax consequences. This is one of its drawbacks.',
+optionExplains:['Wrong. Rate expectations strategies typically use cash market securities, not necessarily derivatives.','CORRECT. Frequent portfolio rebalancing = higher transaction costs than passive strategies like laddering.','Wrong. No specific illiquid security requirement.','Wrong. Individual bond trades don\'t require individual regulatory approval.'],
+trap:'Active strategies (rate expectations) generate higher costs; passive strategies (ladder) generate lower costs.'},
+
+// ── Q83 ──
+{id:83,type:'mcq',difficulty:'hard',topic:'Yield Curve',page:'p.76',
+text:'Which of the following would cause investments officers to TRADE (sell and reinvest) their security portfolios most actively?',
+options:['Stable interest rates with no change in economic conditions','Prospect of significant capital gains, opportunity to reduce risk without yield loss, or ability to raise after-tax returns','All portfolio securities approaching maturity simultaneously','Federal Reserve announcement of unchanged reserve requirements'],
+correct:1,
+hint:'Banks trade when it improves returns, reduces risk, or manages taxes.',
+explanation:'Banks trade securities most actively when: (a) tax management can boost after-tax returns, (b) locking in higher long-term yields is possible when rates are expected to fall, (c) asset quality can be improved without sacrificing much return, or (d) the portfolio can move to higher-quality securities if loan portfolio problems emerge.',
+optionExplains:['Wrong. Stable conditions mean little incentive to trade.','CORRECT. The four specific catalysts for active trading: tax gains, capital gains, quality improvement, or yield enhancement.','Wrong. Maturing securities are routine rollovers, not strategic trading.','Wrong. Reserve requirement changes affect bank reserves, not strategic bond portfolio trading motivation.'],
+trap:'Bond portfolio trading is not random or continuous — it is triggered by specific financial opportunities or risk management needs.'},
+
+// ── Q84 ──
+{id:84,type:'mcq',difficulty:'medium',topic:'Inflation Risk',page:'p.72',
+text:'Which type of investment provides the MOST DIRECT protection against inflation risk?',
+options:['Long-term fixed-rate corporate bonds','Short-term securities and those with variable interest rates','Zero-coupon Treasury strips','Long-duration government bonds'],
+correct:1,
+hint:'Which instruments can reprice as inflation changes?',
+explanation:'Short-term securities and variable-rate instruments provide the most protection against inflation. Short-term securities mature quickly and can be rolled over at the new, higher nominal rates. Variable-rate instruments adjust their coupons automatically. Long-term fixed-rate bonds suffer the most from inflation erosion.',
+optionExplains:['Wrong. Long-term fixed-rate bonds are highly vulnerable to inflation — their real value erodes.','CORRECT. Short-term rollover + variable rate repricing = best inflation protection.','Wrong. Zero-coupon strips lock in a real rate — they\'re severely harmed by unexpected inflation.','Wrong. Long-duration bonds have the GREATEST inflation risk exposure.'],
+trap:'Inflation protection requires FLEXIBILITY to reprice — short maturities and variable rates provide this.'},
+
+// ── Q85 ──
+{id:85,type:'mcq',difficulty:'medium',topic:'Credit Risk',page:'p.69',
+text:'Credit options and credit swaps in investment management can be used to:',
+options:['Convert corporate bonds to government bonds in the portfolio','Swap an uncertain return on securities for a lower but more CERTAIN return based on a reference rate','Extend the maturity of investment holdings without buying new bonds','Reduce the coupon rate on existing bond holdings'],
+correct:1,
+hint:'What does a credit swap exchange for certainty?',
+explanation:'Investments officers can use credit swaps to exchange an uncertain return on risky securities for a lower but MORE CERTAIN return based on a standard reference rate (like the Treasury yield). This trades upside for certainty — useful when credit risk concerns are elevated.',
+optionExplains:['Wrong. Credit swaps manage risk; they don\'t change the legal nature of the underlying instrument.','CORRECT. Credit swap = trade uncertain risky return for lower certain reference-rate return.','Wrong. Maturity extension requires buying different-maturity securities.','Wrong. Credit swaps don\'t alter coupon terms of existing bonds.'],
+trap:'Credit swaps sacrifice yield in exchange for certainty — a risk management trade-off, not a return-enhancement tool.'},
+
+// ── Q86 ──
+{id:86,type:'mcq',difficulty:'hard',topic:'Securitized Assets',page:'p.62',
+text:'Four major factors drove popularity of asset-backed securities before the 2007-2009 crisis. Which is LEAST accurate?',
+options:['Government or private guarantees provided credit enhancement','Higher average yields than most government securities','Guaranteed price stability regardless of economic conditions','Superior liquidity and marketability compared to the underlying loans themselves'],
+correct:2,
+hint:'What did the 2007-09 crisis reveal about ABS pricing?',
+explanation:'The 2007-2009 crisis proved that ABS prices are NOT guaranteed to be stable. Market values deteriorated SHARPLY when underlying loans (mortgages) experienced surging default rates. "Price stability" was NEVER one of the stated advantages of ABS — the listed advantages were guarantees, higher yields, lack of alternatives, and better liquidity than loans.',
+optionExplains:['Wrong. Government/private guarantees WAS a stated factor driving ABS popularity.','Wrong. Higher yields WAS a stated factor.','CORRECT. Price stability was NOT listed as an advantage and was disproven dramatically in 2007-09.','Wrong. Superior liquidity vs. loans WAS a stated factor.'],
+trap:'The crisis revealed the false assumption of ABS stability. Price volatility on ABS can be extreme in a crisis.'},
+
+// ── Q87 ──
+{id:87,type:'truefalse',difficulty:'hard',topic:'Yield Curve',page:'p.76',
+text:'TRUE or FALSE: Yield curves provide information only about current interest rates and have no predictive value for the economy.',
+correct:false,
+hint:'What do economists say about yield curve shape and business cycles?',
+explanation:'FALSE. Yield curves convey FORWARD-LOOKING information: positively sloped = market expects rates to rise (expansion); inverted = market expects rates to fall (potential recession). The text states yield curves send signals about the current stage of the business cycle and generally rise in economic expansions and fall in recessions.',
+wrongPart:'Any TRUE answer misses the yield curve\'s role as an economic leading indicator.',
+trap:'The yield curve is one of the most watched economic indicators — its shape has significant predictive power for the business cycle.'},
+
+// ── Q88 ──
+{id:88,type:'mcq',difficulty:'medium',topic:'Investment Portfolio Functions',page:'p.56',
+text:'Investment portfolios help STABILIZE bank earnings because:',
+options:['Investment income is guaranteed and cannot fall during recessions','When loan revenues fall (e.g., in recessions), investment income may rise to partially offset the decline','Investment securities are always marked to market, smoothing reported income','Government bonds always pay higher yields than loans during downturns'],
+correct:1,
+hint:'Think about how bonds and loans behave differently through the economic cycle.',
+explanation:'During recessions, loan demand and revenues fall. But bond yields (especially long-term) may remain relatively stable or even rise in nominal terms, providing an offsetting income stream. This countercyclical characteristic of investment income helps smooth the bank\'s total earnings over the business cycle.',
+optionExplains:['Wrong. Investment income is NOT guaranteed — it fluctuates with rates.','CORRECT. Countercyclical income: when loans fall → investment income partially compensates.','Wrong. Available-for-sale securities are marked to market, creating OCI volatility, not income stability.','Wrong. Government bonds do not always yield more than loans; typically loans yield more.'],
+trap:'Investment portfolios don\'t fully offset loan income swings — they PARTIALLY compensate, providing income stabilization.'},
+
+// ── Q89 ──
+{id:89,type:'mcq',difficulty:'easy',topic:'Money Market Instruments',page:'p.57',
+text:'U.S. Treasury bills can be used as collateral for which of the following?',
+options:['Attracting equity investors','Securing personal consumer loans','Attracting funds from other institutions (used as collateral for borrowing)','Backing employee pension obligations'],
+correct:2,
+hint:'One of the key advantages of T-bills listed in the chapter.',
+explanation:'T-bills are widely accepted as high-quality collateral for borrowing — financial firms can use them to attract funds from other institutions. This high collateral acceptability is one of the key advantages of T-bills beyond their safety and liquidity.',
+optionExplains:['Wrong. T-bills are debt instruments; they do not attract equity investors.','Wrong. Consumer loans are typically collateralized by the purchased asset (car, house), not T-bills.','CORRECT. T-bills as collateral for interbank borrowing is a key stated advantage.','Wrong. Pension obligations are backed by pension fund assets, not specifically T-bills.'],
+trap:'T-bills are excellent collateral precisely because they are liquid, safe, and widely accepted.'},
+
+// ── Q90 ──
+{id:90,type:'mcq',difficulty:'hard',topic:'Capital Market Instruments',page:'p.60',
+text:'Which combination of facts about municipal bonds is COMPLETELY CORRECT?',
+options:['Interest is tax-exempt; capital gains are also fully tax-exempt; banks can underwrite both GO and revenue bonds','Interest on bonds funding PUBLIC projects is tax-exempt; capital gains are taxable; banks can underwrite GO bonds and (since 1999) revenue bonds','Interest is taxable; capital gains are tax-exempt; banks cannot underwrite any municipal bonds','Interest is partially exempt; all gains are tax-exempt; banks can only underwrite T-bills'],
+correct:1,
+hint:'Triple-check: interest exemption, capital gain treatment, bank underwriting authority.',
+explanation:'(1) Interest on munis funding PUBLIC projects = federal tax-exempt. (2) Capital gains on munis = fully taxable (except discounted bonds). (3) Banks have always been able to underwrite GO bonds; the Gramm-Leach-Bliley Act (1999) extended this to revenue bonds.',
+optionExplains:['Wrong. Capital gains on munis are NOT tax-exempt.','CORRECT. All three facts are correctly stated.','Wrong. Muni interest IS tax-exempt.','Wrong. Interest is fully (not partially) exempt for qualifying bonds.'],
+trap:'Three separate rules for munis: interest (exempt), capital gains (taxable), bank underwriting (GO always OK; revenue OK since 1999).'},
+
+// ── Q91 ──
+{id:91,type:'mcq',difficulty:'medium',topic:'Duration',page:'p.77',
+text:'Which of the following would have the LONGEST duration?',
+options:['A 5-year zero-coupon bond','A 5-year 10% coupon bond','A 2-year zero-coupon bond','A 10-year 10% coupon bond'],
+correct:3,
+hint:'Duration depends on both maturity and coupon size. Higher coupon = shorter duration for same maturity.',
+explanation:'Duration increases with maturity and decreases with coupon size. A 10-year 10% coupon bond has the longest maturity among the choices. Even though the coupon reduces duration below 10 years, it will still have longer duration than the 5-year bonds. The zero-coupon bond has duration = maturity, but the 5-year zero gives duration = 5 years vs. the 10-year coupon bond which has duration between 7-9 years typically.',
+optionExplains:['Wrong. A 5-year zero has duration = 5 years exactly.','Wrong. A 5-year coupon bond has duration < 5 years (coupons pull in the weighted average).','Wrong. A 2-year zero has duration = 2 years — shortest here.','CORRECT. 10-year maturity with moderate coupon → duration ~7-9 years. Longest of the four.'],
+trap:'Zero-coupon duration = maturity exactly. For coupon bonds, duration < maturity. Compare across all four carefully.'},
+
+// ── Q92 ──
+{id:92,type:'mcq',difficulty:'medium',topic:'Factors Affecting Investment Choice',page:'p.71',
+text:'An investments officer minimizes CALL RISK primarily by:',
+options:['Buying only zero-coupon bonds which cannot be called','Purchasing callable bonds with longer call deferment periods, or avoiding callable securities altogether','Holding callable bonds in the "held to maturity" category to avoid mark-to-market losses','Requiring the issuer to post collateral equal to the call premium'],
+correct:1,
+hint:'If you can\'t avoid calls, delay them. If you can, don\'t buy them.',
+explanation:'To minimize call risk: (1) buy callable bonds with longer CALL DEFERMENT periods (so the call cannot occur for several years, giving the investor more certainty), or (2) simply avoid callable securities altogether. Call privileges are declining in corporate bonds but remain common in municipals.',
+optionExplains:['Wrong. Zero-coupon bonds CAN be callable; zero-coupon status doesn\'t prevent callability.','CORRECT. Longer deferment + avoidance — the two standard call risk mitigation strategies.','Wrong. Accounting classification (HTM vs. AFS) does not change the economic call risk.','Wrong. Issuers don\'t post collateral against calls; they retain the option freely.'],
+trap:'Call deferment buys TIME but doesn\'t eliminate call risk — the bond is still callable after the deferment period.'},
+
+// ── Q93 ──
+{id:93,type:'truefalse',difficulty:'hard',topic:'Securitized Assets',page:'p.63',
+text:'TRUE or FALSE: Mortgage-backed securities accounted for the majority of U.S. bank investment portfolios by dollar volume in 2010.',
+correct:true,
+hint:'Table 4.3 data: what was the largest single category?',
+explanation:'TRUE. Mortgage-backed securities accounted for approximately 53.6% of all insured commercial bank investment holdings by 2010 — making them the single largest component of bank investment portfolios by volume. Largest banks had the heaviest concentrations.',
+wrongPart:'Any FALSE answer misses the dominant role of MBS in bank investment portfolios.',
+trap:'MBS domination of bank portfolios was a key pre-2008 vulnerability — concentration in a single sector with hidden prepayment and credit risk.'},
+
+// ── Q94 ──
+{id:94,type:'mcq',difficulty:'hard',topic:'Tax Exposure',page:'p.67',
+text:'Why would a bank engage in a TAX SWAP specifically in years when LOAN REVENUES ARE HIGH?',
+options:['High loan revenues create excess capital that must be deployed in bonds','High loan revenues increase taxable income, making it more valuable to recognize losses on securities to offset that income','Low-yielding bonds become irrelevant when loans are performing well','Federal regulations require tax swaps when loan-to-asset ratios exceed benchmarks'],
+correct:1,
+hint:'More taxable income = greater tax benefit from recognizing losses.',
+explanation:'Tax swaps are most beneficial when taxable income is HIGH. Selling low-yielding securities at a loss generates a tax deduction that offsets the HIGH loan income, reducing current-year taxes. The loss also enables purchasing higher-yielding replacements. When income is LOW, tax losses provide less benefit.',
+optionExplains:['Wrong. Excess capital deployment is a capital management issue, not tax swap motivation.','CORRECT. High loan income → high taxes → sell at a loss to reduce taxable income → more valuable tax deduction.','Wrong. Low-yielding bonds become MORE of a problem in high-income years from an opportunity cost perspective.','Wrong. No such regulatory requirement exists.'],
+trap:'Tax swaps are most powerful when tax rates are highest AND when there is most taxable income to offset.'},
+
+// ── Q95 ──
+{id:95,type:'mcq',difficulty:'easy',topic:'Investment Maturity Strategies',page:'p.73',
+text:'The Ladder strategy builds in investment FLEXIBILITY because:',
+options:['All securities mature at the same time, allowing a large cash infusion','Some securities are always rolling over into cash, allowing the firm to take advantage of new opportunities','Ladder portfolios have the highest average yield','Long maturities dominate, providing stable income'],
+correct:1,
+hint:'When some rungs always mature, what do you always have?',
+explanation:'Because the ladder spreads maturities evenly, securities in the shortest bucket are ALWAYS maturing. This provides a continuous cash flow from maturing bonds, allowing the investments officer to reinvest in new opportunities, respond to changing rates, or fund emerging cash needs.',
+optionExplains:['Wrong. In a ladder, maturities are SPREAD OUT — not all at once.','CORRECT. Rolling maturities = continuous flexibility. Always some cash available from maturing bonds.','Wrong. Ladders don\'t maximize yield — they smooth income at moderate yields.','Wrong. Ladders include short and medium maturities, not just long.'],
+trap:'The ladder\'s flexibility comes from the ROLLING nature of maturities — a continuous stream of maturing securities.'},
+
+// ── Q96 ──
+{id:96,type:'mcq',difficulty:'medium',topic:'Credit Risk',page:'p.69',
+text:'Standard & Poor\'s bond rating "BBB" corresponds to which Moody\'s rating category?',
+options:['Aaa','Ba','Baa','A'],
+correct:2,
+hint:'BBB and Baa are both the lowest investment-grade ratings.',
+explanation:'BBB (S&P) = Baa (Moody\'s) — both represent "medium grade" quality, the LOWEST category still considered investment grade. This is the minimum level banks are generally allowed to hold. Below BBB/Baa is speculative/junk territory.',
+optionExplains:['Wrong. Aaa/AAA = highest quality — the TOP of investment grade.','Wrong. Ba/BB = speculative — BELOW investment grade.','CORRECT. Baa (Moody\'s) = BBB (S&P). Both are the investment grade floor.','Wrong. A/A = upper-medium grade, one notch above BBB/Baa.'],
+trap:'Moody\'s uses letters with "a" lowercase (Baa, Ba). S&P uses letters only (BBB, BB). Baa = BBB = investment grade floor.'},
+
+// ── Q97 ──
+{id:97,type:'mcq',difficulty:'hard',topic:'Securitized Assets',page:'p.71',
+text:'In the PSA model at 100% PSA, after the first 30 months, the annual mortgage prepayment rate:',
+options:['Continues increasing by 0.2% per month indefinitely','Stabilizes at 6% per year for the remainder of the pool\'s life','Falls back to 0.2% as mortgages age','Doubles to 12% per year in the final 30 months'],
+correct:1,
+hint:'PSA ramps up for 30 months, then what?',
+explanation:'100% PSA: months 1-30 = prepayment rate starts at 0.2% annual and increases 0.2% per month (reaching 6% at month 30). After month 30 = LEVELS OFF at 6% per year for the remainder of the pool\'s life. This is the steady-state assumption.',
+optionExplains:['Wrong. The increase STOPS after month 30 — it doesn\'t continue indefinitely.','CORRECT. After 30 months of ramp-up, PSA assumes steady 6% annual prepayment rate.','Wrong. 0.2% was only month 1. The rate doesn\'t reset.','Wrong. 12% doubling is not part of the PSA model.'],
+trap:'PSA has two phases: (1) ramp-up phase (months 1-30), (2) steady state at 6% thereafter.'},
+
+// ── Q98 ──
+{id:98,type:'mcq',difficulty:'medium',topic:'Investment Portfolio Functions',page:'p.57',
+text:'Which two types of risk does the investment portfolio directly help offset within a bank\'s overall balance sheet?',
+options:['Market risk and operational risk','Credit risk from the loan portfolio, and business (economic) risk from geographic concentration','Regulatory risk and compliance risk','Systemic risk and liquidity risk only'],
+correct:1,
+hint:'The portfolio provides offsets for the two key balance sheet risks from lending.',
+explanation:'Two key offsetting functions: (1) CREDIT RISK offset — high-quality investment securities balance the credit risk inherent in the loan portfolio. (2) BUSINESS RISK offset — purchasing securities from different geographic regions offsets the concentration risk if the local economy where loans are made experiences a downturn.',
+optionExplains:['Wrong. Market and operational risk are broadly defined and not specifically addressed by portfolio security selection.','CORRECT. Credit risk offset (high-quality securities) + business/geographic risk offset (out-of-market securities).','Wrong. Regulatory and compliance risk are managed through governance, not portfolio composition.','Wrong. Systemic risk cannot be diversified away; liquidity risk is partially addressed but not the paired answer.'],
+trap:'Two targeted offsets: credit quality (offset loan credit risk) + geography (offset local business/economic risk).'},
+
+// ── Q99 ──
+{id:99,type:'mcq',difficulty:'hard',topic:'Pledging Requirements',page:'p.72',
+text:'When municipal bonds are used as collateral for government deposits, how are they typically valued for pledging purposes?',
+options:['At par (face value) like Treasury securities','At a discount from par (often 80-90% of face value) to provide an added safety cushion','At their current market price with daily mark-to-market','At zero — only Treasuries count toward pledging requirements'],
+correct:1,
+hint:'Why would you haircut collateral for pledging? Safety margin.',
+explanation:'A-rated or better municipal bonds CAN be used for government deposit pledging, BUT they are valued at a DISCOUNT from par (typically 80-90% of face value) rather than at par. This haircut gives the government depositor an extra cushion of safety — if the bond value falls, the government is still fully protected.',
+optionExplains:['Wrong. Only Treasuries and agencies are valued at par for pledging. Munis get haircuts.','CORRECT. Municipal bonds pledged at 80-90% of par — haircut provides safety margin.','Wrong. Daily MTM is not the pledging valuation approach.','Wrong. Qualifying A-rated munis CAN be used — they are not zero-valued for pledging.'],
+trap:'The pledging haircut on munis = safety margin above and beyond the actual bond value. Treasuries get no haircut; munis do.'},
+
+// ── Q100 ──
+{id:100,type:'mcq',difficulty:'hard',topic:'Duration / Immunization',page:'p.78',
+text:'After immunizing a portfolio by matching duration to the holding period, if market interest rates RISE, the total return is approximately:',
+options:['Significantly higher than anticipated because reinvestment rates rose','Approximately preserved — capital losses are offset by higher reinvestment income','Significantly lower because bond prices fell sharply','Zero — duration matching eliminates all investment return when rates rise'],
+correct:1,
+hint:'Immunization freezes total return — price and reinvestment effects cancel.',
+explanation:'With immunization (duration = holding period), a rate RISE causes: (1) bond prices to FALL (negative effect) and (2) reinvestment of intermediate cash flows at HIGHER rates (positive effect). These two effects approximately OFFSET each other, leaving the total return approximately unchanged from what was expected when the position was established.',
+optionExplains:['Wrong. Total return is approximately PRESERVED, not significantly higher.','CORRECT. The price decline is offset by higher reinvestment income. Total return ≈ locked in.','Wrong. "Significantly lower" ignores the reinvestment income offset.','Wrong. Immunization preserves a positive return — it doesn\'t zero out the return.'],
+trap:'Immunization is not perfect — it approximates freezing returns. Small discrepancies arise from convexity and non-parallel yield curve shifts.'}
+
+];
+
+// ── STATE ──
+const state = {};
+let correctCount=0, wrongCount=0;
+let visibleIds = QUESTIONS.map(q=>q.id);
+
+// ── RENDER ──
+function render(){
+  const topics = [...new Set(QUESTIONS.map(q=>q.topic))].sort();
+  const sel = document.getElementById('topic-select');
+  sel.innerHTML = '<option value="">📂 All Topics</option>' + topics.map(t=>`<option value="${t}">${t}</option>`).join('');
+  const list = document.getElementById('q-list');
+  list.innerHTML = QUESTIONS.map(q=>buildCard(q)).join('');
+  updateStats();
+}
+
+function buildCard(q){
+  const s = state[q.id];
+  const diffClass = `badge-diff-${q.difficulty}`;
+  let interactiveHTML = '';
+  if(q.type==='truefalse'){
+    const td = s ? (s.correct ? 'correct-ans' : 'wrong-ans') : '';
+    const fd = s ? (s.correct ? '' : (s.choice===false ? 'wrong-ans' : '')) : '';
+    const tc = s ? (s.choice===true ? (s.correct?'correct-ans':'wrong-ans') : '') : '';
+    const fc = s ? (s.choice===false ? (s.correct?'correct-ans':'wrong-ans') : '') : '';
+    interactiveHTML = `<div class="tf-row">
+      <button class="tf-btn true-btn ${tc}" onclick="answerTF(${q.id},true)" ${s?'disabled':''}>✅ TRUE</button>
+      <button class="tf-btn false-btn ${fc}" onclick="answerTF(${q.id},false)" ${s?'disabled':''}>❌ FALSE</button>
+    </div>`;
+  } else {
+    interactiveHTML = `<div class="options">${q.options.map((o,i)=>{
+      let cls='';
+      if(s){ if(i===q.correct){cls='correct-ans';} else if(i===s.choice && !s.correct){cls='wrong-ans';} else if(i!==q.correct){cls='dimmed';} }
+      const letter = String.fromCharCode(65+i);
+      return `<button class="opt-btn ${cls}" onclick="answerMCQ(${q.id},${i})" ${s?'disabled':''}><span class="opt-letter">${letter}</span><span class="opt-label">${o}</span></button>`;
+    }).join('')}</div>`;
+  }
+
+  let hintHtml='', explainHtml='';
+  if(!s){
+    hintHtml=`<div style="margin-bottom:10px"><button class="hint-btn" onclick="showHint(${q.id})">💡 Hint</button><div class="hint-box" id="hint-${q.id}">${q.hint}</div></div>`;
+  }
+  if(s){
+    const hdr = s.correct ? 'correct-h' : 'wrong-h';
+    const title = s.correct ? '✅ Correct!' : '❌ Wrong';
+    let optExplains='';
+    if(q.type==='truefalse'){
+      optExplains=`<div class="explain-section"><div class="explain-label why">◆ Wrong Part</div><div class="explain-text">${q.wrongPart||'See explanation above.'}</div></div>`;
+    } else {
+      optExplains=`<div class="explain-section"><div class="explain-label options-label">◆ All Options</div>${q.optionExplains.map((e,i)=>{const cl=i===q.correct?'oe-correct':'oe-wrong';return `<div class="opt-explain-item ${cl}"><strong>${String.fromCharCode(65+i)}.</strong> ${e}</div>`;}).join('')}</div>`;
+    }
+    explainHtml=`<div class="explain-box show"><div class="explain-header ${hdr}">${title}</div><div class="explain-body">
+      <div class="explain-section"><div class="explain-label why">◆ Why</div><div class="explain-text">${q.explanation}</div></div>
+      ${optExplains}
+      <div class="explain-section"><div class="explain-label trap">⚠ Trap</div><div class="explain-text">${q.trap}</div></div>
+    </div></div>`;
+  }
+
+  const bottomHtml = s ? `<div class="card-bottom"><div class="answered-badge ${s.correct?'ab-correct':'ab-wrong'}">${s.correct?'✅ Correct':'❌ Wrong'}</div></div>` : '';
+
+  return `<div class="q-card ${visibleIds.includes(q.id)?'':'hidden'}" id="qcard-${q.id}">
+    <div class="q-meta">
+      <span class="badge badge-num">#${q.id}</span>
+      <span class="badge badge-type">${q.type==='truefalse'?'T/F':'MCQ'}</span>
+      <span class="badge ${diffClass}">${q.difficulty}</span>
+      <span class="badge badge-topic">${q.topic}</span>
+      <span class="badge badge-page">${q.page}</span>
+    </div>
+    <div class="q-text">${q.text}</div>
+    ${hintHtml}
+    ${interactiveHTML}
+    ${explainHtml}
+    ${bottomHtml}
+  </div>`;
+}
+
+function showHint(id){ document.getElementById(`hint-${id}`).classList.toggle('show'); }
+
+function answerMCQ(id,choice){
+  if(state[id]) return;
+  const q = QUESTIONS.find(x=>x.id===id);
+  const correct = choice===q.correct;
+  state[id]={choice,correct};
+  if(correct) correctCount++; else wrongCount++;
+  refreshCard(id); updateStats();
+}
+
+function answerTF(id,choice){
+  if(state[id]) return;
+  const q = QUESTIONS.find(x=>x.id===id);
+  const correct = choice===q.correct;
+  state[id]={choice,correct};
+  if(correct) correctCount++; else wrongCount++;
+  refreshCard(id); updateStats();
+}
+
+function refreshCard(id){
+  const card = document.getElementById(`qcard-${id}`);
+  const q = QUESTIONS.find(x=>x.id===id);
+  if(card){ card.outerHTML = buildCard(q); }
+}
+
+function updateStats(){
+  const done = correctCount+wrongCount;
+  document.getElementById('sc').textContent=correctCount;
+  document.getElementById('sw').textContent=wrongCount;
+  document.getElementById('sq').textContent=done;
+  document.getElementById('ss-c').textContent=correctCount;
+  document.getElementById('ss-w').textContent=wrongCount;
+  document.getElementById('ss-t').textContent=done;
+  document.getElementById('progress-bar').style.width=(done/100*100)+'%';
+}
+
+function applyFilters(){
+  const search = document.getElementById('search-input').value.toLowerCase();
+  const topic = document.getElementById('topic-select').value;
+  const diff = document.getElementById('diff-select').value;
+  visibleIds=[];
+  let count=0;
+  QUESTIONS.forEach(q=>{
+    const matchT = !topic || q.topic===topic;
+    const matchD = !diff || q.difficulty===diff;
+    const matchS = !search || q.text.toLowerCase().includes(search) || q.topic.toLowerCase().includes(search) || (q.options&&q.options.some(o=>o.toLowerCase().includes(search)));
+    const card = document.getElementById(`qcard-${q.id}`);
+    if(matchT&&matchD&&matchS){ visibleIds.push(q.id); count++; if(card)card.classList.remove('hidden'); }
+    else{ if(card)card.classList.add('hidden'); }
+  });
+  document.getElementById('results-info').textContent = count===100?'Showing all 100 questions':`Showing ${count} of 100 questions`;
+  document.getElementById('empty-state').style.display=count===0?'block':'none';
+}
+
+function clearFilters(){
+  document.getElementById('search-input').value='';
+  document.getElementById('topic-select').value='';
+  document.getElementById('diff-select').value='';
+  applyFilters();
+}
+
+function resetAll(){
+  Object.keys(state).forEach(k=>delete state[k]);
+  correctCount=0; wrongCount=0;
+  render();
+  applyFilters();
+}
+
+render();
+</script>
+</body>
+</html>
